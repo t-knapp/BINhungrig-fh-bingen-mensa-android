@@ -3,23 +3,24 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <ImageView
+    <!--<ImageView
         android:id="@+id/imageView_dish"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:src="@drawable/ic_menu_example_dish" />
+        android:src="@drawable/ic_menu_example_dish" /> -->
     
     <TextView
         android:id="@+id/textView_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@id/imageView_dish"
-        android:layout_alignTop="@+id/imageView_dish"
         android:text="TextView1"
         android:textStyle="bold" />
+      <!--  android:layout_toRightOf="@id/imageView_dish"
+        android:layout_alignTop="@+id/imageView_dish"
+         /> -->
 
     <TextView
         android:id="@+id/textView_price"

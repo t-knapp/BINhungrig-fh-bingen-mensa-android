@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -30,68 +33,60 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
+        Log.i(LOG, "ContentView is setted");
+
 		Mensa mensa = (Mensa) this.getApplication();
-		
+
+        Log.i(LOG, "Mensa: " + mensa.toString());
 		Toast.makeText(this, mensa.toString(), Toast.LENGTH_LONG).show();
 
 		
 		// Setup the list view
         final ListView newsEntryListView = (ListView) findViewById(R.id.listView1);
-        final DishItemAdapter newsEntryAdapter = new DishItemAdapter(this, R.layout.dish_list_item);
-        newsEntryListView.setAdapter(newsEntryAdapter);
-        
-	
 	
 		String readTwitterFeed = "";
 		try {
 			readTwitterFeed = mensa.getDishes(2014,03);
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			Log.e(LOG, "mensa.getDishes - InterruptedException" + e1.toString());
 		} catch (ExecutionException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			Log.e(LOG, "mensa.getDishes - ExecutionException" + e1.toString());
 		}
-			
-		//textview.setText(readTwitterFeed);
-
-		//Toast.makeText(this, newsEntryAdapter.toString(), Toast.LENGTH_LONG).show();
-		
-
-		newsEntryAdapter.add(
-        		new Dish(-1,
-        				 "heute",
-        				 "Text text text",
-        				 3.25,
-        				 4.00
-				 )
-    		);
 
 		
 	    try {
+          // Filling the data in an array
 	      JSONArray jsonArray = new JSONArray(readTwitterFeed);
-	      Log.i(MainActivity.class.getName(),
+	      Log.i(LOG,
 	          "Number of entries " + jsonArray.length());
-	      
+          final List<Dish> list = new ArrayList<Dish>();
 	      for (int i = 0; i < jsonArray.length(); i++) {
 	        JSONObject jsonObject = jsonArray.getJSONObject(i);
-	        Log.i(MainActivity.class.getName(), jsonObject.getString("text") );
-	        /*
-	        newsEntryAdapter.add(
-        		new Dish(jsonObject.getInt("id_dishes"),
-        				 jsonObject.getString("date"),
-        				 jsonObject.getString("text"),
-        				 jsonObject.getDouble("priceStudent"),
-        				 jsonObject.getDouble("priceOfficial")
-				 )
-    		);
-    		*/
-	        
+	        Log.i(LOG, jsonObject.getString("text") );
+            list.add(new Dish(
+                    jsonObject.getInt("id_dishes"),
+                    jsonObject.getString("date"),
+                    jsonObject.getString("text"),
+                    jsonObject.getDouble("priceStudent"),
+                    jsonObject.getDouble("priceOfficial")
+            ));
 	      }
+
+            // Filling the Adapter with the generated values
+            final DishItemAdapter adapter = new DishItemAdapter(
+                    this,
+                    list
+            );
+
+            // Connection between ListView and Adapter
+            newsEntryListView.setAdapter(adapter);
+
 	      
 	    } catch (Exception e) {
-	      e.printStackTrace();
+	      Log.e(LOG, e.getMessage());
 	    }
 	}
 
@@ -103,4 +98,5 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
+    private final static String LOG = MainActivity.class.getName();
 }

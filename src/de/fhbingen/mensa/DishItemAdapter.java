@@ -1,15 +1,11 @@
 package de.fhbingen.mensa;
 
-import android.animation.LayoutTransition;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,8 +46,10 @@ public class DishItemAdapter extends ArrayAdapter<Dish> {
 		// Setting the values to the layout elements
         title.setText(dish.getText());
         // TODO: Formatierung der Ausgabe, sodass immer 2 Nachkommastellen
-        price.setText(Double.toString(dish.getPriceStudent()));
-		
+        //price.setText(Double.toString(dish.getPriceStudent()));
+		price.setText(String.format("%.2f €", dish.getPriceStudent()));
+        
+        
 		return rowView;
 	}
 

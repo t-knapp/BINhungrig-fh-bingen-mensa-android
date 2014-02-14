@@ -1,21 +1,8 @@
 package de.fhbingen.mensa;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Logger;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -24,7 +11,6 @@ import android.app.Activity;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -65,7 +51,7 @@ public class MainActivity extends Activity {
           final List<Dish> list = new ArrayList<Dish>();
 	      for (int i = 0; i < jsonArray.length(); i++) {
 	        JSONObject jsonObject = jsonArray.getJSONObject(i);
-	        Log.i(LOG, jsonObject.getString("text") );
+	        //Log.i(LOG, jsonObject.getString("text") );
             list.add(new Dish(
                     jsonObject.getInt("id_dishes"),
                     jsonObject.getString("date"),

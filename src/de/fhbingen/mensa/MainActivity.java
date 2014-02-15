@@ -6,14 +6,17 @@ import java.util.concurrent.ExecutionException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.app.ListActivity;
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ListActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +30,6 @@ public class MainActivity extends Activity {
         Log.i(LOG, "Mensa: " + mensa.toString());
 		Toast.makeText(this, mensa.toString(), Toast.LENGTH_LONG).show();
 
-		
-		// Setup the list view
-        final ListView newsEntryListView = (ListView) findViewById(R.id.listView1);
-	
 		String readTwitterFeed = "";
 		try {
 			readTwitterFeed = mensa.getDishes(2014,03);
@@ -68,12 +67,13 @@ public class MainActivity extends Activity {
             );
 
             // Connection between ListView and Adapter
-            newsEntryListView.setAdapter(adapter);
+            setListAdapter(adapter);
 
 	      
 	    } catch (Exception e) {
 	      Log.e(LOG, e.getMessage());
 	    }
+
 	}
 
 	

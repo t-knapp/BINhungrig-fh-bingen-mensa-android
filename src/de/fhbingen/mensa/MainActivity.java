@@ -23,11 +23,11 @@ public class MainActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-        Log.i(LOG, "ContentView is setted");
+        Log.i(TAG, "ContentView is setted");
 
 		Mensa mensa = (Mensa) this.getApplication();
 
-        Log.i(LOG, "Mensa: " + mensa.toString());
+        Log.i(TAG, "Mensa: " + mensa.toString());
 		Toast.makeText(this, mensa.toString(), Toast.LENGTH_LONG).show();
 
 		String readTwitterFeed = "";
@@ -35,35 +35,54 @@ public class MainActivity extends ListActivity {
 			readTwitterFeed = mensa.getDishes(2014,03);
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
-			Log.e(LOG, "mensa.getDishes - InterruptedException" + e1.toString());
+			Log.e(TAG, "mensa.getDishes - InterruptedException" + e1.toString());
 		} catch (ExecutionException e1) {
 			// TODO Auto-generated catch block
-			Log.e(LOG, "mensa.getDishes - ExecutionException" + e1.toString());
+			Log.e(TAG, "mensa.getDishes - ExecutionException" + e1.toString());
 		}
 
 		
 	    try {
           // Filling the data in an array
 	      JSONArray jsonArray = new JSONArray(readTwitterFeed);
-	      Log.i(LOG,
+	      Log.i(TAG,
 	          "Number of entries " + jsonArray.length());
           final List<Dish> list = new ArrayList<Dish>();
 	      for (int i = 0; i < jsonArray.length(); i++) {
 	        JSONObject jsonObject = jsonArray.getJSONObject(i);
-	        //Log.i(LOG, jsonObject.getString("text") );
+	        //Log.i(TAG, jsonObject.getString("text") );
+            Log.d(TAG, "Date " + jsonObject.getString("date"));
+
             list.add(new Dish(
                     jsonObject.getInt("id_dishes"),
                     jsonObject.getString("date"),
                     jsonObject.getString("text"),
                     jsonObject.getDouble("priceStudent"),
-                    jsonObject.getDouble("priceOfficial")
+                    jsonObject.getDouble("priceOfficial"),
+                    MainActivity.this
             ));
 	      }
+
+            final List<Dish> listMonday = new ArrayList<Dish>();
+
+            Log.d(TAG, "Before foreach for for Monday");
+            for(Dish d: list){
+                try{
+                    String day = d.getDayOfWeek();
+                     Log.d(TAG, day);
+
+                    if (day.equals("Montag"))
+                        listMonday.add(d);
+                }
+                catch(Exception e){
+                    Log.e(TAG, "Message: " + e.getMessage() + "\nCause: " + e.getCause() );
+                }
+            }
 
             // Filling the Adapter with the generated values
             final DishItemAdapter adapter = new DishItemAdapter(
                     this,
-                    list
+                    listMonday
             );
 
             // Connection between ListView and Adapter
@@ -71,7 +90,7 @@ public class MainActivity extends ListActivity {
 
 	      
 	    } catch (Exception e) {
-	      Log.e(LOG, e.getMessage());
+	      Log.e(TAG, "Exception cause: " + e.getCause() + "\nException message" +e.getMessage() + "\nException toStr" + e.toString());
 	    }
 
 	}
@@ -84,5 +103,6 @@ public class MainActivity extends ListActivity {
 		return true;
 	}
 
-    private final static String LOG = MainActivity.class.getName();
+    private final static String TAG = MainActivity.class.getName();
+
 }

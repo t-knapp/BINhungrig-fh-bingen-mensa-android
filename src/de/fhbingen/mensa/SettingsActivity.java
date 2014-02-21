@@ -55,6 +55,9 @@ public class SettingsActivity extends Activity implements OnItemSelectedListener
 		// Commit the edits!
 		editor.commit();
 		
+		// Commit to Mensa
+        Mensa.userRole = Mensa.UserRole.values()[settings.getInt("userRole", Mensa.UserRole.STUDENT.ordinal())];
+		
 		if(roleIndex != pos){
 			MainActivity.roleChanged = true;
 		}

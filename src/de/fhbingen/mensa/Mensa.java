@@ -169,6 +169,38 @@ public class Mensa extends Application {
 		return null;
 	}
 	
+	public int[] loadRating(int id_dishes){
+		ContentTask ct = new ContentTask();
+		ct.execute(APIURL + "getRatings=" + id_dishes );
+		
+		int[] retVal = new int[5];
+		
+		try {
+			String result = ct.get();
+			
+			if(!result.isEmpty()){
+				JSONArray jsonArray = new JSONArray(result);
+				for(int i = 0; i < jsonArray.length(); i++){
+					retVal[i] = jsonArray.getInt(i);
+				}
+			}
+			
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return retVal;
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return retVal;
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return retVal;
+		}
+		return retVal;
+	}
+	
 	public List<Dish> getDay(String cal) {
 		return dayMap.get(cal);
 	}

@@ -115,7 +115,6 @@ public class MainActivity extends ListActivity {
 			
 			//TODO: Update view
 			
-			
 			roleChanged = false;
 		}
 	}

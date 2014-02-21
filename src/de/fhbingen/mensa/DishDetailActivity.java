@@ -1,5 +1,7 @@
 package de.fhbingen.mensa;
 
+import java.util.Arrays;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class DishDetailActivity extends Activity {
 
@@ -17,6 +20,8 @@ public class DishDetailActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dish_detail);
+		
+		Mensa mensa = (Mensa) this.getApplication();
 		
 		Dish dish = (Dish) getIntent().getExtras().getSerializable("data");
 		
@@ -38,10 +43,10 @@ public class DishDetailActivity extends Activity {
 		);
 		
 		//Set avg. rating
+		int[] ratings  = mensa.loadRating(dish.getId_dishes());
+
 		
 		//Load and set dish-picture
-		Mensa mensa = (Mensa) this.getApplication();
-		
 		if(dish.getId_pictures() != -1){ //Server sets -1 if no picture available
 			byte[] decodedString;
 			if(dish.getPicture() == null){

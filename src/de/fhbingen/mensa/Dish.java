@@ -1,8 +1,6 @@
 package de.fhbingen.mensa;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-
 import android.util.Log;
 
 import java.io.Serializable;
@@ -101,7 +99,7 @@ public class Dish implements Serializable {
 	public int getId_pictures() {
 		return id_pictures;
 	}
-
+	
 
 	/** Transforms the String of Date in an valid Calendar object.
      *  Calculates the responding day of the week with the calendar object.

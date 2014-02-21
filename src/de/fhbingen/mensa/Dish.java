@@ -1,9 +1,11 @@
 package de.fhbingen.mensa;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import android.util.Log;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -11,9 +13,14 @@ import java.util.regex.Pattern;
 
 import de.fhbingen.mensa.Exceptions.NotExcepectedServerAnswer;
 
-public class Dish {
+public class Dish implements Serializable {
 
-    /** Constructor of dish
+    /**
+     * 
+     */
+	private static final long serialVersionUID = 3377898359032737970L;
+
+	/** Constructor of dish
      *
      * @param id_dishes
      * @param date
@@ -28,22 +35,28 @@ public class Dish {
 		String text,
 		double priceStudent,
 		double priceOfficial,
-        Context context)
+		double avgRating,
+		int id_pictures,
+		String thumb/*,
+        Context context*/)
 	{
 		this.id_dishes = id_dishes;
 		this.date = date;
 		this.text = text;
 		this.priceStudent = priceStudent;
 		this.priceOfficial = priceOfficial;
-		this.avgRating = 3.33;
-        this.context = context;
-        try{
-            this.day_of_week = computeDayOfWeek();
-        }
-        catch (NotExcepectedServerAnswer e){
-            this.day_of_week = "Montag";
-        }
+		this.avgRating = avgRating;
+		this.id_pictures = id_pictures;
+		this.thumb = thumb.getBytes();
+        //this.context = context;
+        //try{
+		//    this.day_of_week = computeDayOfWeek();
+		//}
+		//catch (NotExcepectedServerAnswer e){
+        //    this.day_of_week = "Montag";
+        //}
 	}
+	
 	
 	public int getId_dishes() {
 		return id_dishes;
@@ -73,7 +86,24 @@ public class Dish {
         return day_of_week;
     }
 
-    /** Transforms the String of Date in an valid Calendar object.
+    public byte[] getThumb(){
+    	return thumb;
+    }
+    
+    public byte[] getPicture() {
+		return picture;
+    }
+
+	public void setPicture(byte[] picture) {
+		this.picture = picture;
+	}
+
+	public int getId_pictures() {
+		return id_pictures;
+	}
+
+
+	/** Transforms the String of Date in an valid Calendar object.
      *  Calculates the responding day of the week with the calendar object.
      * @return a String with the weekday e.g. Monday
      * @throws NotExcepectedServerAnswer if the String of date doesn't match to yyyy-mm-dd
@@ -115,12 +145,17 @@ public class Dish {
 	private int id_dishes;
 	private String date;
 	private String text;
-    private String day_of_week;
 	private double priceStudent;
 	private double priceOfficial;
 	
+	private int id_pictures;
+	private byte[] thumb;
+	private byte[] picture;
+	
 	private double avgRating;
 
+	private String day_of_week;
+	
     private Context context;
 
     private final static String TAG = Dish.class.getName();

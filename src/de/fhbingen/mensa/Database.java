@@ -1,5 +1,8 @@
 package de.fhbingen.mensa;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -41,14 +44,23 @@ public class Database extends SQLiteOpenHelper {
 		db.execSQL(createQuery);
 	}
 
-	public void addDish(String name, float rating) {
-		Log.i(TAG, "addDish");
+	public void insetDish(Dish dish) {
+		Log.i(TAG, "insertDish");
 
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		//Insert values, prepared statement would be more secure
 		final String query = "INSERT INTO dishes (name, rating)" +
-				             "VALUES (\""+ name + "\", " + rating + ");";
+				             "VALUES (?,?,?);";
+			
+		//Prepared statements
+		SQLiteStatement statement = db.compileStatement(query);
+	
+		statement.bindLong(1, dish.getId_dishes());
+		statement.bindString(2, dish.getDate());
+		statement.bindString(3, dish.getText());
+	
+		statement.execute();
 
 		db.execSQL(query);
 	}
@@ -83,6 +95,11 @@ public class Database extends SQLiteOpenHelper {
 		statement.execute();
 	}
 
+	public List<Dish> getDishes(){
+		List<Dish> ret = new LinkedList<Dish>();
+		return ret;
+	}
+	
 	@Override
 	public void onUpgrade(SQLiteDatabase db, 
 			              int oldVersion,

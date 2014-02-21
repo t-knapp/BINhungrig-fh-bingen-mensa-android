@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Mensa</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Einstellungen</string>
     <string name="hello_world">Hello world!</string>
 
     <!-- Dish -->
@@ -16,5 +16,15 @@
         <item>Freitag</item>
         <item>Samstag</item>
     </string-array>
+    
+    <!-- Settings -->
+    <string-array name="users_array">
+        <item>Studenten</item>
+        <item>Bedienstete</item>
+    </string-array>
+
+    <string name="title_activity_dish_detail">Detailansicht</string>
+    <string name="title_activity_settings">Einstellungen</string>
+    <string name="show_price">Preis anzeigen für</string>
 
 </resources>

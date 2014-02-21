@@ -1,42 +1,184 @@
 package de.fhbingen.mensa;
 
-import java.text.NumberFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Application;
-import android.text.format.Time;
+import android.content.SharedPreferences;
+import android.util.Base64;
+import android.util.Log;
 
 public class Mensa extends Application {
 
 	private final static String APIURL = "http://nuke.volans.uberspace.de/fh-bingen/mensa/dev/API.php?";
+	private final static String TAG = Mensa.class.getName();
 	
+	public final static String PREF_USER = "UserSettings";
+	
+	public static UserRole userRole;
+	
+	public enum UserRole {
+		STUDENT, OFFICIAL
+	}
+
 	public Mensa() {
-		// TODO Auto-generated constructor stub
+		dayMap = new HashMap<String, List<Dish>>();
 	}
-	
-	public String getDishes() throws InterruptedException, ExecutionException{
+
+	public String getDishes() throws InterruptedException, ExecutionException {
 		Calendar rightNow = Calendar.getInstance();
-		return this.getDishes(
-				rightNow.get(Calendar.YEAR), rightNow.get(Calendar.WEEK_OF_YEAR));
+		return this.getDishes(rightNow.get(Calendar.YEAR),
+				rightNow.get(Calendar.WEEK_OF_YEAR));
 	}
-	
-	public String getDishes(int year, int week) throws InterruptedException, ExecutionException{
-		return this.getDishes(Integer.toString(year), String.format("%02d", week));
+
+	public String getDishes(int year, int week) throws InterruptedException,
+			ExecutionException {
+		return this.getDishes(Integer.toString(year),
+				String.format("%02d", week));
 	}
-	
-	public String getDishes(String year, String weekOfYear) throws InterruptedException, ExecutionException{
+
+	public String getDishes(String year, String weekOfYear)
+			throws InterruptedException, ExecutionException {
 		ContentTask ct = new ContentTask();
 		ct.execute(APIURL + "getWeek=" + year + weekOfYear);
 		return ct.get();
 	}
+
+	public void loadWeek() {
+		
+		if(!dayMap.isEmpty()){
+			return;
+		}
+		
+		// Calendar rightNow = Calendar.getInstance();
+		ContentTask ct = new ContentTask();
+		// ct.execute(APIURL + "getWeek=" + rightNow.get(Calendar.YEAR)
+		// + rightNow.get(Calendar.WEEK_OF_YEAR));
+
+		ct.execute(APIURL + "getWeek=201403"); // TODO: Switch to live
+
+		try {
+			// Filling the data in an array
+			JSONArray jsonArray = new JSONArray(ct.get());
+
+			for (int i = 0; i < jsonArray.length(); i++) {
+				JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+				String objDate = jsonObject.getString("date");
+
+				// Log.d(TAG, "Date " + objDate);
+
+				if (!dayMap.containsKey(objDate)) {
+					dayMap.put(objDate, new LinkedList<Dish>());
+				}
+
+				dayMap.get(objDate).add(
+					new Dish(
+						jsonObject.getInt("id_dishes"),
+						objDate,
+						jsonObject.getString("text"),
+						jsonObject.getDouble("priceStudent"),
+						jsonObject.getDouble("priceOfficial"),
+						jsonObject.getDouble("ravg"),
+						jsonObject.getInt("pid"),
+						jsonObject.getString("thumb")
+					)
+				);
+
+				// Calendar cal = new GregorianCalendar();
+				// SimpleDateFormat dateFormat = new
+				// SimpleDateFormat("yyyy-mm-dd");
+				// cal.setTime(dateFormat.parse(objDate));
+
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public byte[] loadPicture(int id_dishes, int id_pictures){
+		ContentTask ct = new ContentTask();
+		ct.execute(APIURL + "getDishPhotoData=" + id_pictures);
+		
+		try {
+			String result = ct.get();
+			if(result.length() > 0 && !result.equals("false")){
+			
+				JSONObject jsonObj = new JSONObject(result);
+								
+				Calendar rightNow = Calendar.getInstance();
+				
+				String query = "2014-01-13";
+				
+				//TODO: Set to live mode
+				/*
+				query = String.format(
+					"%d-%02d-%02d",
+					rightNow.get(Calendar.YEAR),
+					rightNow.get(Calendar.MONTH),
+					rightNow.get(Calendar.DAY_OF_MONTH)
+				);
+				*/
+				
+				Log.d(TAG, "query : " + query);
+				
+				List<Dish> dayList = dayMap.get(
+					query
+				);
+				
+				for (Dish dish : dayList) {
+					if(dish.getId_dishes() == id_dishes){
+						String pictureData = jsonObj.getString("pictureData");
+						if(pictureData.length() > 0){
+							byte[] decodedString = Base64.decode(pictureData.getBytes(), Base64.DEFAULT);
+							dish.setPicture(decodedString);
+							return decodedString;
+						} else {
+							return null;
+						}
+					}
+				}
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return null;
+	}
 	
-	
+	public List<Dish> getDay(String cal) {
+		return dayMap.get(cal);
+	}
+
 	@Override
 	public String toString() {
 		return "Mensa Application";
 	}
-	
-	private Database db;
+
+	// private Database db;
+	private HashMap<String, List<Dish>> dayMap;
 
 }

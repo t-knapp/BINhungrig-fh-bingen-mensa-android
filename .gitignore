@@ -22,7 +22,8 @@ project.properties
 
 # Android Studio
 .idea/
-*build/
+build/
+.gradle/
 /*/local.properties
 /*/out
 /*/*/build

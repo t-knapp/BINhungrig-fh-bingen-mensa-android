@@ -9,6 +9,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:layout_marginBottom="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="4dp"
+        android:minHeight="100px"
+        android:minWidth="100px"
         android:src="@drawable/ic_menu_example_dish" />
     
     <TextView
@@ -29,5 +34,16 @@
         android:layout_alignLeft="@+id/textView_title"
         android:layout_below="@+id/textView_title"
         android:text="TextView2" />
+
+    <TextView
+        android:id="@+id/textView_rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageView_dish"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="3dp"
+        android:layout_marginRight="3dp"
+        android:text="0"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>

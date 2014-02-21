@@ -1,10 +1,14 @@
 package de.fhbingen.mensa;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.HashMap;
@@ -45,11 +49,35 @@ public class DishItemAdapter extends ArrayAdapter<Dish> {
 
 		// Setting the values to the layout elements
         title.setText(dish.getText());
-        // TODO: Formatierung der Ausgabe, sodass immer 2 Nachkommastellen
-        //price.setText(Double.toString(dish.getPriceStudent()));
-		price.setText(String.format("%.2f €", dish.getPriceStudent()));
+
+        // Formatting price
+		price.setText(
+			String.format(
+				"%.2f €",
+				(Mensa.userRole == Mensa.UserRole.STUDENT)
+					? dish.getPriceStudent()
+					: dish.getPriceOfficial()
+			)
+		);
         
-        
+		// Set avg. rating
+		TextView rating = (TextView) rowView.findViewById(R.id.textView_rating);
+		double avgRating = dish.getAvgRating();
+		if(avgRating != -1){
+			rating.setText(String.format("%.1f", dish.getAvgRating()));
+		} else {
+			rating.setVisibility(View.GONE);
+		}
+		
+		// Insert thumbnail if available
+		byte[] encodedString = dish.getThumb();
+		if(encodedString.length > 0){
+			ImageView iv = (ImageView) rowView.findViewById(R.id.imageView_dish);
+			byte[] decodedString = Base64.decode(encodedString, Base64.DEFAULT);
+			Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length); 
+			iv.setImageBitmap(decodedByte);
+		}
+		
 		return rowView;
 	}
 

@@ -26,5 +26,18 @@
     <string name="title_activity_dish_detail">Detailansicht</string>
     <string name="title_activity_settings">Einstellungen</string>
     <string name="show_price">Preis anzeigen für</string>
+    <string name="avg_dummy_rating">5,5</string>
+    <string name="avg_title">&#248; Bewertung</string>
+    
+    <string name="label_1_start">&#9733; 1</string>
+    <string name="label_2_start">&#9733; 2</string>
+    <string name="label_3_start">&#9733; 3</string>
+    <string name="label_4_start">&#9733; 4</string>
+    <string name="label_5_start">&#9733; 5</string>
+    <string name="label_price">Preis:</string>
+    <string name="heading_rating">Eine Bewertung abgeben</string>
+    <string name="button_rate">Bewertung speichern</string>
+    <string name="dummy_numberRatings">n Bewertungen</string>
+    
 
 </resources>

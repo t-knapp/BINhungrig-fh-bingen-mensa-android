@@ -12,6 +12,12 @@ public class CustomBar extends View {
 	public CustomBar(Context context, AttributeSet atts) {
 		super(context, atts);
 		
+		//Set colors at construction time. Creation order in XML important.
+		colorIndex = cI--;
+		if(cI == -1){
+			cI = 4;
+		}
+		
 		paint = new Paint();
 		paint.setAntiAlias(true);
 		paint.setTextSize(16f);
@@ -64,9 +70,10 @@ public class CustomBar extends View {
 	}
 	
 	private int colorIndex = 0;
-	private int max = 5;
-	private int value = 5;
+	private int max = 0;
+	private int value = 0;
 	private final Paint paint;
 	private static final int[] colors = { 0xFFFF8B5A, 0xFFFFB234, 0xFFFFD834, 0xFFADD633, 0xFF9FC05A};
+	private static int cI = 4;
 
 }

@@ -6,6 +6,8 @@ import java.util.regex.Pattern;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -14,7 +16,9 @@ import android.widget.Button;
 public class GalleryActivity extends Activity {
 
 	private Button btn;
-	
+	private final Database db = new Database(this);
+	private WebView webView;
+		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -22,22 +26,15 @@ public class GalleryActivity extends Activity {
 		
 		btn = (Button) findViewById(R.id.button_complain);
 		
-		final WebView webView = (WebView) findViewById(R.id.webView1);
+		 webView = (WebView) findViewById(R.id.webView1);
 				
 		webView.getSettings().setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
 				
 		webView.setWebViewClient(new WebViewClient(){
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {	
-				int id_pictures = -1;
-				
-				Pattern p = Pattern.compile(".*&id_pictures=(\\d+)");
-				Matcher m = p.matcher(url);
-				if (m.find()) {
-					id_pictures = Integer.parseInt(m.group(1));
-				}
-				
-				btn.setEnabled(!alreadyComplained(id_pictures));
+								
+				btn.setEnabled(!alreadyComplained(extractId_Pictures(url)));
 				
 				webView.loadUrl(url);
 				return true;
@@ -50,6 +47,32 @@ public class GalleryActivity extends Activity {
 		webView.loadUrl(Mensa.GALLERYURL + "id_dishes="+id_dishes+"&id_pictures="+id_pictures);
 		
 		btn.setEnabled(!alreadyComplained(id_pictures));
+		
+		btn.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				webView.getUrl();
+				new InsertComplainActivity().execute(Mensa.APIURL + "insertPictureComplain=" + extractId_Pictures());
+			}
+			
+		});
+	}
+	
+	private int extractId_Pictures(){
+		return extractId_Pictures(webView.getUrl());
+	}
+	
+	private int extractId_Pictures(String url){
+		int id_pictures = -1;
+		
+		Pattern p = Pattern.compile(".*&id_pictures=(\\d+)");
+		Matcher m = p.matcher(url);
+		if (m.find()) {
+			id_pictures = Integer.parseInt(m.group(1));
+		}
+		
+		return id_pictures;
 	}
 	
 	@Override
@@ -60,8 +83,16 @@ public class GalleryActivity extends Activity {
 	}
 	
 	private boolean alreadyComplained(int id_pictures){
-		//TODO: DB Stuff.
-		return false;
+		return db.complainedAboutPicture(id_pictures);
 	}
 
+	private class InsertComplainActivity extends ContentTask{
+		@Override
+		protected void onPostExecute(String result) {
+			if(result != null && result.equals("true")){
+				db.insertComplain(extractId_Pictures());
+				btn.setEnabled(false);
+			}
+		}
+	}
 }

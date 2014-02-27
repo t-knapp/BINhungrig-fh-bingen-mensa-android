@@ -32,6 +32,8 @@ public class DishDetailActivity extends Activity {
 	private TextView labelRatings;
 	private int[] ratings = new int[5];
 	
+	private final Database db = new Database(this);
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -139,6 +141,7 @@ public class DishDetailActivity extends Activity {
 				}
 			});
 		}
+		
 		/*
 		iv.setOnLongClickListener(new OnLongClickListener() {
 			
@@ -152,31 +155,42 @@ public class DishDetailActivity extends Activity {
 				
 		//Rating
 		bar = (RatingBar) findViewById(R.id.ratingBarDish);
-		bar.setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
-			
-			@Override
-			public void onRatingChanged(RatingBar ratingBar, float rating,
-					boolean fromUser) {
-				ratingBar.setRating(rating>0?rating:1);				
-			}
-		});
-		
 		btn = (Button) findViewById(R.id.button_complain);
-		btn.setOnClickListener(new OnClickListener() {
+		
+		int dbRating = db.selectRating(dish.getId_dishes());
+		if(dbRating != -1){
+			bar.setRating(dbRating);
+			btn.setVisibility(View.GONE);
+			bar.setIsIndicator(true);
+			labelRatings.setText("Deine Bewertung");
+		} else {
+		
+			bar.setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
+				
+				@Override
+				public void onRatingChanged(RatingBar ratingBar, float rating,
+						boolean fromUser) {
+					ratingBar.setRating(rating>0?rating:1);				
+				}
+			});
 			
-			@Override
-			public void onClick(View v) {
+			
+			btn.setOnClickListener(new OnClickListener() {
 				
-				new InsertRatingActivity()
-					.execute(Mensa.APIURL
-							+ "insertDishRating=" 
-							+ dish.getId_dishes() 
-							+ ";" + (int)bar.getRating());
-				
-				btn.setVisibility(View.GONE);
-				bar.setIsIndicator(true);
-			}
-		});
+				@Override
+				public void onClick(View v) {
+					
+					new InsertRatingActivity()
+						.execute(Mensa.APIURL
+								+ "insertDishRating=" 
+								+ dish.getId_dishes() 
+								+ ";" + (int)bar.getRating());
+					
+					btn.setVisibility(View.GONE);
+					bar.setIsIndicator(true);
+				}
+			});
+		}
 	}
 
 	@Override
@@ -297,14 +311,16 @@ public class DishDetailActivity extends Activity {
 				btn.setVisibility(View.GONE);
 				bar.setIsIndicator(true);
 				labelRatings.setText("Deine Bewertung");
-				//TODO: Store rating and id in SQLite
+				
+				//Store rating and id in SQLite
+				db.insertRating(dish.getId_dishes(), (int)bar.getRating());
 				
 				//Update rating
 				ratings[(int)bar.getRating()-1]++;
 				setRating(ratings);		
 				double avg = setAvgRating();
 				
-				//Update dish in Mensa collection
+				//Update dish in mensas collection
 				mensa.setAvgRating(dish.getDate(), dish.getId_dishes(), avg);
 			} else {
 				btn.setVisibility(View.GONE);

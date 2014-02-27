@@ -1,14 +1,13 @@
 package de.fhbingen.mensa;
 
-import java.util.Arrays;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.RadialGradient;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
@@ -20,23 +19,28 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class DishDetailActivity extends Activity {
 
+	private Mensa mensa;
+	private Dish dish;
+	private ImageView iv;
+	private TextView tv;
+	private RatingBar bar;
+	private Button btn;
+	private TextView labelRatings;
+	private int[] ratings = new int[5];
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dish_detail);
 		
-		final Mensa mensa = (Mensa) this.getApplication();
-		
-		final Dish dish = (Dish) getIntent().getExtras().getSerializable("data");
-		
-		final TextView labelRatings = (TextView) findViewById(R.id.textView_headingDoRating);
-		
-		TextView tv;
-		
+		mensa        = (Mensa) this.getApplication();
+		iv           = (ImageView) findViewById(R.id.dish_picture);
+		dish         = (Dish) getIntent().getExtras().getSerializable("data");
+		labelRatings = (TextView) findViewById(R.id.textView_headingDoRating);
+				
 		//Set dish-text
 		tv = (TextView) findViewById(R.id.dish_text);
 		tv.setText(dish.getText());
@@ -54,32 +58,12 @@ public class DishDetailActivity extends Activity {
 		);
 		
 		//Set average rating
-		tv = (TextView) findViewById(R.id.textView_avgRating);
-		tv.setText(String.format(Locale.GERMAN, "%.1f", dish.getAvgRating()));
+		setAvgRating(dish.getAvgRating());
+		
+		//Load rating in AsyncTask
+		new LoadRatingsActivity()
+			.execute(Mensa.APIURL + "getRatings=" + dish.getId_dishes());
 				
-		//Set ratings
-		int[] ratings  = mensa.loadRating(dish.getId_dishes());
-
-
-		
-		CustomBar cb;
-		int max = 0;
-		int numberRatings = 0;
-		for (int i : ratings) {
-			max = i > max ? i : max;
-			numberRatings += i;
-		}
-
-		for (int i = 0; i < ratings.length; i++){
-			cb = (CustomBar) findViewById(CUSTOMBARS[i]);
-			cb.setData(i, max, ratings[i]);
-		}
-
-		//Set nubmer of rating
-		tv = (TextView) findViewById(R.id.textView_numberRatings);
-		tv.setText(String.format("%d Bewertungen", numberRatings));
-
-		
 		//Load and set dish-picture
 		// if thumb.length > 0
 		//     if picdata.length > 0
@@ -91,7 +75,7 @@ public class DishDetailActivity extends Activity {
 		// else
 		//     show default image
 		//     add listener for picture intent
-		final ImageView iv = (ImageView) findViewById(R.id.dish_picture);
+		//final ImageView iv = (ImageView) findViewById(R.id.dish_picture);
 		
 		byte[] thumbBytes = dish.getThumb();
 		
@@ -100,11 +84,7 @@ public class DishDetailActivity extends Activity {
 			byte[] pictureBytes = dish.getPicture();
 			if(pictureBytes != null){
 				//Show large image
-
-				//decodedString = mensa.loadPicture(dish.getId_dishes(), dish.getId_pictures());
-
-				Bitmap decodedByte = BitmapFactory.decodeByteArray(pictureBytes, 0, pictureBytes.length); 
-				iv.setImageBitmap(decodedByte);
+				setPicture(pictureBytes);
 				
 				iv.setOnClickListener(new OnClickListener() {
 					@Override
@@ -116,28 +96,21 @@ public class DishDetailActivity extends Activity {
 			} else {
 				// Show thumbnail
 				byte[] decodedString = Base64.decode(thumbBytes, Base64.DEFAULT);
-				Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 				
-				iv.setImageBitmap(decodedByte);
+				setPicture(decodedString);
 				
+				//TODO: Move listener to private property for reuse.
 				iv.setOnClickListener(new OnClickListener() {
 					
 					@Override
 					public void onClick(View v) {
 						Log.d("DDA", "downloadLargePicture");
-						byte[] decodedString = mensa.loadPicture(dish.getId_dishes(), dish.getId_pictures());
-
-						Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 						
-						iv.setImageBitmap(decodedByte);
+						new LoadPictureActivity().execute(
+								Mensa.APIURL + "getDishPhotoData=" + dish.getId_pictures()
+						);
+						
 						iv.setOnClickListener(null);
-						
-						iv.setOnClickListener(new OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								Log.d("DDA", "startWebView");
-							}
-						});
 					}
 				});
 			}
@@ -172,7 +145,7 @@ public class DishDetailActivity extends Activity {
 		*/
 				
 		//Rating
-		final RatingBar bar = (RatingBar) findViewById(R.id.ratingBarDish);
+		bar = (RatingBar) findViewById(R.id.ratingBarDish);
 		bar.setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
 			
 			@Override
@@ -182,45 +155,149 @@ public class DishDetailActivity extends Activity {
 			}
 		});
 		
-		final Button btn = (Button) findViewById(R.id.button1);
+		btn = (Button) findViewById(R.id.button1);
 		btn.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				
-				ContentTask ct = new ContentTask();
-				ct.execute(
-					Mensa.APIURL
-					+ "insertDishRating=" 
-					+ dish.getId_dishes() 
-					+ ";" + (int)bar.getRating());
-				try {
-					String result = ct.get();
-					if(result.equals("true")){
-						Log.d("DDA", "Rating submitted.");
-						//TODO: Hide Button and Bar, or disable them, store in DB
-						//TODO: Update Ratings
-						btn.setVisibility(View.GONE);
-						bar.setIsIndicator(true);
-						labelRatings.setText("Deine Bewertung");
-					}
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (ExecutionException e) {
-					e.printStackTrace();
-				}
+				new InsertRatingActivity()
+					.execute(Mensa.APIURL
+							+ "insertDishRating=" 
+							+ dish.getId_dishes() 
+							+ ";" + (int)bar.getRating());
+				
+				btn.setVisibility(View.GONE);
+				bar.setIsIndicator(true);
 			}
-			
 		});
-		
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		//getMenuInflater().inflate(R.menu.dish_detail, menu);
-		return true;
+		return false;
+	}
+	
+	public void setPicture(byte[] pictureBytes){
+		if(pictureBytes != null){
+			if(pictureBytes.length > 0){
+				iv.setImageBitmap(BitmapFactory.decodeByteArray(pictureBytes, 0, pictureBytes.length));
+			}
+		}
+	}
+	
+	public void setRating(int[] ratings){
+		CustomBar cb;
+		int max = 0;
+		int numberRatings = 0;
+		
+		//Calculate count and max
+		for (int i : ratings) {
+			max = i > max ? i : max;
+			numberRatings += i;
+		}
+
+		//Draw rating
+		for (int i = 0; i < ratings.length; i++){
+			cb = (CustomBar) findViewById(CUSTOMBARS[i]);
+			cb.setData(i, max, ratings[i]);
+		}
+
+		//Set number of rating
+		tv = (TextView) findViewById(R.id.textView_numberRatings);
+		tv.setText(String.format("%d Bewertungen", numberRatings));
+	}
+	
+	public double setAvgRating(){
+		int cnt = 0;
+		double sum = 0;
+		for(int i = 0; i < ratings.length; i++){
+			sum += (i+1) * ratings[i];
+			cnt += ratings[i];
+		}
+		setAvgRating(sum/cnt);
+		return sum/cnt;
+	}
+	
+	public void setAvgRating(double avg){
+		tv = (TextView) findViewById(R.id.textView_avgRating);
+		tv.setText(String.format(Locale.GERMAN, "%.1f", avg));
 	}
 	
 	private final int[] CUSTOMBARS = {R.id.customBar1, R.id.customBar2, R.id.customBar3, R.id.customBar4, R.id.customBar5};
+	
+	private class LoadPictureActivity extends ContentTask{
+		
+		@Override
+		protected void onPostExecute(String result) {
+			
+			JSONObject jsonObj;
+			String data = null;
+			try {
+				jsonObj = new JSONObject(result);
+				data = jsonObj.getString("pictureData");
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			if(data != null){
+				byte[] decodedString = Base64.decode(data.getBytes(), Base64.DEFAULT);
+				mensa.setDishPicture(dish.getDate(), dish.getId_dishes(), decodedString);
+				setPicture(decodedString);
+				
+				//Update listener
+				iv.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Log.d("DDA", "startWebView");
+					}
+				});
+			}
+		}
+	}
+	
+	private class LoadRatingsActivity extends ContentTask{
+		@Override
+		protected void onPostExecute(String result) {
+			JSONArray jsonArray;
+			
+			try {
+				jsonArray = new JSONArray(result);
+				for(int i = 0; i < jsonArray.length(); i++){
+					ratings[i] = jsonArray.getInt(i);
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			setRating(ratings);
+		}
+	}
+	
+	private class InsertRatingActivity extends ContentTask{
+		@Override
+		protected void onPostExecute(String result) {
+			if(result != null && result.equals("true")){
+				btn.setVisibility(View.GONE);
+				bar.setIsIndicator(true);
+				labelRatings.setText("Deine Bewertung");
+				//TODO: Store rating and id in SQLite
+				
+				//Update rating
+				ratings[(int)bar.getRating()-1]++;
+				setRating(ratings);		
+				double avg = setAvgRating();
+				
+				//Update dish in Mensa collection
+				mensa.setAvgRating(dish.getDate(), dish.getId_dishes(), avg);
+			} else {
+				btn.setVisibility(View.GONE);
+				bar.setIsIndicator(true);
+			}
+		}
+	}
 }

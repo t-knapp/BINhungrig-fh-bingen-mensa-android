@@ -110,6 +110,36 @@ public class Mensa extends Application {
 		}
 	}
 
+	public void setDishPicture(String dateQuery, int id_dishes, byte[] decodedData){
+		
+		if(dateQuery == null) return;
+		if(dateQuery.isEmpty()) return;
+		if(decodedData == null) return;
+		if(decodedData.length == 0) return;
+		
+		List<Dish> dayList = dayMap.get(dateQuery);
+		
+		for (Dish dish : dayList) {
+			if(dish.getId_dishes() == id_dishes){
+				dish.setPicture(decodedData);
+			}
+		}
+		
+	}
+	
+	public void setAvgRating(String dateQuery, int id_dishes, double avg){
+		if(dateQuery == null) return;
+		if(dateQuery.isEmpty()) return;
+		
+		List<Dish> dayList = dayMap.get(dateQuery);
+		
+		for (Dish dish : dayList) {
+			if(dish.getId_dishes() == id_dishes){
+				dish.setAvgRating(avg);
+			}
+		}
+	}
+	
 	public byte[] loadPicture(int id_dishes, int id_pictures){
 		ContentTask ct = new ContentTask();
 		ct.execute(APIURL + "getDishPhotoData=" + id_pictures);

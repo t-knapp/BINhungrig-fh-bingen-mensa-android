@@ -246,7 +246,7 @@
                 android:stepSize="1" />
 
             <Button
-                android:id="@+id/button1"
+                android:id="@+id/button_complain"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/button_rate" />

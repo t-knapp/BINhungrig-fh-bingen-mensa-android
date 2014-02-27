@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
@@ -90,6 +91,11 @@ public class DishDetailActivity extends Activity {
 					@Override
 					public void onClick(View v) {
 						Log.d("DDA", "startWebView");
+						
+						Intent webView = new Intent(v.getContext(), GalleryActivity.class);
+						webView.putExtra("id_dishes", dish.getId_dishes());
+						webView.putExtra("id_pictures", dish.getId_pictures());
+						startActivity(webView);
 					}
 				});
 								
@@ -155,7 +161,7 @@ public class DishDetailActivity extends Activity {
 			}
 		});
 		
-		btn = (Button) findViewById(R.id.button1);
+		btn = (Button) findViewById(R.id.button_complain);
 		btn.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -253,6 +259,12 @@ public class DishDetailActivity extends Activity {
 					@Override
 					public void onClick(View v) {
 						Log.d("DDA", "startWebView");
+						
+						Intent webView = new Intent(v.getContext(), GalleryActivity.class);
+						webView.putExtra("id_dishes", dish.getId_dishes());
+						webView.putExtra("id_pictures", dish.getId_pictures());
+						startActivity(webView);
+						
 					}
 				});
 			}

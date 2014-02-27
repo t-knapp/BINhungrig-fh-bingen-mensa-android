@@ -18,6 +18,8 @@ import android.util.Log;
 public class Mensa extends Application {
 
 	public final static String APIURL = "http://nuke.volans.uberspace.de/fh-bingen/mensa/dev/API.php?";
+	public final static String GALLERYURL = "http://nuke.volans.uberspace.de/fh-bingen/mensa/dev/gallery.php?";
+	
 	private final static String TAG = Mensa.class.getName();
 	
 	public final static String PREF_USER = "UserSettings";

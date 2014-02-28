@@ -1,13 +1,24 @@
 package de.fhbingen.mensa;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Locale;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
@@ -18,6 +29,7 @@ import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.Toast;
 import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.TextView;
 
@@ -133,13 +145,15 @@ public class DishDetailActivity extends Activity {
 			});
 			
 		} else {
-			iv.setOnClickListener(new OnClickListener() {
+			/*iv.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
 					Log.d("DDA", "startPhotoIntent");
 				}
 			});
+			*/
+			iv.setOnClickListener(new StartPhotoListener());			
 		}
 		
 		/*
@@ -328,4 +342,143 @@ public class DishDetailActivity extends Activity {
 			}
 		}
 	}
+	
+	/*
+	______ _      _                         _____ _          __  __ 
+	| ___ (_)    | |                       /  ___| |        / _|/ _|
+	| |_/ /_  ___| |_ _   _ _ __ ___ ______\ `--.| |_ _   _| |_| |_ 
+	|  __/| |/ __| __| | | | '__/ _ \______|`--. \ __| | | |  _|  _|
+	| |   | | (__| |_| |_| | | |  __/      /\__/ / |_| |_| | | | |  
+	\_|   |_|\___|\__|\__,_|_|  \___|      \____/ \__|\__,_|_| |_|  
+	 */
+	
+	private class StartPhotoListener implements OnClickListener{
+
+		@Override
+		public void onClick(View v) {
+			
+			//Intent i = new Intent(v.getContext(), ImagePickActivity.class);
+			//startActivity(i);
+			
+			Intent intent 	 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			
+			mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),
+							   "tmp_avatar_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+
+			intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+
+			try {
+				intent.putExtra("return-data", true);
+				
+				startActivityForResult(intent, PICK_FROM_CAMERA);
+			} catch (ActivityNotFoundException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+	}
+		
+	private Uri mImageCaptureUri;
+	private static final int PICK_FROM_CAMERA = 1;
+	private static final int CROP_FROM_CAMERA = 2;
+	
+	private void doCrop() {
+    	Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setType("image/*");
+        
+        List<ResolveInfo> list = getPackageManager().queryIntentActivities( intent, 0 );
+        
+        int size = list.size();
+        
+        if (size == 0) {	        
+        	Toast.makeText(this, "Can not find image crop app", Toast.LENGTH_SHORT).show();
+        	
+            return;
+        } else {
+        	intent.setData(mImageCaptureUri);
+            
+            intent.putExtra("outputX", 500);
+            intent.putExtra("outputY", 500);
+            intent.putExtra("aspectX", 1);
+            intent.putExtra("aspectY", 1);
+            intent.putExtra("scale", true);
+            intent.putExtra("return-data", true);
+            
+        	if (size == 1) {
+        		Intent i 		= new Intent(intent);
+	        	ResolveInfo res	= list.get(0);
+	        	
+	        	i.setComponent( new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+	        	
+	        	startActivityForResult(i, CROP_FROM_CAMERA);
+        	}
+        }
+	}
+	
+	private void toast(){
+    	Toast.makeText(this, "Upload erfolgreich", Toast.LENGTH_LONG).show();
+    }
+	
+	private class UploadPictureTask extends UploadBinaryTask {
+    	@Override
+    	protected void onPostExecute(String result) {
+    		toast();
+    	}
+    }
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    if (resultCode != RESULT_OK) return;
+	   
+	    switch (requestCode) {
+		    case PICK_FROM_CAMERA:
+		    	doCrop();
+		    	
+		    	break;
+		    case CROP_FROM_CAMERA:	    	
+		        Bundle extras = data.getExtras();
+	
+		        if (extras != null) {	        	
+		            Bitmap photo = extras.getParcelable("data");
+		            
+		            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		            photo.compress(Bitmap.CompressFormat.JPEG, 85, stream);
+		            byte[] byteArray = stream.toByteArray();
+		            
+		            //TODO: Save Picture in mensas collection
+		            iv.setImageBitmap(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
+		            
+		            byte[] encodedBytes = Base64.encode(byteArray, Base64.DEFAULT);
+
+		            try {
+		            	String dataString = new String(encodedBytes, "UTF-8").replaceAll("\\n", "");
+		            	String queryString = Mensa.APIURL + "insertDishPhoto="+dish.getId_dishes()+"&data=";
+		            			            	
+		            	new UploadPictureTask().execute(
+							queryString,
+							dataString
+							);
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		            
+		            //Log.d("IPA", "encodedBytes.lenght: " + encodedBytes.length);
+		            
+		            //mImageView.setImageBitmap(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
+		            
+		            //mImageView.setImageBitmap(photo);
+		        }
+	
+		        File f = new File(mImageCaptureUri.getPath());            
+		        
+		        if (f.exists()) f.delete();
+	
+		        break;
+
+	    }
+	}
+	
+	
 }

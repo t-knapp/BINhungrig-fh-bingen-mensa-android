@@ -21,6 +21,8 @@ import android.widget.TextView;
 
 public class MainActivity extends ListActivity {
 
+	public static boolean roleChanged;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -111,18 +113,12 @@ public class MainActivity extends ListActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(requestCode == 1337 && resultCode == 0 && roleChanged){
-			
-			
 			//TODO: Update view
-			
 			roleChanged = false;
 		}
 	}
-		
-    private final static String TAG = MainActivity.class.getName();
-    
-    public static boolean roleChanged;
-    
+       
     private List<Dish> dlist;
     private DishItemAdapter adapter;
+    private final static String TAG = "MainActivity";
 }

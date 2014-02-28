@@ -11,9 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Application;
-import android.content.SharedPreferences;
-import android.util.Base64;
-import android.util.Log;
 
 public class Mensa extends Application {
 
@@ -141,7 +138,7 @@ public class Mensa extends Application {
 			}
 		}
 	}
-	
+	/*
 	public byte[] loadPicture(int id_dishes, int id_pictures){
 		ContentTask ct = new ContentTask();
 		ct.execute(APIURL + "getDishPhotoData=" + id_pictures);
@@ -157,14 +154,14 @@ public class Mensa extends Application {
 				String query = "2014-01-13";
 				
 				//TODO: Set to live mode
-				/*
-				query = String.format(
-					"%d-%02d-%02d",
-					rightNow.get(Calendar.YEAR),
-					rightNow.get(Calendar.MONTH),
-					rightNow.get(Calendar.DAY_OF_MONTH)
-				);
-				*/
+				
+				//query = String.format(
+				//	"%d-%02d-%02d",
+				//	rightNow.get(Calendar.YEAR),
+				//	rightNow.get(Calendar.MONTH),
+				//	rightNow.get(Calendar.DAY_OF_MONTH)
+				//);
+				
 				
 				Log.d(TAG, "query : " + query);
 				
@@ -200,8 +197,9 @@ public class Mensa extends Application {
 		}
 		return null;
 	}
+	*/
 	
-	public int[] loadRating(int id_dishes){
+	/*public int[] loadRating(int id_dishes){
 		ContentTask ct = new ContentTask();
 		ct.execute(APIURL + "getRatings=" + id_dishes );
 		
@@ -232,6 +230,7 @@ public class Mensa extends Application {
 		}
 		return retVal;
 	}
+	*/
 	
 	public List<Dish> getDay(String cal) {
 		return dayMap.get(cal);

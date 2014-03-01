@@ -14,8 +14,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -28,6 +30,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.Toast;
 import android.widget.RatingBar.OnRatingBarChangeListener;
@@ -43,7 +46,7 @@ public class DishDetailActivity extends Activity {
 	private Button btn;
 	private TextView labelRatings;
 	private int[] ratings = new int[5];
-	
+		
 	private final Database db = new Database(this);
 	
 	@Override
@@ -126,7 +129,7 @@ public class DishDetailActivity extends Activity {
 					public void onClick(View v) {
 						Log.d("DDA", "downloadLargePicture");
 						
-						new LoadPictureActivity().execute(
+						new LoadPictureActivity(DishDetailActivity.this).execute(
 								Mensa.APIURL + "getDishPhotoData=" + dish.getId_pictures()
 						);
 						
@@ -135,6 +138,7 @@ public class DishDetailActivity extends Activity {
 				});
 			}
 			
+			//TODO: Photolistener.
 			iv.setOnLongClickListener(new OnLongClickListener() {
 				
 				@Override
@@ -143,6 +147,7 @@ public class DishDetailActivity extends Activity {
 					return true;
 				}
 			});
+			
 			
 		} else {
 			/*iv.setOnClickListener(new OnClickListener() {
@@ -166,6 +171,7 @@ public class DishDetailActivity extends Activity {
 			}
 		});
 		*/
+		iv.setOnLongClickListener(new StartPhotoListenerLong());
 				
 		//Rating
 		bar = (RatingBar) findViewById(R.id.ratingBarDish);
@@ -242,6 +248,7 @@ public class DishDetailActivity extends Activity {
 		//Set number of rating
 		tv = (TextView) findViewById(R.id.textView_numberRatings);
 		tv.setText(String.format("%d Bewertungen", numberRatings));
+		tv.setVisibility(View.VISIBLE);
 	}
 	
 	public double setAvgRating(){
@@ -263,6 +270,23 @@ public class DishDetailActivity extends Activity {
 	private final int[] CUSTOMBARS = {R.id.customBar1, R.id.customBar2, R.id.customBar3, R.id.customBar4, R.id.customBar5};
 	
 	private class LoadPictureActivity extends ContentTask{
+		
+		public LoadPictureActivity(Activity act) {
+			//c = act;
+		}
+		
+		//private Context c;
+		//private ProgressDialog dialog;
+		private ProgressBar pg = (ProgressBar) findViewById(R.id.progressBar1);
+		
+		@Override
+		protected void onPreExecute() {
+			//dialog = new ProgressDialog(c);
+			//dialog.setMessage("Lade Foto ...");
+			//dialog.setCancelable(false);
+			//dialog.show();
+			pg.setVisibility(View.VISIBLE);
+		}
 		
 		@Override
 		protected void onPostExecute(String result) {
@@ -296,10 +320,13 @@ public class DishDetailActivity extends Activity {
 					}
 				});
 			}
+			//dialog.dismiss();
+			pg.setVisibility(View.GONE);
 		}
 	}
 	
 	private class LoadRatingsActivity extends ContentTask{
+
 		@Override
 		protected void onPostExecute(String result) {
 			JSONArray jsonArray;
@@ -378,7 +405,34 @@ public class DishDetailActivity extends Activity {
 		}
 		
 	}
+
+	private class StartPhotoListenerLong implements OnLongClickListener{
+
+		@Override
+		public boolean onLongClick(View v) {
+			
+			//Intent i = new Intent(v.getContext(), ImagePickActivity.class);
+			//startActivity(i);
+			
+			Intent intent 	 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			
+			mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),
+							   "tmp_avatar_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+
+			intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+
+			try {
+				intent.putExtra("return-data", true);
+				
+				startActivityForResult(intent, PICK_FROM_CAMERA);
+			} catch (ActivityNotFoundException e) {
+				e.printStackTrace();
+			}
+			return true;
+		}
 		
+	}
+	
 	private Uri mImageCaptureUri;
 	private static final int PICK_FROM_CAMERA = 1;
 	private static final int CROP_FROM_CAMERA = 2;

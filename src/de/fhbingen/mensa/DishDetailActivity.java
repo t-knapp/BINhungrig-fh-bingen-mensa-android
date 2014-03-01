@@ -456,7 +456,7 @@ public class DishDetailActivity extends Activity {
             intent.putExtra("outputY", 500);
             intent.putExtra("aspectX", 1);
             intent.putExtra("aspectY", 1);
-            intent.putExtra("scale", true);
+            intent.putExtra("scale", false);
             intent.putExtra("return-data", true);
             
         	if (size == 1) {
@@ -501,6 +501,7 @@ public class DishDetailActivity extends Activity {
 		            byte[] byteArray = stream.toByteArray();
 		            
 		            //TODO: Save Picture in mensas collection
+		            // Only set iv if no picture is set before.
 		            iv.setImageBitmap(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
 		            
 		            byte[] encodedBytes = Base64.encode(byteArray, Base64.DEFAULT);

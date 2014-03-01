@@ -146,6 +146,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_alignBottom="@+id/textViewLabel1Star"
+                            android:layout_alignParentTop="true"
                             android:layout_marginBottom="1dp"
                             android:layout_marginLeft="3dp"
                             android:layout_toRightOf="@+id/textViewLabel1Star" />
@@ -168,6 +169,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignBottom="@+id/textViewLabel2Star"
+                            android:layout_alignParentTop="true"
                             android:layout_marginBottom="1dp"
                             android:layout_marginLeft="3dp"
                             android:layout_toRightOf="@+id/textViewLabel2Star" />
@@ -213,6 +215,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignBottom="@+id/textView3"
+                            android:layout_alignParentTop="true"
                             android:layout_marginBottom="1dp"
                             android:layout_marginLeft="3dp"
                             android:layout_toRightOf="@+id/textView3" />
@@ -235,9 +238,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignBottom="@+id/textView4"
+                            android:layout_alignParentTop="true"
                             android:layout_marginBottom="1dp"
                             android:layout_marginLeft="3dp"
-                            android:layout_toRightOf="@+id/textView4" /> />
+                            android:layout_toRightOf="@+id/textView4" />
 
                     </RelativeLayout>
                 </LinearLayout>

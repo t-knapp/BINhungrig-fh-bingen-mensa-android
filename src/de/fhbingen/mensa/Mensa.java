@@ -50,22 +50,15 @@ public class Mensa extends Application {
 		return ct.get();
 	}
 
-	public void loadWeek() {
+	public void loadWeek(String result) {
 		
 		if(!dayMap.isEmpty()){
 			return;
 		}
 		
-		// Calendar rightNow = Calendar.getInstance();
-		ContentTask ct = new ContentTask();
-		// ct.execute(APIURL + "getWeek=" + rightNow.get(Calendar.YEAR)
-		// + rightNow.get(Calendar.WEEK_OF_YEAR));
-
-		ct.execute(APIURL + "getWeek=201403"); // TODO: Switch to live
-
 		try {
 			// Filling the data in an array
-			JSONArray jsonArray = new JSONArray(ct.get());
+			JSONArray jsonArray = new JSONArray(result);
 
 			for (int i = 0; i < jsonArray.length(); i++) {
 				JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -98,12 +91,6 @@ public class Mensa extends Application {
 
 			}
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -240,7 +227,7 @@ public class Mensa extends Application {
 	public String toString() {
 		return "Mensa Application";
 	}
-
+	
 	// private Database db;
 	private HashMap<String, List<Dish>> dayMap;
 

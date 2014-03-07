@@ -13,14 +13,16 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class MainActivity extends ListActivity {
+public class MainActivity extends FragmentActivity {
 
 	public static boolean roleChanged;
 	
@@ -31,6 +33,8 @@ public class MainActivity extends ListActivity {
 
         Log.i(TAG, "ContentView is setted");
 
+        listview = (ListView) findViewById(android.R.id.list);
+
 		mensa = (Mensa) this.getApplication();
 		
 		// Load userrole from preferences
@@ -39,15 +43,17 @@ public class MainActivity extends ListActivity {
 
         
         new LoadWeekTask().execute(Mensa.APIURL + "getWeek=201403");
+
+        listview.setOnItemClickListener(new ListView.OnItemClickListener( ) {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+                Intent detail = new Intent(getApplicationContext(), DishDetailActivity.class);
+                detail.putExtra("data", (Dish)listview.getItemAtPosition(position));
+                startActivity(detail);
+            }
+        });
 	}
-	
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		super.onListItemClick(l, v, position, id);
-		Intent detail = new Intent(this, DishDetailActivity.class);
-		detail.putExtra("data", (Dish)getListView().getItemAtPosition(position));
-		startActivity(detail);
-	}
+
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,7 +95,7 @@ dlist = mensa.getDay("2014-01-13");
             );
 
             // Connection between ListView and Adapter
-            setListAdapter(adapter);
+            listview.setAdapter(adapter);
       
 	    } catch (Exception e) {
 	      Log.e(TAG, "Exception cause: " + e.getCause() + "\nException message" +e.getMessage() + "\nException toStr" + e.toString());
@@ -143,5 +149,6 @@ dlist = mensa.getDay("2014-01-13");
 	private Mensa mensa;
     private List<Dish> dlist;
     private DishItemAdapter adapter;
+    private ListView listview;
     private final static String TAG = "MainActivity";
 }

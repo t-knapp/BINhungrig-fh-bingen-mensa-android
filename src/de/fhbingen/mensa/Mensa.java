@@ -11,13 +11,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Application;
-import android.content.SharedPreferences;
-import android.util.Base64;
-import android.util.Log;
 
 public class Mensa extends Application {
 
-	private final static String APIURL = "http://nuke.volans.uberspace.de/fh-bingen/mensa/dev/API.php?";
+	public final static String APIURL = "http://nuke.volans.uberspace.de/fh-bingen/mensa/dev/API.php?";
+	public final static String GALLERYURL = "http://nuke.volans.uberspace.de/fh-bingen/mensa/dev/gallery.php?";
+	
 	private final static String TAG = Mensa.class.getName();
 	
 	public final static String PREF_USER = "UserSettings";
@@ -51,22 +50,15 @@ public class Mensa extends Application {
 		return ct.get();
 	}
 
-	public void loadWeek() {
+	public void loadWeek(String result) {
 		
 		if(!dayMap.isEmpty()){
 			return;
 		}
 		
-		// Calendar rightNow = Calendar.getInstance();
-		ContentTask ct = new ContentTask();
-		// ct.execute(APIURL + "getWeek=" + rightNow.get(Calendar.YEAR)
-		// + rightNow.get(Calendar.WEEK_OF_YEAR));
-
-		ct.execute(APIURL + "getWeek=201403"); // TODO: Switch to live
-
 		try {
 			// Filling the data in an array
-			JSONArray jsonArray = new JSONArray(ct.get());
+			JSONArray jsonArray = new JSONArray(result);
 
 			for (int i = 0; i < jsonArray.length(); i++) {
 				JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -101,15 +93,39 @@ public class Mensa extends Application {
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
+	public void setDishPicture(String dateQuery, int id_dishes, byte[] decodedData){
+		
+		if(dateQuery == null) return;
+		if(dateQuery.isEmpty()) return;
+		if(decodedData == null) return;
+		if(decodedData.length == 0) return;
+		
+		List<Dish> dayList = dayMap.get(dateQuery);
+		
+		for (Dish dish : dayList) {
+			if(dish.getId_dishes() == id_dishes){
+				dish.setPicture(decodedData);
+			}
+		}
+		
+	}
+	
+	public void setAvgRating(String dateQuery, int id_dishes, double avg){
+		if(dateQuery == null) return;
+		if(dateQuery.isEmpty()) return;
+		
+		List<Dish> dayList = dayMap.get(dateQuery);
+		
+		for (Dish dish : dayList) {
+			if(dish.getId_dishes() == id_dishes){
+				dish.setAvgRating(avg);
+			}
+		}
+	}
+	/*
 	public byte[] loadPicture(int id_dishes, int id_pictures){
 		ContentTask ct = new ContentTask();
 		ct.execute(APIURL + "getDishPhotoData=" + id_pictures);
@@ -125,14 +141,14 @@ public class Mensa extends Application {
 				String query = "2014-01-13";
 				
 				//TODO: Set to live mode
-				/*
-				query = String.format(
-					"%d-%02d-%02d",
-					rightNow.get(Calendar.YEAR),
-					rightNow.get(Calendar.MONTH),
-					rightNow.get(Calendar.DAY_OF_MONTH)
-				);
-				*/
+				
+				//query = String.format(
+				//	"%d-%02d-%02d",
+				//	rightNow.get(Calendar.YEAR),
+				//	rightNow.get(Calendar.MONTH),
+				//	rightNow.get(Calendar.DAY_OF_MONTH)
+				//);
+				
 				
 				Log.d(TAG, "query : " + query);
 				
@@ -168,8 +184,9 @@ public class Mensa extends Application {
 		}
 		return null;
 	}
+	*/
 	
-	public int[] loadRating(int id_dishes){
+	/*public int[] loadRating(int id_dishes){
 		ContentTask ct = new ContentTask();
 		ct.execute(APIURL + "getRatings=" + id_dishes );
 		
@@ -200,6 +217,7 @@ public class Mensa extends Application {
 		}
 		return retVal;
 	}
+	*/
 	
 	public List<Dish> getDay(String cal) {
 		return dayMap.get(cal);
@@ -209,7 +227,7 @@ public class Mensa extends Application {
 	public String toString() {
 		return "Mensa Application";
 	}
-
+	
 	// private Database db;
 	private HashMap<String, List<Dish>> dayMap;
 

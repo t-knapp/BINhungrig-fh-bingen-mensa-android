@@ -79,6 +79,10 @@ public class Dish implements Serializable {
 	public double getAvgRating() {
 		return avgRating;
 	}
+	
+	public void setAvgRating(double r){
+		avgRating = r;
+	}
 
     public String getDayOfWeek(){
         return day_of_week;

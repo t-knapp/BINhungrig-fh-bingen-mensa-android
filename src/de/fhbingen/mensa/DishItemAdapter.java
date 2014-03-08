@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class DishItemAdapter extends ArrayAdapter<Dish> {
 
@@ -53,6 +54,7 @@ public class DishItemAdapter extends ArrayAdapter<Dish> {
         // Formatting price
 		price.setText(
 			String.format(
+			    Locale.GERMAN,
 				"%.2f €",
 				(Mensa.userRole == Mensa.UserRole.STUDENT)
 					? dish.getPriceStudent()
@@ -64,7 +66,7 @@ public class DishItemAdapter extends ArrayAdapter<Dish> {
 		TextView rating = (TextView) rowView.findViewById(R.id.textView_rating);
 		double avgRating = dish.getAvgRating();
 		if(avgRating != -1){
-			rating.setText(String.format("%.1f", dish.getAvgRating()));
+			rating.setText(String.format(Locale.GERMAN, "%.1f", dish.getAvgRating()));
 		} else {
 			rating.setVisibility(View.GONE);
 		}

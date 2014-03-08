@@ -31,7 +31,7 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-        Log.i(TAG, "ContentView is setted");
+        Log.i(TAG, "ContentView is set");
 
         listview = (ListView) findViewById(android.R.id.list);
 
@@ -85,7 +85,7 @@ public class MainActivity extends FragmentActivity {
 	}
     
 	private void createList(){
-dlist = mensa.getDay("2014-01-13");
+        dlist = mensa.getDay("2014-01-13");
 		
 	    try {
             // Filling the Adapter with the generated values

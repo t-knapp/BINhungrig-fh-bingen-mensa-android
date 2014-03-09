@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import com.actionbarsherlock.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,6 +13,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
 
 public class GalleryActivity extends SherlockActivity {
 
@@ -23,8 +25,9 @@ public class GalleryActivity extends SherlockActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gallery);
-		
-		btn = (Button) findViewById(R.id.button_complain);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+        btn = (Button) findViewById(R.id.button_complain);
 		
 		 webView = (WebView) findViewById(R.id.webView1);
 				
@@ -81,8 +84,20 @@ public class GalleryActivity extends SherlockActivity {
 		//getMenuInflater().inflate(R.menu.gallery, menu);
 		return false;
 	}
-	
-	private boolean alreadyComplained(int id_pictures){
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private boolean alreadyComplained(int id_pictures){
 		return db.complainedAboutPicture(id_pictures);
 	}
 

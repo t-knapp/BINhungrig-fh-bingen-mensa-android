@@ -6,7 +6,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Locale;
 
+import android.support.v4.app.NavUtils;
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,7 +55,8 @@ public class DishDetailActivity extends SherlockActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dish_detail);
-		
+        getSupportActionBar().setHomeButtonEnabled(true);
+
 		mensa        = (Mensa) this.getApplication();
 		iv           = (ImageView) findViewById(R.id.dish_picture);
 		dish         = (Dish) getIntent().getExtras().getSerializable("data");
@@ -219,6 +222,17 @@ public class DishDetailActivity extends SherlockActivity {
 		//getMenuInflater().inflate(R.menu.dish_detail, menu);
 		return false;
 	}
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 	
 	public void setPicture(byte[] pictureBytes){
 		if(pictureBytes != null){

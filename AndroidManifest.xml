@@ -19,7 +19,11 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="de.fhbingen.mensa.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+
+            android:launchMode="singleTop"
+            >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,15 +32,36 @@
         </activity>
         <activity
             android:name="de.fhbingen.mensa.DishDetailActivity"
-            android:label="@string/title_activity_dish_detail" >
+            android:label="@string/title_activity_dish_detail"
+
+            android:launchMode="singleTop"
+
+            android:parentActivityName="de.fhbingen.mensa.MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.fhbingen.mensa.MainActivity" />
+            >
         </activity>
         <activity
             android:name="de.fhbingen.mensa.SettingsActivity"
-            android:label="@string/title_activity_settings" >
+            android:label="@string/title_activity_settings"
+            android:parentActivityName="de.fhbingen.mensa.MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.fhbingen.mensa.MainActivity" />
+            >
         </activity>
         <activity
             android:name="de.fhbingen.mensa.GalleryActivity"
-            android:label="@string/title_activity_gallery" >
+            android:label="@string/title_activity_gallery"
+            android:parentActivityName="de.fhbingen.mensa.DishDetailActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.fhbingen.mensa.DishDetailActivity" />
+            >
         </activity>
     </application>
 

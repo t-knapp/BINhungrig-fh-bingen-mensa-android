@@ -2,6 +2,7 @@ package de.fhbingen.mensa;
 
 import android.os.Bundle;
 import android.content.SharedPreferences;
+import android.support.v4.app.NavUtils;
 import com.actionbarsherlock.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -9,6 +10,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
 
 public class SettingsActivity extends SherlockActivity implements OnItemSelectedListener{
 
@@ -16,8 +18,9 @@ public class SettingsActivity extends SherlockActivity implements OnItemSelected
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
-		
-		Spinner spinner = (Spinner) findViewById(R.id.spinnerUser);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+        Spinner spinner = (Spinner) findViewById(R.id.spinnerUser);
 		// Create an ArrayAdapter using the string array and a default spinner layout
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
 		        R.array.users_array, android.R.layout.simple_spinner_item);
@@ -42,7 +45,19 @@ public class SettingsActivity extends SherlockActivity implements OnItemSelected
 		return true;
 	}
 
-	@Override
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
 	public void onItemSelected(AdapterView<?> parent, View view, int pos,
 			long id) {
 		// We need an Editor object to make preference changes.

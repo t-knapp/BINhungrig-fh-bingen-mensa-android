@@ -1,17 +1,16 @@
 package de.fhbingen.mensa;
 
 import android.os.Bundle;
-import android.app.Activity;
 import android.content.SharedPreferences;
-import android.util.Log;
-import android.view.Menu;
+import com.actionbarsherlock.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import com.actionbarsherlock.app.SherlockActivity;
 
-public class SettingsActivity extends Activity implements OnItemSelectedListener{
+public class SettingsActivity extends SherlockActivity implements OnItemSelectedListener{
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

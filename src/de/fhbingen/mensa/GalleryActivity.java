@@ -4,16 +4,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.os.Bundle;
-import android.app.Activity;
-import android.view.Menu;
+import com.actionbarsherlock.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import com.actionbarsherlock.app.SherlockActivity;
 
-public class GalleryActivity extends Activity {
+public class GalleryActivity extends SherlockActivity {
 
 	private Button btn;
 	private final Database db = new Database(this);

@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Locale;
+
+import com.actionbarsherlock.app.SherlockActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,7 +24,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Menu;
+import com.actionbarsherlock.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -34,7 +36,7 @@ import android.widget.Toast;
 import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.TextView;
 
-public class DishDetailActivity extends Activity {
+public class DishDetailActivity extends SherlockActivity {
 
 	private Mensa mensa;
 	private Dish dish;

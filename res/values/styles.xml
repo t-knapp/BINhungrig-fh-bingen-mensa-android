@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
+    <style name="AppTheme" parent="Theme.Sherlock.Light">
         <item name="android:actionBarStyle">@style/MensaActionBar</item>
 
         <!-- Support library compatibility -->
@@ -9,10 +9,10 @@
 
     </style>
 
-    <style name="MensaActionBar" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@android:color/holo_green_light</item>
+    <style name="MensaActionBar" parent="Widget.Sherlock.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/fh_bingen_green</item>
         <!-- Support library compatibility -->
-        <item name="background">@android:color/holo_green_light</item>
+        <item name="background">@color/fh_bingen_green</item>
     </style>
 
 </resources>

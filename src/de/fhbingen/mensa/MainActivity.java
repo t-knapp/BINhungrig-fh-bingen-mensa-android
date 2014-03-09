@@ -13,7 +13,11 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +26,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+
+
 public class MainActivity extends FragmentActivity {
 
 	public static boolean roleChanged;
@@ -29,19 +35,26 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-
+		setContentView(R.layout.view_pager);
         Log.i(TAG, "ContentView is setted");
 
+        Log.e();
+        //Setting the ViewPager
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
+        myFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+        //Connection between viewpager und fragmentadapter
+        viewPager.setAdapter(myFragmentPagerAdapter);
+
+        /*
         listview = (ListView) findViewById(android.R.id.list);
 
 		mensa = (Mensa) this.getApplication();
-		
+
 		// Load userrole from preferences
 		SharedPreferences settings = getSharedPreferences(Mensa.PREF_USER, 0);
         Mensa.userRole = Mensa.UserRole.values()[settings.getInt("userRole", Mensa.UserRole.STUDENT.ordinal())];
 
-        
+
         new LoadWeekTask().execute(Mensa.APIURL + "getWeek=201403");
 
         listview.setOnItemClickListener(new ListView.OnItemClickListener( ) {
@@ -54,28 +67,28 @@ public class MainActivity extends FragmentActivity {
         });
 	}
 
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_settings:
 			Intent settings = new Intent(this, SettingsActivity.class);
 			//startActivity(settings);
-					
+
 			startActivityForResult(settings, 1337);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(requestCode == 1337 && resultCode == 0 && roleChanged){
@@ -83,10 +96,10 @@ public class MainActivity extends FragmentActivity {
 			roleChanged = false;
 		}
 	}
-    
+
 	private void createList(){
-dlist = mensa.getDay("2014-01-13");
-		
+    dlist = mensa.getDay("2014-01-13");
+
 	    try {
             // Filling the Adapter with the generated values
             adapter = new DishItemAdapter(
@@ -96,11 +109,11 @@ dlist = mensa.getDay("2014-01-13");
 
             // Connection between ListView and Adapter
             listview.setAdapter(adapter);
-      
+
 	    } catch (Exception e) {
 	      Log.e(TAG, "Exception cause: " + e.getCause() + "\nException message" +e.getMessage() + "\nException toStr" + e.toString());
 	    }
-	    
+
 	    // Set date
 	    SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
 	    SimpleDateFormat dayFormat   = new SimpleDateFormat("EEEE", Locale.GERMAN);
@@ -110,7 +123,7 @@ dlist = mensa.getDay("2014-01-13");
 
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(date);
-			
+
 			TextView tv = (TextView) findViewById(R.id.textView_date);
 			tv.setText(
 				String.format(
@@ -126,7 +139,7 @@ dlist = mensa.getDay("2014-01-13");
 			e.printStackTrace();
 		}
 	}
-	
+
 	private class LoadWeekTask extends ContentTask {
 		@Override
 		protected void onPreExecute() {
@@ -135,20 +148,46 @@ dlist = mensa.getDay("2014-01-13");
 			d.setMessage("Lade Woche");
 			d.show();
 		}
-		
+
 		@Override
 		protected void onPostExecute(String result) {
 			mensa.loadWeek(result);
 			createList(); //TODO: with current day
 			d.dismiss();
 		}
-		
+
 		private ProgressDialog d;
+	*/
 	}
-	
+
+    private static class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+
+        public MyFragmentPagerAdapter(FragmentManager fm){
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int index){
+            // Computating from the actual day
+            String date = today;
+            return ListFragment.newInstance(date);
+        }
+
+        @Override
+        public int getCount(){
+            return NUMBER_OF_PAGES;
+        }
+    }
+
 	private Mensa mensa;
     private List<Dish> dlist;
     private DishItemAdapter adapter;
     private ListView listview;
+    private ViewPager viewPager;
+    private MyFragmentPagerAdapter myFragmentPagerAdapter;
+    private String today = "2014-01-13";
     private final static String TAG = "MainActivity";
+    // TODO perhaps computating the max value of available pages
+    private final static int NUMBER_OF_PAGES = 5;
+
 }

@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
+import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
@@ -42,8 +44,13 @@ public class MainActivity extends FragmentActivity {
         //Setting the ViewPager
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         myFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+
+       // The PagerTabStripe is set automatically!
+
         //Connection between viewpager und fragmentadapter
         viewPager.setAdapter(myFragmentPagerAdapter);
+
+
 
         /*
         listview = (ListView) findViewById(android.R.id.list);
@@ -160,6 +167,10 @@ public class MainActivity extends FragmentActivity {
 	*/
 	}
 
+    public CharSequence getPageTitle(int position) {
+        return "Page " + (position + 1);
+    }
+
     private static class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
         public MyFragmentPagerAdapter(FragmentManager fm){
@@ -176,6 +187,10 @@ public class MainActivity extends FragmentActivity {
         @Override
         public int getCount(){
             return NUMBER_OF_PAGES;
+        }
+
+        public CharSequence getPageTitle(int position){
+            return position + "";
         }
     }
 

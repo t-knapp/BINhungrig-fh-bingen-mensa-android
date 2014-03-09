@@ -9,7 +9,7 @@
 
     </style>
 
-    <style name="MensaActionBar" parent="Widget.Sherlock.Light.ActionBar.Solid.Inverse">
+    <style name="MensaActionBar" parent="Widget.Sherlock.Light.ActionBar.Solid">
         <item name="android:background">@color/abs__background_holo_light</item>
         <!-- Support library compatibility -->
         <item name="background">@color/abs__background_holo_light</item>

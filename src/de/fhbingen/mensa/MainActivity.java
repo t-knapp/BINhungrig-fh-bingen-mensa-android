@@ -26,11 +26,12 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import de.fhbingen.mensa.Fragments.ListFragment;
 
 
 public class MainActivity extends FragmentActivity {
 
-	public static boolean roleChanged;
+	//public static boolean roleChanged;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +39,6 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.view_pager);
         Log.i(TAG, "ContentView is setted");
 
-        Log.e();
         //Setting the ViewPager
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         myFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
@@ -185,7 +185,7 @@ public class MainActivity extends FragmentActivity {
     private ListView listview;
     private ViewPager viewPager;
     private MyFragmentPagerAdapter myFragmentPagerAdapter;
-    private String today = "2014-01-13";
+    private static String today = "2014-01-13";
     private final static String TAG = "MainActivity";
     // TODO perhaps computating the max value of available pages
     private final static int NUMBER_OF_PAGES = 5;

@@ -22,12 +22,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 
 import de.fhbingen.mensa.ContentTask;
 import de.fhbingen.mensa.Dish;
 import de.fhbingen.mensa.DishDetailActivity;
 import de.fhbingen.mensa.DishItemAdapter;
+import de.fhbingen.mensa.MainActivity;
 import de.fhbingen.mensa.Mensa;
 import de.fhbingen.mensa.R;
 import de.fhbingen.mensa.SettingsActivity;
@@ -35,7 +37,9 @@ import de.fhbingen.mensa.SettingsActivity;
 /**
  * Created by rana on 09.03.14.
  */
-public class ListFragment extends Fragment {
+public class ListFragment extends Fragment{
+
+    public static boolean roleChanged;
 
     public static ListFragment newInstance(String date){
         ListFragment fragment = new ListFragment();
@@ -56,43 +60,45 @@ public class ListFragment extends Fragment {
     ){
         // activity_main as layout contains the layout for the fragment!
         // The fragment itself is an second layout file !!
-        View view = inflater.inflate(R.layout.activity_main, container, false);
+        view = inflater.inflate(R.layout.activity_main, container, false);
 
         // Filling the view of the fragment
-        listview = (ListView) findViewById(android.R.id.list);
+        listview = (ListView) view.findViewById(android.R.id.list);
 
-        mensa = (Mensa) this.getApplication();
+        // mensa = (Mensa) this.getApplication();
+        mensa = (Mensa) view.getContext().getApplicationContext();
 
         // Load userrole from preferences
-        SharedPreferences settings = getSharedPreferences(Mensa.PREF_USER, 0);
+        SharedPreferences settings = view.getContext().getSharedPreferences(Mensa.PREF_USER, 0);
         Mensa.userRole = Mensa.UserRole.values()[settings.getInt("userRole", Mensa.UserRole.STUDENT.ordinal())];
-
 
         new LoadWeekTask().execute(Mensa.APIURL + "getWeek=201403");
 
         listview.setOnItemClickListener(new ListView.OnItemClickListener( ) {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-                Intent detail = new Intent(getApplicationContext(), DishDetailActivity.class);
+                Intent detail = new Intent(view.getContext().getApplicationContext(), DishDetailActivity.class);
                 detail.putExtra("data", (Dish)listview.getItemAtPosition(position));
                 startActivity(detail);
             }
         });
+
+        return view;
     }
 
 
-    @Override
+  /*  @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
-    }
+    } */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                Intent settings = new Intent(this, SettingsActivity.class);
+                Intent settings = new Intent(view.getContext(), SettingsActivity.class);
                 //startActivity(settings);
 
                 startActivityForResult(settings, 1337);
@@ -103,7 +109,7 @@ public class ListFragment extends Fragment {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == 1337 && resultCode == 0 && roleChanged){
             //TODO: Update view
             roleChanged = false;
@@ -119,8 +125,8 @@ public class ListFragment extends Fragment {
         try {
             // Filling the Adapter with the generated values
             adapter = new DishItemAdapter(
-                    this,
-                    dlist
+                    view.getContext(),
+                    dList
             );
 
             // Connection between ListView and Adapter
@@ -140,7 +146,7 @@ public class ListFragment extends Fragment {
             Calendar cal = new GregorianCalendar();
             cal.setTime(date);
 
-            TextView tv = (TextView) findViewById(R.id.textView_date);
+            TextView tv = (TextView) view.findViewById(R.id.textView_date);
             tv.setText(
                     String.format(
                             "%s, %2d. %s %d",
@@ -159,7 +165,7 @@ public class ListFragment extends Fragment {
     private class LoadWeekTask extends ContentTask {
         @Override
         protected void onPreExecute() {
-            d = new ProgressDialog(MainActivity.this);
+            d = new ProgressDialog(view.getContext());
             d.setCancelable(false);
             d.setMessage("Lade Woche");
             d.show();
@@ -175,6 +181,12 @@ public class ListFragment extends Fragment {
         private ProgressDialog d;
     }
 
+    private Mensa mensa;
+    private ListView listview;
+    private View view;
+    private List<Dish> dList;
+    private DishItemAdapter adapter;
     // String for finding an value in the bundle
     private static final String DATE_IDENTIFY = "DATE";
+    private final static String TAG = "ListFragment";
 }

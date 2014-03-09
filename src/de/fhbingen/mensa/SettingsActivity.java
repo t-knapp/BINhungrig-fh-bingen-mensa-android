@@ -1,5 +1,6 @@
 package de.fhbingen.mensa;
 
+import android.app.ListFragment;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -59,7 +60,7 @@ public class SettingsActivity extends Activity implements OnItemSelectedListener
         Mensa.userRole = Mensa.UserRole.values()[settings.getInt("userRole", Mensa.UserRole.STUDENT.ordinal())];
 		
 		if(roleIndex != pos){
-			MainActivity.roleChanged = true;
+			de.fhbingen.mensa.Fragments.ListFragment.roleChanged = true;
 		}
 	}
 

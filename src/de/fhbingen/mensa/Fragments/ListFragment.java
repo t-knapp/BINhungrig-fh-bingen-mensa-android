@@ -72,8 +72,10 @@ public class ListFragment extends Fragment{
         SharedPreferences settings = view.getContext().getSharedPreferences(Mensa.PREF_USER, 0);
         Mensa.userRole = Mensa.UserRole.values()[settings.getInt("userRole", Mensa.UserRole.STUDENT.ordinal())];
 
-        new LoadWeekTask().execute(Mensa.APIURL + "getWeek=201403");
-
+        //TODO: Get data form mensa object!
+        //new LoadWeekTask().execute(Mensa.APIURL + "getWeek=201403");
+        new LoadWeekTask().execute(Mensa.APIURL + "getWeek=" + Mensa.getCurrentWeek());
+        
         listview.setOnItemClickListener(new ListView.OnItemClickListener( ) {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id){
@@ -146,16 +148,7 @@ public class ListFragment extends Fragment{
             Calendar cal = new GregorianCalendar();
             cal.setTime(date);
 
-            TextView tv = (TextView) view.findViewById(R.id.textView_date);
-            tv.setText(
-                    String.format(
-                            "%s, %2d. %s %d",
-                            dayFormat.format(date),
-                            cal.get(Calendar.DAY_OF_MONTH),
-                            monthFormat.format(date),
-                            cal.get(Calendar.YEAR)
-                    )
-            );
+            
         } catch (ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

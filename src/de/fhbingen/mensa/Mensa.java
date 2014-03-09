@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
@@ -11,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Application;
+import android.util.Log;
 
 public class Mensa extends Application {
 
@@ -228,7 +230,54 @@ public class Mensa extends Application {
 		return "Mensa Application";
 	}
 	
+	/**
+	 * Returns current week of year formatted YYYYWW
+	 * @return String YYYYWW
+	 */
+	public static String getCurrentWeek(){
+		Calendar rightNow = Calendar.getInstance();
+		return String.format(
+				Locale.GERMAN,
+				"%d%02d",
+				rightNow.get(Calendar.YEAR),
+				rightNow.get(Calendar.WEEK_OF_YEAR)+1 /* TODO: +1 DEVELOPMENT !!! */
+		);
+	}
+	
+	
+	
 	// private Database db;
 	private HashMap<String, List<Dish>> dayMap;
+	
+	/*
+	 _   _ _   _ _     
+	| | | | | (_) |    
+	| | | | |_ _| |___ 
+	| | | | __| | / __|
+	| |_| | |_| | \__ \
+	 \___/ \__|_|_|___/
+	 */
+
+	public static String toYYYYMMDD(Calendar calendar){
+		Log.d("UTILS", calendar.toString());
+		return String.format(
+				Locale.GERMAN,
+                "%d-%02d-%02d",
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH)
+        );
+	}
+	
+	public static String toDDMMYYYY(Calendar calendar){
+		Log.d("UTILS", calendar.toString());
+		return String.format(
+				Locale.GERMAN,
+                "%d.%02d.%d",
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.YEAR)
+        );
+	}
 
 }

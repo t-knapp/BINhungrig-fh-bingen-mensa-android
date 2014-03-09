@@ -43,7 +43,7 @@ public final class R {
         public static final int LinearLayout1=0x7f0a0000;
         public static final int LinearLayout2=0x7f0a0007;
         public static final int RelativeLayout1=0x7f0a0019;
-        public static final int action_settings=0x7f0a0021;
+        public static final int action_settings=0x7f0a0022;
         public static final int button_complain=0x7f0a0017;
         public static final int customBar1=0x7f0a0014;
         public static final int customBar2=0x7f0a0012;
@@ -53,11 +53,12 @@ public final class R {
         public static final int dish_picture=0x7f0a0002;
         public static final int dish_price=0x7f0a0005;
         public static final int dish_text=0x7f0a0004;
-        public static final int imageView_dish=0x7f0a001d;
+        public static final int imageView_dish=0x7f0a001c;
+        public static final int pager_header=0x7f0a0021;
         public static final int progressBar1=0x7f0a0003;
         public static final int ratingBarDish=0x7f0a0016;
         public static final int scrollView1=0x7f0a0001;
-        public static final int spinnerUser=0x7f0a001c;
+        public static final int spinnerUser=0x7f0a001b;
         public static final int textView1=0x7f0a0008;
         public static final int textView2=0x7f0a000f;
         public static final int textView3=0x7f0a0011;
@@ -66,13 +67,13 @@ public final class R {
         public static final int textViewLabel1Star=0x7f0a000b;
         public static final int textViewLabel2Star=0x7f0a000d;
         public static final int textView_avgRating=0x7f0a0009;
-        public static final int textView_date=0x7f0a001a;
         public static final int textView_headingDoRating=0x7f0a0015;
         public static final int textView_numberRatings=0x7f0a000a;
-        public static final int textView_price=0x7f0a001f;
-        public static final int textView_rating=0x7f0a0020;
-        public static final int textView_settings_price=0x7f0a001b;
-        public static final int textView_title=0x7f0a001e;
+        public static final int textView_price=0x7f0a001e;
+        public static final int textView_rating=0x7f0a001f;
+        public static final int textView_settings_price=0x7f0a001a;
+        public static final int textView_title=0x7f0a001d;
+        public static final int viewPager=0x7f0a0020;
         public static final int webView1=0x7f0a0018;
     }
     public static final class layout {
@@ -81,6 +82,7 @@ public final class R {
         public static final int activity_main=0x7f030002;
         public static final int activity_settings=0x7f030003;
         public static final int dish_list_item=0x7f030004;
+        public static final int view_pager=0x7f030005;
     }
     public static final class menu {
         public static final int dish_detail=0x7f090000;

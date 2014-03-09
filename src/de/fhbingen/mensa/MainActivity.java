@@ -7,10 +7,12 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.zip.Inflater;
 
 import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -41,17 +43,28 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.view_pager);
         Log.i(TAG, "ContentView is setted");
 
+        //Connect to Mensa
+        mensa = (Mensa) getApplication();
+                
         //Setting the ViewPager
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         myFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
 
-       // The PagerTabStripe is set automatically!
+        
+        // The PagerTabStripe is set automatically!
 
-        //Connection between viewpager und fragmentadapter
-        viewPager.setAdapter(myFragmentPagerAdapter);
+        //Start LoadWeekTask, Save to Map. Provide Access to this Map
+        context = viewPager.getContext();
+        new LoadWeekTask().execute(Mensa.APIURL + "getWeek=" + Mensa.getCurrentWeek());
+        
+        //Connection between viewpager und fragmentadapter (made in onPostExecute in Task)
+        //viewPager.setAdapter(myFragmentPagerAdapter);
 
-
-
+        
+        
+        
+        
+        
         /*
         listview = (ListView) findViewById(android.R.id.list);
 
@@ -179,8 +192,14 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int index){
+        	Log.d(TAG, "getItem( index : " + index + " )");
+        	final Calendar rightNow = Calendar.getInstance();
+        	rightNow.add(Calendar.DAY_OF_MONTH, index);
             // Computating from the actual day
-            String date = today;
+            String date = Mensa.toYYYYMMDD(rightNow); // YYYY-MM-DD
+            
+            //TODO: Hier können NullPointer kommen wenn date nicht in der Map enthalten ist.
+            //Tobi macht das noch =)
             return ListFragment.newInstance(date);
         }
 
@@ -190,7 +209,15 @@ public class MainActivity extends FragmentActivity {
         }
 
         public CharSequence getPageTitle(int position){
-            return position + "";
+        	final Calendar rightNow = Calendar.getInstance();
+        	if(position == 0){
+        		return "Heute";
+        	} else if (position == 1) {
+        		return "Morgen";
+        	} else {
+        		rightNow.add(Calendar.DAY_OF_MONTH, position);   		
+        		return Mensa.toDDMMYYYY(rightNow); // DD.MM.YYYY
+        	}
         }
     }
 
@@ -200,9 +227,36 @@ public class MainActivity extends FragmentActivity {
     private ListView listview;
     private ViewPager viewPager;
     private MyFragmentPagerAdapter myFragmentPagerAdapter;
-    private static String today = "2014-01-13";
+    private static String today = "2014-03-10";
     private final static String TAG = "MainActivity";
     // TODO perhaps computating the max value of available pages
     private final static int NUMBER_OF_PAGES = 5;
+    
+    /**
+     * Task loads a week
+     * @author tknapp@fh-bingen.de
+     *
+     */
+    private class LoadWeekTask extends ContentTask {
+        @Override
+        protected void onPreExecute() {
+            d = new ProgressDialog(context);
+            d.setCancelable(false);
+            d.setMessage("Lade Speiseplan");
+            d.show();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            mensa.loadWeek(result);
+            d.dismiss();
+            // Connection between viewpager und fragmentadapter
+            viewPager.setAdapter(myFragmentPagerAdapter);
+        }
+
+        private ProgressDialog d;
+    }
+    
+    private Context context;
 
 }

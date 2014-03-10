@@ -19,6 +19,7 @@ local.properties
 .classpath
 .project
 project.properties
+.settings/gradle/
 
 # Android Studio
 .idea/

@@ -66,11 +66,11 @@ public class MainActivity extends SherlockFragmentActivity {
         }
     }
 
-    public CharSequence getPageTitle(int position) {
-        return "Page " + (position + 1);
-    }
+    //public CharSequence getPageTitle(int position) {
+    //    return "Page " + (position + 1);
+    //}
 
-    private static class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+    private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
         public MyFragmentPagerAdapter(FragmentManager fm){
             super(fm);
@@ -91,11 +91,13 @@ public class MainActivity extends SherlockFragmentActivity {
 
         @Override
         public int getCount(){
-            return NUMBER_OF_PAGES;
+            return 5; //TODO: Get from Mensa, but do not skip empty day (Feiertag).
         }
 
         public CharSequence getPageTitle(int position){
         	final Calendar rightNow = Calendar.getInstance();
+
+            //TODO: If position means freitag skip weekend
         	if(position == 0){
         		return "Heute";
         	} else if (position == 1) {
@@ -108,16 +110,16 @@ public class MainActivity extends SherlockFragmentActivity {
     }
 
 	private Mensa mensa;
-    private List<Dish> dlist;
+    //private List<Dish> dlist;
     private DishItemAdapter adapter;
     private ListView listview;
     private ViewPager viewPager;
     private MyFragmentPagerAdapter myFragmentPagerAdapter;
-    private static String today = "2014-03-10";
+
+    //private static String today = "2014-03-10";
+
     private final static String TAG = "MainActivity";
-    // TODO perhaps computating the max value of available pages
-    private final static int NUMBER_OF_PAGES = 5;
-    
+
     /**
      * Task loads a week
      * @author tknapp@fh-bingen.de
@@ -134,7 +136,6 @@ public class MainActivity extends SherlockFragmentActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            Log.d("TOBI", result);
             mensa.loadWeek(result);
             d.dismiss();
             // Connection between viewpager und fragmentadapter

@@ -9,7 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragment;
 import de.fhbingen.mensa.*;
 
@@ -54,16 +56,31 @@ public class ListFragment extends SherlockFragment {
 
         //new LoadWeekTask().execute(Mensa.APIURL + "getWeek=201403");
         //new LoadWeekTask().execute(Mensa.APIURL + "getWeek=" + Mensa.getCurrentWeek());
-        createList();
 
-        listview.setOnItemClickListener(new ListView.OnItemClickListener( ) {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-                Intent detail = new Intent(view.getContext().getApplicationContext(), DishDetailActivity.class);
-                detail.putExtra("data", (Dish)listview.getItemAtPosition(position));
-                startActivity(detail);
-            }
-        });
+        //TODO: If list null, create TextView
+        dList = mensa.getDay(getArguments().getString(DATE_IDENTIFY));
+
+        if(dList == null){
+
+            TextView tv = (TextView) view.findViewById(R.id.TextView_NoDishes);
+            tv.setVisibility(View.VISIBLE);
+
+            ImageView iv = (ImageView) view.findViewById(R.id.iv_nodishes);
+            iv.setVisibility(View.VISIBLE);
+
+        //else createList();
+        } else {
+            createList();
+
+            listview.setOnItemClickListener(new ListView.OnItemClickListener( ) {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+                    Intent detail = new Intent(view.getContext().getApplicationContext(), DishDetailActivity.class);
+                    detail.putExtra("data", (Dish)listview.getItemAtPosition(position));
+                    startActivity(detail);
+                }
+            });
+        }
 
         return view;
     }
@@ -80,7 +97,7 @@ public class ListFragment extends SherlockFragment {
         // Line by Tobi
         //dlist = mensa.getDay("2014-01-13");
 
-        dList = mensa.getDay(getArguments().getString(DATE_IDENTIFY));
+        //dList = mensa.getDay(getArguments().getString(DATE_IDENTIFY));
         //TODO: dList possible null if no plan for this day.
 
         try {
@@ -96,24 +113,6 @@ public class ListFragment extends SherlockFragment {
         } catch (Exception e) {
             Log.e(TAG, "Exception cause: " + e.getCause() + "\nException message" + e.getMessage() + "\nException toStr" + e.toString());
         }
-
-        /*
-        // Set date
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat dayFormat   = new SimpleDateFormat("EEEE", Locale.GERMAN);
-        SimpleDateFormat monthFormat = new SimpleDateFormat("MMMMMMMMM", Locale.GERMAN);
-        try {
-            Date date = inputFormat.parse("2014-01-13");
-
-            Calendar cal = new GregorianCalendar();
-            cal.setTime(date);
-
-            
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        */
     }
 
     private Mensa mensa;

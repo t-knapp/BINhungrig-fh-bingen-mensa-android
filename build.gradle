@@ -2,6 +2,7 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.10'
     }
 
+apply plugin: 'android'
 
 buildscript {
     repositories {
@@ -11,16 +12,26 @@ buildscript {
         classpath 'com.android.tools.build:gradle:0.8.+'
     }
 }
-apply plugin: 'android'
+
+repositories {
+    mavenCentral()
+}
 
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
+    // You must install or update the Support Repository through the SDK manager to use this dependency.
+    // The Support Repository (separate from the corresponding library) can be found in the Extras category.
+    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+    compile 'com.android.support:support-v4:19.0.+'
 }
 
 android {
     compileSdkVersion 19
     buildToolsVersion "19.0.2"
 
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion 19
+    }
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'

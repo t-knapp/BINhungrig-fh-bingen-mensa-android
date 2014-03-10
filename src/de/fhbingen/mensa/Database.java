@@ -1,24 +1,15 @@
 package de.fhbingen.mensa;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
-import android.util.Log;
 
 public class Database extends SQLiteOpenHelper {
 
-	// Database Version
-	private static final int DATABASE_VERSION = 6;
-	// Database Name
+	private static final int DATABASE_VERSION = 7;
 	private static final String DATABASE_NAME = "MensaDB";
-
-	// Logcat TAG
-	private static final String TAG = "Database";
 
 	public Database(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -26,87 +17,87 @@ public class Database extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		//Create table for dishes
-		String createQuery = "CREATE TABLE \"dishes\" ("
-				+ "\"id\" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-				+ "\"date\" TEXT," + "\"name\" TEXT," + "\"rating\" REAL"
-				+ ");";
+		//Create table for users dish ratings
+		String createQuery = 
+				"CREATE TABLE \"ratings\" ("
+				+ "\"id_dishes\" INTEGER PRIMARY KEY NOT NULL,"
+				+ "\"rating\" INTEGER NOT NULL" +
+		        ");";
 		db.execSQL(createQuery);
 
-		//Create table for pictures, pictures will be stored as BLOB
-		createQuery = "CREATE TABLE \"pictures\" ("
-				+ "\"id\" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-				+ "\"dish_id\" INTEGER NOT NULL," 
-				+ "\"data\" BLOB  NOT NULL,"
-				+ "\"user\" TEXT NOT NULL,"
-				+ "UNIQUE (id, dish_id)" + ");";
+		//Create table complains about dish pictures
+		createQuery = 
+				"CREATE TABLE \"complains\" ("
+			    + "\"id_pictures\" INTEGER PRIMARY KEY NOT NULL );";
 
 		db.execSQL(createQuery);
 	}
 
-	public void insetDish(Dish dish) {
-		Log.i(TAG, "insertDish");
-
-		SQLiteDatabase db = this.getWritableDatabase();
-
-		//Insert values, prepared statement would be more secure
-		final String query = "INSERT INTO dishes (name, rating)" +
-				             "VALUES (?,?,?);";
-			
-		//Prepared statements
-		SQLiteStatement statement = db.compileStatement(query);
-	
-		statement.bindLong(1, dish.getId_dishes());
-		statement.bindString(2, dish.getDate());
-		statement.bindString(3, dish.getText());
-	
+	public void insertRating(int id_dishes, int rating){
+		final SQLiteDatabase db = this.getWritableDatabase();
+		final String query = "INSERT INTO \"ratings\" (id_dishes, rating)" 
+						   + "VALUES (?,?);";
+		final SQLiteStatement statement = db.compileStatement(query);
+		statement.bindLong(1, id_dishes);
+		statement.bindLong(2, rating);
 		statement.execute();
-
-		db.execSQL(query);
-	}
-
-	public byte[] getDishPhoto(int dish_id) {
-		Log.i(TAG, "getDishPhoto");
-
-		SQLiteDatabase db = this.getReadableDatabase();
-
-		Cursor cursor = db.query("pictures", new String[] { "data" }, null,
-				null, null, null, "id DESC", "1");
-		cursor.moveToFirst();
-
-		return cursor.getBlob(0);
-	}
-
-	public void addDishPhoto(int dish_id, byte[] data) {
-		Log.i(TAG, "addDishPhoto");
-
-		SQLiteDatabase db = this.getWritableDatabase();
-
-		String query = "INSERT INTO pictures (dish_id, data, user)" +
-				       "VALUES (?,?,?);";
 		
-		//Prepared statements
-		SQLiteStatement statement = db.compileStatement(query);
-
-		statement.bindLong(1, dish_id);
-		statement.bindBlob(2, data);
-		statement.bindString(3, "t.knapp");
-
-		statement.execute();
-	}
-
-	public List<Dish> getDishes(){
-		List<Dish> ret = new LinkedList<Dish>();
-		return ret;
+		db.close();
 	}
 	
+	public int selectRating(int id_dishes){
+		final SQLiteDatabase db = this.getReadableDatabase();
+		
+		final Cursor cursor = db.query("ratings", new String[] { "rating" }, "id_dishes = " + id_dishes, null, null, null, null, "1");
+		
+		int retval = -1;
+		
+		if(cursor.moveToFirst()){
+			retval = cursor.getInt(0);
+		}
+		
+		cursor.close();
+		db.close();
+		
+		return retval;
+	}
+	
+	public void insertComplain(int id_pictures){
+		final SQLiteDatabase db = this.getWritableDatabase();
+		
+		final String query = "INSERT INTO \"complains\" (id_pictures)" 
+						   + "VALUES (?);";
+		
+		final SQLiteStatement statement = db.compileStatement(query);
+		statement.bindLong(1, id_pictures);
+		statement.execute();
+		
+		db.close();
+	}
+	
+	public boolean complainedAboutPicture(int id_pictures){
+		final SQLiteDatabase db = this.getWritableDatabase();
+		
+		final String query = "SELECT \"id_pictures\""
+				           + "FROM \"complains\""
+				           + "WHERE  \"id_pictures\" = " + id_pictures;
+		
+		final Cursor cursor = db.rawQuery(query, null);
+	    final int cnt = cursor.getCount();
+	    
+	    cursor.close();
+	    db.close();
+	    
+	    return cnt > 0;
+	}
+		
 	@Override
 	public void onUpgrade(SQLiteDatabase db, 
 			              int oldVersion,
 			              int newVersion) {
 		// Called on DATABASE_VERSION change.
-		db.execSQL("DROP TABLE IF EXISTS \"dishes\";");
-		db.execSQL("DROP TABLE IF EXISTS \"pictures\";");
+		db.execSQL("DROP TABLE IF EXISTS \"ratings\";");
+		db.execSQL("DROP TABLE IF EXISTS \"complains\";");
 		onCreate(db);
 	}
 

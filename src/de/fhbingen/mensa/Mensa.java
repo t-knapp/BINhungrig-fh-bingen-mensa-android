@@ -240,7 +240,7 @@ public class Mensa extends Application {
 				Locale.GERMAN,
 				"%d%02d",
 				rightNow.get(Calendar.YEAR),
-				rightNow.get(Calendar.WEEK_OF_YEAR)+1 /* TODO: +1 DEVELOPMENT !!! */
+				rightNow.get(Calendar.WEEK_OF_YEAR)
 		);
 	}
 	
@@ -259,7 +259,7 @@ public class Mensa extends Application {
 	 */
 
 	public static String toYYYYMMDD(Calendar calendar){
-		Log.d("UTILS", calendar.toString());
+		//Log.d("UTILS", calendar.toString());
 		return String.format(
 				Locale.GERMAN,
                 "%d-%02d-%02d",
@@ -270,7 +270,7 @@ public class Mensa extends Application {
 	}
 	
 	public static String toDDMMYYYY(Calendar calendar){
-		Log.d("UTILS", calendar.toString());
+		//Log.d("UTILS", calendar.toString());
 		return String.format(
 				Locale.GERMAN,
                 "%d.%02d.%d",

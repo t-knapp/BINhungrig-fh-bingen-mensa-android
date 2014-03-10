@@ -52,10 +52,10 @@ public class ListFragment extends SherlockFragment {
         SharedPreferences settings = view.getContext().getSharedPreferences(Mensa.PREF_USER, 0);
         Mensa.userRole = Mensa.UserRole.values()[settings.getInt("userRole", Mensa.UserRole.STUDENT.ordinal())];
 
-        //TODO: Get data form mensa object!
         //new LoadWeekTask().execute(Mensa.APIURL + "getWeek=201403");
-        new LoadWeekTask().execute(Mensa.APIURL + "getWeek=" + Mensa.getCurrentWeek());
-        
+        //new LoadWeekTask().execute(Mensa.APIURL + "getWeek=" + Mensa.getCurrentWeek());
+        createList();
+
         listview.setOnItemClickListener(new ListView.OnItemClickListener( ) {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id){
@@ -81,6 +81,7 @@ public class ListFragment extends SherlockFragment {
         //dlist = mensa.getDay("2014-01-13");
 
         dList = mensa.getDay(getArguments().getString(DATE_IDENTIFY));
+        //TODO: dList possible null if no plan for this day.
 
         try {
             // Filling the Adapter with the generated values
@@ -96,6 +97,7 @@ public class ListFragment extends SherlockFragment {
             Log.e(TAG, "Exception cause: " + e.getCause() + "\nException message" + e.getMessage() + "\nException toStr" + e.toString());
         }
 
+        /*
         // Set date
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat dayFormat   = new SimpleDateFormat("EEEE", Locale.GERMAN);
@@ -111,25 +113,7 @@ public class ListFragment extends SherlockFragment {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
-
-    private class LoadWeekTask extends ContentTask {
-        @Override
-        protected void onPreExecute() {
-            d = new ProgressDialog(view.getContext());
-            d.setCancelable(false);
-            d.setMessage("Lade Woche");
-            d.show();
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            mensa.loadWeek(result);
-            createList(); //TODO: with current day
-            d.dismiss();
-        }
-
-        private ProgressDialog d;
+        */
     }
 
     private Mensa mensa;

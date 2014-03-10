@@ -41,7 +41,8 @@ public class MainActivity extends SherlockFragmentActivity {
 
         //Start LoadWeekTask, Save to Map. Provide Access to this Map
         context = viewPager.getContext();
-        new LoadWeekTask().execute(Mensa.APIURL + "getWeek=" + Mensa.getCurrentWeek());
+        final String query = Mensa.APIURL + "getWeek=" + Mensa.getCurrentWeek();
+        new LoadWeekTask().execute(query);
 	}
 
     @Override
@@ -133,6 +134,7 @@ public class MainActivity extends SherlockFragmentActivity {
 
         @Override
         protected void onPostExecute(String result) {
+            Log.d("TOBI", result);
             mensa.loadWeek(result);
             d.dismiss();
             // Connection between viewpager und fragmentadapter

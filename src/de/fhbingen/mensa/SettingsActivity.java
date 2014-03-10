@@ -1,5 +1,6 @@
 package de.fhbingen.mensa;
 
+import android.app.ListFragment;
 import android.os.Bundle;
 import android.content.SharedPreferences;
 import android.support.v4.app.NavUtils;
@@ -73,7 +74,7 @@ public class SettingsActivity extends SherlockActivity implements OnItemSelected
         Mensa.userRole = Mensa.UserRole.values()[settings.getInt("userRole", Mensa.UserRole.STUDENT.ordinal())];
 		
 		if(roleIndex != pos){
-			MainActivity.roleChanged = true;
+			de.fhbingen.mensa.Fragments.ListFragment.roleChanged = true;
 		}
 	}
 

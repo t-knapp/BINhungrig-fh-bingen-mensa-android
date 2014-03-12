@@ -9,6 +9,7 @@ import java.util.Locale;
 import android.support.v4.app.NavUtils;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Menu;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,6 +51,7 @@ public class DishDetailActivity extends SherlockActivity {
 	private int[] ratings = new int[5];
 		
 	private final Database db = new Database(this);
+    private final DishDetailActivity instance = this;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -174,7 +176,12 @@ public class DishDetailActivity extends SherlockActivity {
 			}
 		});
 		*/
-		iv.setOnLongClickListener(new StartPhotoListenerLong());
+		iv.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return instance.takeDishPicture();
+            }
+        });
 				
 		//Rating
 		bar = (RatingBar) findViewById(R.id.ratingBarDish);
@@ -219,13 +226,16 @@ public class DishDetailActivity extends SherlockActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		//getMenuInflater().inflate(R.menu.dish_detail, menu);
-		return false;
+		getSupportMenuInflater().inflate(R.menu.dish_detail, menu);
+		return true;
 	}
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_take_photo:
+                takeDishPicture();
+
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
@@ -419,33 +429,6 @@ public class DishDetailActivity extends SherlockActivity {
 		}
 		
 	}
-
-	private class StartPhotoListenerLong implements OnLongClickListener{
-
-		@Override
-		public boolean onLongClick(View v) {
-			
-			//Intent i = new Intent(v.getContext(), ImagePickActivity.class);
-			//startActivity(i);
-			
-			Intent intent 	 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-			
-			mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),
-							   "tmp_avatar_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
-
-			intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
-
-			try {
-				intent.putExtra("return-data", true);
-				
-				startActivityForResult(intent, PICK_FROM_CAMERA);
-			} catch (ActivityNotFoundException e) {
-				e.printStackTrace();
-			}
-			return true;
-		}
-		
-	}
 	
 	private Uri mImageCaptureUri;
 	private static final int PICK_FROM_CAMERA = 1;
@@ -548,6 +531,28 @@ public class DishDetailActivity extends SherlockActivity {
 
 	    }
 	}
+
+    private boolean takeDishPicture() {
+        //Intent i = new Intent(v.getContext(), ImagePickActivity.class);
+        //startActivity(i);
+
+        Intent intent 	 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        mImageCaptureUri = Uri.fromFile(new File(Environment
+                .getExternalStorageDirectory(),
+                "tmp_avatar_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+
+        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+
+        try {
+            intent.putExtra("return-data", true);
+
+            startActivityForResult(intent, PICK_FROM_CAMERA);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
 	
 	
 }

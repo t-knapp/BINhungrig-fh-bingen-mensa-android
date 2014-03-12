@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">Mensa</string>
-    <string name="action_settings">Einstellungen</string>
     <string name="hello_world">Hello world!</string>
 
     <!-- Dish -->
@@ -38,6 +37,12 @@
     <string name="button_rate">Bewertung speichern</string>
     <string name="dummy_numberRatings">n Bewertungen</string>
     <string name="title_activity_gallery">Bildergalerie</string>
-    <string name="btn_label_complain">Bild als unangemessen melden</string><string name="NoDishes">Heute bleibt die Küche kalt.</string>
+    <string name="btn_label_complain">Bild als unangemessen melden</string>
+    <string name="NoDishes">Heute bleibt die Küche kalt.</string>
+
+    <!-- Action Names -->
+    <string name="action_settings">Einstellungen</string>
+    <string name="action_take_photo">Foto machen</string>
+
 
 </resources>

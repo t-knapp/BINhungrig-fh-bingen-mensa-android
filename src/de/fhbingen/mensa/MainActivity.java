@@ -16,7 +16,6 @@ import com.actionbarsherlock.view.MenuItem;
 import de.fhbingen.mensa.Fragments.ListFragment;
 
 import java.util.Calendar;
-import java.util.List;
 
 
 public class MainActivity extends SherlockFragmentActivity {
@@ -42,7 +41,7 @@ public class MainActivity extends SherlockFragmentActivity {
         //Start LoadWeekTask, Save to Map. Provide Access to this Map
         context = viewPager.getContext();
         final String query = Mensa.APIURL + "getWeek=" + Mensa.getCurrentWeek();
-        new LoadWeekTask().execute(query);
+        new LoadWeekTask(false).execute(query);
 	}
 
     @Override
@@ -78,45 +77,65 @@ public class MainActivity extends SherlockFragmentActivity {
 
         @Override
         public Fragment getItem(int index){
-        	Log.d(TAG, "getItem( index : " + index + " )");
+        	//Log.d(TAG, "getItem( index : " + index + " )");
         	final Calendar rightNow = Calendar.getInstance();
         	rightNow.add(Calendar.DAY_OF_MONTH, index);
+
+            //Load next week on sunday
+            final Calendar sunday = Calendar.getInstance();
+            sunday.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+
+            if(!nextWeekLoaded){
+                long diff = sunday.getTimeInMillis() - rightNow.getTimeInMillis();
+
+                if((diff / (24 * 60 * 60 * 1000)) == 0){
+                    final String query = Mensa.APIURL + "getWeek=" + Mensa.getNextWeek();
+                    new LoadWeekTask(true).execute(query);
+                }
+            }
+
             // Computating from the actual day
             String date = Mensa.toYYYYMMDD(rightNow); // YYYY-MM-DD
             
-            //TODO: Hier können NullPointer kommen wenn date nicht in der Map enthalten ist.
-            //Tobi macht das noch =)
             return ListFragment.newInstance(date);
         }
 
         @Override
         public int getCount(){
-            return 5; //TODO: Get from Mensa, but do not skip empty day (Feiertag).
+            return this.tillSunday + this.nextWeekDayCount;
         }
 
         public CharSequence getPageTitle(int position){
         	final Calendar rightNow = Calendar.getInstance();
 
-            //TODO: If position means freitag skip weekend
         	if(position == 0){
         		return "Heute";
         	} else if (position == 1) {
         		return "Morgen";
         	} else {
-        		rightNow.add(Calendar.DAY_OF_MONTH, position);   		
+        		rightNow.add(Calendar.DAY_OF_MONTH, position);
         		return Mensa.toDDMMYYYY(rightNow); // DD.MM.YYYY
         	}
         }
+
+        public void setNextWeekDayCount(int cnt){
+            this.nextWeekDayCount = cnt;
+        }
+
+        public void setNextWeekLoaded(boolean b){
+            this.nextWeekLoaded = b;
+        }
+
+        private int nextWeekDayCount = 0;
+        private int tillSunday = mensa.daysTillSunday();
+        private boolean nextWeekLoaded = false;
     }
 
 	private Mensa mensa;
-    //private List<Dish> dlist;
     private DishItemAdapter adapter;
     private ListView listview;
     private ViewPager viewPager;
     private MyFragmentPagerAdapter myFragmentPagerAdapter;
-
-    //private static String today = "2014-03-10";
 
     private final static String TAG = "MainActivity";
 
@@ -126,23 +145,44 @@ public class MainActivity extends SherlockFragmentActivity {
      *
      */
     private class LoadWeekTask extends ContentTask {
+
+        public LoadWeekTask(boolean append){
+            super();
+            this.append = append;
+        }
+
         @Override
         protected void onPreExecute() {
-            d = new ProgressDialog(context);
-            d.setCancelable(false);
-            d.setMessage("Lade Speiseplan");
-            d.show();
+            if (!append){
+                //Do not show if next week is loading @ Saturdays Fragment
+                d = new ProgressDialog(context);
+                d.setCancelable(false);
+                d.setMessage("Lade Speiseplan");
+                d.show();
+            }
         }
 
         @Override
         protected void onPostExecute(String result) {
-            mensa.loadWeek(result);
-            d.dismiss();
+            mensa.loadWeek(result, append);
+            if(!append){
+                //...Not shown @ Saturdays-Loading, no need to close
+                d.dismiss();
+            }
             // Connection between viewpager und fragmentadapter
-            viewPager.setAdapter(myFragmentPagerAdapter);
+            if(!append){
+                viewPager.setAdapter(myFragmentPagerAdapter);
+            } else {
+                //Updating MUST NOT be done after execute() because
+                //assync task. We MUST update after the execution!
+                myFragmentPagerAdapter.setNextWeekDayCount(5);
+                myFragmentPagerAdapter.setNextWeekLoaded(true);
+                myFragmentPagerAdapter.notifyDataSetChanged();
+            }
         }
 
         private ProgressDialog d;
+        private final boolean append;
     }
     
     private Context context;

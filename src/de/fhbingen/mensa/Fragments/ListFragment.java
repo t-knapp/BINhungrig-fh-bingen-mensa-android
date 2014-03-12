@@ -54,21 +54,14 @@ public class ListFragment extends SherlockFragment {
         SharedPreferences settings = view.getContext().getSharedPreferences(Mensa.PREF_USER, 0);
         Mensa.userRole = Mensa.UserRole.values()[settings.getInt("userRole", Mensa.UserRole.STUDENT.ordinal())];
 
-        //new LoadWeekTask().execute(Mensa.APIURL + "getWeek=201403");
-        //new LoadWeekTask().execute(Mensa.APIURL + "getWeek=" + Mensa.getCurrentWeek());
-
-        //TODO: If list null, create TextView
         dList = mensa.getDay(getArguments().getString(DATE_IDENTIFY));
 
         if(dList == null){
-
             TextView tv = (TextView) view.findViewById(R.id.TextView_NoDishes);
             tv.setVisibility(View.VISIBLE);
 
             ImageView iv = (ImageView) view.findViewById(R.id.iv_nodishes);
             iv.setVisibility(View.VISIBLE);
-
-        //else createList();
         } else {
             createList();
 
@@ -94,12 +87,6 @@ public class ListFragment extends SherlockFragment {
     }
 
     private void createList(){
-        // Line by Tobi
-        //dlist = mensa.getDay("2014-01-13");
-
-        //dList = mensa.getDay(getArguments().getString(DATE_IDENTIFY));
-        //TODO: dList possible null if no plan for this day.
-
         try {
             // Filling the Adapter with the generated values
             adapter = new DishItemAdapter(

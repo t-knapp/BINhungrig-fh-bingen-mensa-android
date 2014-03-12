@@ -32,7 +32,7 @@ public class Mensa extends Application {
 	public Mensa() {
 		dayMap = new HashMap<String, List<Dish>>();
 	}
-
+/*
 	public String getDishes() throws InterruptedException, ExecutionException {
 		Calendar rightNow = Calendar.getInstance();
 		return this.getDishes(rightNow.get(Calendar.YEAR),
@@ -51,16 +51,20 @@ public class Mensa extends Application {
 		ct.execute(APIURL + "getWeek=" + year + weekOfYear);
 		return ct.get();
 	}
-
-	public void loadWeek(String result) {
+*/
+    /**
+     *
+     * @param result JSON-formatted dish-array
+     * @param append if true, the result String data will be appended
+     */
+	public void loadWeek(String result, boolean append) {
 		
-		if(!dayMap.isEmpty()){
+		if(!dayMap.isEmpty() && !append){
 			return;
 		}
-		
 		try {
 			// Filling the data in an array
-			JSONArray jsonArray = new JSONArray(result);
+			final JSONArray jsonArray = new JSONArray(result);
 
 			for (int i = 0; i < jsonArray.length(); i++) {
 				JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -229,13 +233,24 @@ public class Mensa extends Application {
 	public String toString() {
 		return "Mensa Application";
 	}
-	
+
+    public int daysTillSunday(){
+        //NOW -> Sunday
+        final Calendar rightNow = Calendar.getInstance();
+        final Calendar sunday = Calendar.getInstance();
+        sunday.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
+
+        final long diff = sunday.getTimeInMillis() - rightNow.getTimeInMillis();
+
+        return (int)(diff / (24 * 60 * 60 * 1000) + 1);
+    }
+
 	/**
 	 * Returns current week of year formatted YYYYWW
 	 * @return String YYYYWW
 	 */
 	public static String getCurrentWeek(){
-		Calendar rightNow = Calendar.getInstance();
+		final Calendar rightNow = Calendar.getInstance();
 		return String.format(
 				Locale.GERMAN,
 				"%d%02d",
@@ -243,8 +258,21 @@ public class Mensa extends Application {
 				rightNow.get(Calendar.WEEK_OF_YEAR)
 		);
 	}
-	
-	
+
+    /**
+     * Returns next week of year formatted YYYYWW
+     * @return String YYYYWW
+     */
+	public static String getNextWeek(){
+        final Calendar rightNow = Calendar.getInstance();
+        rightNow.add(Calendar.WEEK_OF_YEAR, 1);
+        return String.format(
+                Locale.GERMAN,
+                "%d%02d",
+                rightNow.get(Calendar.YEAR),
+                rightNow.get(Calendar.WEEK_OF_YEAR)
+        );
+    }
 	
 	// private Database db;
 	private HashMap<String, List<Dish>> dayMap;

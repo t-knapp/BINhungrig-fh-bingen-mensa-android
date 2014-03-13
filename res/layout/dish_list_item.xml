@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:minHeight="@dimen/dish_list_item_min_height">
 
     <ImageView
         android:id="@+id/imageView_dish"
@@ -17,7 +18,8 @@
         android:maxHeight="100dp"
         android:maxWidth="100dp"
         android:scaleType="center"
-        android:src="@drawable/ic_menu_example_dish" />
+        android:src="@drawable/ic_menu_example_dish"
+        />
     
     <TextView
         android:id="@+id/textView_title"

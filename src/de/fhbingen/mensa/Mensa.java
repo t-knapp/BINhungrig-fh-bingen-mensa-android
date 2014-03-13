@@ -157,10 +157,18 @@ public class Mensa extends Application {
                 rightNow.get(Calendar.WEEK_OF_YEAR)
         );
     }
-	
+
+    public boolean getNextWeekLoaded(){
+        return  this.nextWeekLoaded;
+    }
+
+    public void setNextWeekLoaded(boolean nextWeekLoaded){
+        this.nextWeekLoaded = nextWeekLoaded;
+    }
+
 	// private Database db;
 	private HashMap<String, List<Dish>> dayMap;
-	
+	private boolean nextWeekLoaded = false;
 	/*
 	 _   _ _   _ _     
 	| | | | | (_) |    

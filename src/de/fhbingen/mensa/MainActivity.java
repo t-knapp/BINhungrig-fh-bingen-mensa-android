@@ -85,7 +85,7 @@ public class MainActivity extends SherlockFragmentActivity {
             final Calendar sunday = Calendar.getInstance();
             sunday.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
 
-            if(!nextWeekLoaded){
+            if(!mensa.getNextWeekLoaded()){
                 long diff = sunday.getTimeInMillis() - rightNow.getTimeInMillis();
 
                 if((diff / (24 * 60 * 60 * 1000)) == 0){
@@ -102,7 +102,8 @@ public class MainActivity extends SherlockFragmentActivity {
 
         @Override
         public int getCount(){
-            return this.tillSunday + this.nextWeekDayCount;
+            int nextWeekDayCount = mensa.getNextWeekLoaded() ? 5 : 0;
+            return this.tillSunday + nextWeekDayCount;
         }
 
         public CharSequence getPageTitle(int position){
@@ -118,15 +119,15 @@ public class MainActivity extends SherlockFragmentActivity {
         	}
         }
 
-        public void setNextWeekDayCount(int cnt){
+        /*public void setNextWeekDayCount(int cnt){
             this.nextWeekDayCount = cnt;
-        }
+        }*/
 
         public void setNextWeekLoaded(boolean b){
             this.nextWeekLoaded = b;
         }
 
-        private int nextWeekDayCount = 0;
+        //private int nextWeekDayCount = 0;
         private int tillSunday = mensa.daysTillSunday();
         private boolean nextWeekLoaded = false;
     }
@@ -175,7 +176,8 @@ public class MainActivity extends SherlockFragmentActivity {
             } else {
                 //Updating MUST NOT be done after execute() because
                 //assync task. We MUST update after the execution!
-                myFragmentPagerAdapter.setNextWeekDayCount(5);
+                //myFragmentPagerAdapter.setNextWeekDayCount(5);
+                mensa.setNextWeekLoaded(true);
                 myFragmentPagerAdapter.setNextWeekLoaded(true);
                 myFragmentPagerAdapter.notifyDataSetChanged();
             }

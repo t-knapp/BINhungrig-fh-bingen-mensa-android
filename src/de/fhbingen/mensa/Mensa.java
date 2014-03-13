@@ -32,26 +32,7 @@ public class Mensa extends Application {
 	public Mensa() {
 		dayMap = new HashMap<String, List<Dish>>();
 	}
-/*
-	public String getDishes() throws InterruptedException, ExecutionException {
-		Calendar rightNow = Calendar.getInstance();
-		return this.getDishes(rightNow.get(Calendar.YEAR),
-				rightNow.get(Calendar.WEEK_OF_YEAR));
-	}
 
-	public String getDishes(int year, int week) throws InterruptedException,
-			ExecutionException {
-		return this.getDishes(Integer.toString(year),
-				String.format("%02d", week));
-	}
-
-	public String getDishes(String year, String weekOfYear)
-			throws InterruptedException, ExecutionException {
-		ContentTask ct = new ContentTask();
-		ct.execute(APIURL + "getWeek=" + year + weekOfYear);
-		return ct.get();
-	}
-*/
     /**
      *
      * @param result JSON-formatted dish-array
@@ -90,11 +71,6 @@ public class Mensa extends Application {
 					)
 				);
 
-				// Calendar cal = new GregorianCalendar();
-				// SimpleDateFormat dateFormat = new
-				// SimpleDateFormat("yyyy-mm-dd");
-				// cal.setTime(dateFormat.parse(objDate));
-
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -131,99 +107,7 @@ public class Mensa extends Application {
 			}
 		}
 	}
-	/*
-	public byte[] loadPicture(int id_dishes, int id_pictures){
-		ContentTask ct = new ContentTask();
-		ct.execute(APIURL + "getDishPhotoData=" + id_pictures);
-		
-		try {
-			String result = ct.get();
-			if(result.length() > 0 && !result.equals("false")){
-			
-				JSONObject jsonObj = new JSONObject(result);
-								
-				Calendar rightNow = Calendar.getInstance();
-				
-				String query = "2014-01-13";
-				
-				//TODO: Set to live mode
-				
-				//query = String.format(
-				//	"%d-%02d-%02d",
-				//	rightNow.get(Calendar.YEAR),
-				//	rightNow.get(Calendar.MONTH),
-				//	rightNow.get(Calendar.DAY_OF_MONTH)
-				//);
-				
-				
-				Log.d(TAG, "query : " + query);
-				
-				List<Dish> dayList = dayMap.get(
-					query
-				);
-				
-				for (Dish dish : dayList) {
-					if(dish.getId_dishes() == id_dishes){
-						String pictureData = jsonObj.getString("pictureData");
-						if(pictureData.length() > 0){
-							byte[] decodedString = Base64.decode(pictureData.getBytes(), Base64.DEFAULT);
-							dish.setPicture(decodedString);
-							return decodedString;
-						} else {
-							return null;
-						}
-					}
-				}
-			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-		return null;
-	}
-	*/
-	
-	/*public int[] loadRating(int id_dishes){
-		ContentTask ct = new ContentTask();
-		ct.execute(APIURL + "getRatings=" + id_dishes );
-		
-		int[] retVal = new int[5];
-		
-		try {
-			String result = ct.get();
-			
-			if(!result.isEmpty()){
-				JSONArray jsonArray = new JSONArray(result);
-				for(int i = 0; i < jsonArray.length(); i++){
-					retVal[i] = jsonArray.getInt(i);
-				}
-			}
-			
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return retVal;
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return retVal;
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return retVal;
-		}
-		return retVal;
-	}
-	*/
+
 	
 	public List<Dish> getDay(String cal) {
 		return dayMap.get(cal);

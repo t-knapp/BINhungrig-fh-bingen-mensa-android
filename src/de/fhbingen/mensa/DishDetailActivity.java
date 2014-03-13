@@ -112,12 +112,7 @@ public class DishDetailActivity extends SherlockActivity {
 				iv.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						Log.d("DDA", "startWebView");
-						
-						Intent webView = new Intent(v.getContext(), GalleryActivity.class);
-						webView.putExtra("id_dishes", dish.getId_dishes());
-						webView.putExtra("id_pictures", dish.getId_pictures());
-						startActivity(webView);
+                        showGallery(); //TODO does view need to be transmitted?
 					}
 				});
 								
@@ -155,27 +150,10 @@ public class DishDetailActivity extends SherlockActivity {
 			
 			
 		} else {
-			/*iv.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					Log.d("DDA", "startPhotoIntent");
-				}
-			});
-			*/
 			iv.setOnClickListener(new StartPhotoListener());			
 		}
 		
-		/*
-		iv.setOnLongClickListener(new OnLongClickListener() {
-			
-			@Override
-			public boolean onLongClick(View v) {
-				Log.d("DDA", "startPhotoIntent");
-				return true;
-			}
-		});
-		*/
+
 		iv.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -236,6 +214,9 @@ public class DishDetailActivity extends SherlockActivity {
             case R.id.action_take_photo:
                 takeDishPicture();
                 break;
+            case R.id.action_show_gallery:
+                showGallery();
+                break;
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
@@ -243,20 +224,20 @@ public class DishDetailActivity extends SherlockActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-	
-	public void setPicture(byte[] pictureBytes){
+
+    public void setPicture(byte[] pictureBytes){
 		if(pictureBytes != null){
 			if(pictureBytes.length > 0){
 				iv.setImageBitmap(BitmapFactory.decodeByteArray(pictureBytes, 0, pictureBytes.length));
 			}
 		}
 	}
-	
+
 	public void setRating(int[] ratings){
 		CustomBar cb;
 		int max = 0;
 		int numberRatings = 0;
-		
+
 		//Calculate count and max
 		for (int i : ratings) {
 			max = i > max ? i : max;
@@ -274,7 +255,7 @@ public class DishDetailActivity extends SherlockActivity {
 		tv.setText(String.format("%d Bewertungen", numberRatings));
 		tv.setVisibility(View.VISIBLE);
 	}
-	
+
 	public double setAvgRating(){
 		int cnt = 0;
 		double sum = 0;
@@ -285,24 +266,24 @@ public class DishDetailActivity extends SherlockActivity {
 		setAvgRating(sum/cnt);
 		return sum/cnt;
 	}
-	
+
 	public void setAvgRating(double avg){
 		tv = (TextView) findViewById(R.id.textView_avgRating);
 		tv.setText(String.format(Locale.GERMAN, "%.1f", avg));
 	}
-	
+
 	private final int[] CUSTOMBARS = {R.id.customBar1, R.id.customBar2, R.id.customBar3, R.id.customBar4, R.id.customBar5};
-	
+
 	private class LoadPictureActivity extends ContentTask{
-		
+
 		public LoadPictureActivity(Activity act) {
 			//c = act;
 		}
-		
+
 		//private Context c;
 		//private ProgressDialog dialog;
 		private ProgressBar pg = (ProgressBar) findViewById(R.id.progressBar1);
-		
+
 		@Override
 		protected void onPreExecute() {
 			//dialog = new ProgressDialog(c);
@@ -311,10 +292,10 @@ public class DishDetailActivity extends SherlockActivity {
 			//dialog.show();
 			pg.setVisibility(View.VISIBLE);
 		}
-		
+
 		@Override
 		protected void onPostExecute(String result) {
-			
+
 			JSONObject jsonObj;
 			String data = null;
 			try {
@@ -324,37 +305,37 @@ public class DishDetailActivity extends SherlockActivity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			if(data != null){
 				byte[] decodedString = Base64.decode(data.getBytes(), Base64.DEFAULT);
 				mensa.setDishPicture(dish.getDate(), dish.getId_dishes(), decodedString);
 				setPicture(decodedString);
-				
+
 				//Update listener
 				iv.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						Log.d("DDA", "startWebView");
-						
+
 						Intent webView = new Intent(v.getContext(), GalleryActivity.class);
 						webView.putExtra("id_dishes", dish.getId_dishes());
 						webView.putExtra("id_pictures", dish.getId_pictures());
 						startActivity(webView);
-						
+
 					}
 				});
 			}
 			//dialog.dismiss();
 			pg.setVisibility(View.GONE);
 		}
-	}
-	
+
+    }
 	private class LoadRatingsActivity extends ContentTask{
 
 		@Override
 		protected void onPostExecute(String result) {
 			JSONArray jsonArray;
-			
+
 			try {
 				jsonArray = new JSONArray(result);
 				for(int i = 0; i < jsonArray.length(); i++){
@@ -364,27 +345,28 @@ public class DishDetailActivity extends SherlockActivity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			setRating(ratings);
 		}
-	}
-	
+
+    }
 	private class InsertRatingActivity extends ContentTask{
-		@Override
+
+        @Override
 		protected void onPostExecute(String result) {
 			if(result != null && result.equals("true")){
 				btn.setVisibility(View.GONE);
 				bar.setIsIndicator(true);
 				labelRatings.setText("Deine Bewertung");
-				
+
 				//Store rating and id in SQLite
 				db.insertRating(dish.getId_dishes(), (int)bar.getRating());
-				
+
 				//Update rating
 				ratings[(int)bar.getRating()-1]++;
-				setRating(ratings);		
+				setRating(ratings);
 				double avg = setAvgRating();
-				
+
 				//Update dish in mensas collection
 				mensa.setAvgRating(dish.getDate(), dish.getId_dishes(), avg);
 			} else {
@@ -392,27 +374,29 @@ public class DishDetailActivity extends SherlockActivity {
 				bar.setIsIndicator(true);
 			}
 		}
-	}
-	
+    }
 	/*
-	______ _      _                         _____ _          __  __ 
+	______ _      _                         _____ _          __  __
 	| ___ (_)    | |                       /  ___| |        / _|/ _|
-	| |_/ /_  ___| |_ _   _ _ __ ___ ______\ `--.| |_ _   _| |_| |_ 
+	| |_/ /_  ___| |_ _   _ _ __ ___ ______\ `--.| |_ _   _| |_| |_
 	|  __/| |/ __| __| | | | '__/ _ \______|`--. \ __| | | |  _|  _|
-	| |   | | (__| |_| |_| | | |  __/      /\__/ / |_| |_| | | | |  
-	\_|   |_|\___|\__|\__,_|_|  \___|      \____/ \__|\__,_|_| |_|  
+	| |   | | (__| |_| |_| | | |  __/      /\__/ / |_| |_| | | | |
+	\_|   |_|\___|\__|\__,_|_|  \___|      \____/ \__|\__,_|_| |_|
 	 */
-	
+
+    /**
+     * Used when there is NO picture for the current dish yet.
+     */
 	private class StartPhotoListener implements OnClickListener{
 
 		@Override
 		public void onClick(View v) {
-			
+
 			//Intent i = new Intent(v.getContext(), ImagePickActivity.class);
 			//startActivity(i);
-			
+
 			Intent intent 	 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-			
+
 			mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),
 							   "tmp_avatar_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
 
@@ -420,93 +404,93 @@ public class DishDetailActivity extends SherlockActivity {
 
 			try {
 				intent.putExtra("return-data", true);
-				
+
 				startActivityForResult(intent, PICK_FROM_CAMERA);
 			} catch (ActivityNotFoundException e) {
 				e.printStackTrace();
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	private Uri mImageCaptureUri;
-	private static final int PICK_FROM_CAMERA = 1;
-	private static final int CROP_FROM_CAMERA = 2;
-	
+
+    private static final int PICK_FROM_CAMERA = 1;
+    private static final int CROP_FROM_CAMERA = 2;
 	private void doCrop() {
     	Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setType("image/*");
-        
+
         List<ResolveInfo> list = getPackageManager().queryIntentActivities( intent, 0 );
-        
+
         int size = list.size();
-        
-        if (size == 0) {	        
+
+        if (size == 0) {
         	Toast.makeText(this, "Can not find image crop app", Toast.LENGTH_SHORT).show();
-        	
+
             return;
         } else {
         	intent.setData(mImageCaptureUri);
-            
+
             intent.putExtra("outputX", 500);
             intent.putExtra("outputY", 500);
             intent.putExtra("aspectX", 1);
             intent.putExtra("aspectY", 1);
             intent.putExtra("scale", false);
             intent.putExtra("return-data", true);
-            
+
         	if (size == 1) {
         		Intent i 		= new Intent(intent);
 	        	ResolveInfo res	= list.get(0);
-	        	
+
 	        	i.setComponent( new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
-	        	
+
 	        	startActivityForResult(i, CROP_FROM_CAMERA);
         	}
         }
 	}
-	
+
 	private void toast(){
     	Toast.makeText(this, "Upload erfolgreich", Toast.LENGTH_LONG).show();
     }
-	
+
 	private class UploadPictureTask extends UploadBinaryTask {
-    	@Override
+
+        @Override
     	protected void onPostExecute(String result) {
     		toast();
     	}
     }
-	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (resultCode != RESULT_OK) return;
-	   
+
 	    switch (requestCode) {
 		    case PICK_FROM_CAMERA:
 		    	doCrop();
-		    	
+
 		    	break;
-		    case CROP_FROM_CAMERA:	    	
+		    case CROP_FROM_CAMERA:
 		        Bundle extras = data.getExtras();
-	
-		        if (extras != null) {	        	
+
+		        if (extras != null) {
 		            Bitmap photo = extras.getParcelable("data");
-		            
+
 		            ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		            photo.compress(Bitmap.CompressFormat.JPEG, 85, stream);
 		            byte[] byteArray = stream.toByteArray();
-		            
+
 		            //TODO: Save Picture in mensas collection
 		            // Only set iv if no picture is set before.
 		            iv.setImageBitmap(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
-		            
+
 		            byte[] encodedBytes = Base64.encode(byteArray, Base64.DEFAULT);
 
 		            try {
 		            	String dataString = new String(encodedBytes, "UTF-8").replaceAll("\\n", "");
 		            	String queryString = Mensa.APIURL + "insertDishPhoto="+dish.getId_dishes()+"&data=";
-		            			            	
+
 		            	new UploadPictureTask().execute(
 							queryString,
 							dataString
@@ -515,23 +499,27 @@ public class DishDetailActivity extends SherlockActivity {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-		            
+
 		            //Log.d("IPA", "encodedBytes.lenght: " + encodedBytes.length);
-		            
+
 		            //mImageView.setImageBitmap(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
-		            
+
 		            //mImageView.setImageBitmap(photo);
 		        }
-	
-		        File f = new File(mImageCaptureUri.getPath());            
-		        
+
+		        File f = new File(mImageCaptureUri.getPath());
+
 		        if (f.exists()) f.delete();
-	
+
 		        break;
 
 	    }
 	}
 
+    /**
+     * Method used to tell this activity to call a camera intent.
+     * @return true
+     */
     private boolean takeDishPicture() {
         //Intent i = new Intent(v.getContext(), ImagePickActivity.class);
         //startActivity(i);
@@ -553,6 +541,18 @@ public class DishDetailActivity extends SherlockActivity {
         }
         return true;
     }
-	
+
+    /**
+     * Will show the gallery view for the current dish.
+     */
+    private void showGallery() {
+        Log.d("DDA", "startWebView");
+
+        Intent webView = new Intent(this, GalleryActivity.class);
+        webView.putExtra("id_dishes", dish.getId_dishes());
+        webView.putExtra("id_pictures", dish.getId_pictures());
+        startActivity(webView);
+    }
+
 	
 }

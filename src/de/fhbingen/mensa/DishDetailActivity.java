@@ -235,7 +235,7 @@ public class DishDetailActivity extends SherlockActivity {
         switch (item.getItemId()) {
             case R.id.action_take_photo:
                 takeDishPicture();
-
+                break;
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);

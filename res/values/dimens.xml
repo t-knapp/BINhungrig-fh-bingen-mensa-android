@@ -5,5 +5,10 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="ratingBarCountFont">12sp</dimen>
 
-    <dimen name="dish_list_item_min_height">48dp</dimen>
+    <dimen name="dish_list_item_layout_height">78dp</dimen>
+    <dimen name="dish_list_item_picture_width">74dp</dimen>
+
+    <dimen name="dish_list_item_name_font_size">18sp</dimen>
+    <dimen name="dish_list_item_rating_font_size">16sp</dimen>
+    <dimen name="dish_list_item_price_font_size">24sp</dimen>
 </resources>

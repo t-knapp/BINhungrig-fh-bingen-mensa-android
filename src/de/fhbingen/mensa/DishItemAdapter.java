@@ -66,7 +66,7 @@ public class DishItemAdapter extends ArrayAdapter<Dish> {
 		TextView rating = (TextView) rowView.findViewById(R.id.textView_rating);
 		double avgRating = dish.getAvgRating();
 		if(avgRating != -1){
-			rating.setText(String.format(Locale.GERMAN, "%.1f", dish.getAvgRating()));
+			rating.setText(String.format(Locale.GERMAN, "★ %.1f", dish.getAvgRating()));
 		} else {
 			rating.setVisibility(View.GONE);
 		}

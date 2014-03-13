@@ -1,35 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:minHeight="@dimen/dish_list_item_min_height">
+    android:layout_height="@dimen/dish_list_item_layout_height">
 
     <ImageView
         android:id="@+id/imageView_dish"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/dish_list_item_picture_width"
+        android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:layout_alignParentRight="false"
+        android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="4dp"
-        android:adjustViewBounds="false"
-        android:cropToPadding="true"
-        android:maxHeight="100dp"
-        android:maxWidth="100dp"
-        android:scaleType="center"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
         android:src="@drawable/ic_menu_example_dish"
         />
-    
+
     <TextView
         android:id="@+id/textView_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:text="TextView1"
+        android:text="NAME"
+        android:textSize="@dimen/dish_list_item_name_font_size"
         android:textStyle="bold"
         android:layout_toRightOf="@id/imageView_dish"
-        android:layout_alignTop="@+id/imageView_dish"
+        android:layout_alignTop="@id/imageView_dish"
          />
 
     <TextView
@@ -38,7 +37,9 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/textView_title"
         android:layout_below="@+id/textView_title"
-        android:text="TextView2" />
+        android:text="PREIS"
+        android:textSize="@dimen/dish_list_item_price_font_size"
+        />
 
     <TextView
         android:id="@+id/textView_rating"
@@ -48,7 +49,9 @@
         android:layout_alignParentRight="true"
         android:layout_marginBottom="5dp"
         android:layout_marginRight="5dp"
-        android:text="0"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:text="BEWERTUNG"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="@dimen/dish_list_item_rating_font_size"
+        />
 
 </RelativeLayout>

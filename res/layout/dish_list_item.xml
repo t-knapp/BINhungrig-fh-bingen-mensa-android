@@ -20,7 +20,7 @@
         />
 
     <TextView
-        android:id="@+id/textView_title"
+        android:id="@+id/textView_dish_name"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -35,8 +35,9 @@
         android:id="@+id/textView_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView_title"
-        android:layout_below="@+id/textView_title"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="5dp"
         android:text="PREIS"
         android:textSize="@dimen/dish_list_item_price_font_size"
         />
@@ -45,10 +46,8 @@
         android:id="@+id/textView_rating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/imageView_dish"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginRight="5dp"
+        android:layout_alignLeft="@+id/textView_dish_name"
+        android:layout_below="@+id/textView_dish_name"
         android:text="BEWERTUNG"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="@dimen/dish_list_item_rating_font_size"

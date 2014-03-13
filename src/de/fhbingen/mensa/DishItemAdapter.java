@@ -45,7 +45,7 @@ public class DishItemAdapter extends ArrayAdapter<Dish> {
         );
 
         // Getting the layout elements of the listitem View
-        TextView title = (TextView) rowView.findViewById(R.id.textView_title);
+        TextView title = (TextView) rowView.findViewById(R.id.textView_dish_name);
         TextView price = (TextView) rowView.findViewById(R.id.textView_price);
 
 		// Setting the values to the layout elements

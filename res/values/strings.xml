@@ -19,7 +19,7 @@
     <!-- Settings -->
     <string-array name="users_array">
         <item>Studenten</item>
-        <item>Bedienstete</item>
+        <item>Alle</item>
     </string-array>
 
     <string name="title_activity_dish_detail">Detailansicht</string>

@@ -42,7 +42,7 @@
 
     <!-- Action Names -->
     <string name="action_settings">Einstellungen</string>
-    <string name="action_take_photo">Bild machen</string>
+    <string name="action_take_photo">Bild aufnehmen</string>
     <string name="action_show_gallery">Bildergalerie</string>
 
 

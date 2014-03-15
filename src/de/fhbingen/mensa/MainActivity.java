@@ -85,10 +85,10 @@ public class MainActivity extends SherlockFragmentActivity {
             final Calendar sunday = Calendar.getInstance();
             sunday.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
 
-            if(!mensa.getNextWeekLoaded()){
-                long diff = sunday.getTimeInMillis() - rightNow.getTimeInMillis();
+            long diff = sunday.getTimeInMillis() - rightNow.getTimeInMillis();
 
-                if((diff / (24 * 60 * 60 * 1000)) == 0){
+            if(!mensa.getNextWeekLoaded()){
+                if((diff / (24 * 60 * 60 * 1000)) <= 0){
                     final String query = Mensa.APIURL + "getWeek=" + Mensa.getNextWeek();
                     new LoadWeekTask(true).execute(query);
                 }

@@ -40,6 +40,12 @@
     <string name="btn_label_complain">Bild als unangemessen melden</string>
     <string name="NoDishes">Heute bleibt die Küche kalt.</string>
 
+    <!-- OfflineDialog -->
+    <string name="offline_title">Keine Verbindung</string>
+    <string name="you_are_offline">Es besteht keine Verbindung zum Internet. Stellen Sie die Verbindung her und drücken Sie auf \"Nochmal versuchen\".</string>
+    <string name="reload">Nochmal versuchen</string>
+    <string name="quit">App schließen</string>
+
     <!-- Action Names -->
     <string name="action_settings">Einstellungen</string>
     <string name="action_take_photo">Bild machen</string>

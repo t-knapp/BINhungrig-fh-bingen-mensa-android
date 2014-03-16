@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 import de.fhbingen.mensa.Exceptions.NotExcepectedServerAnswer;
@@ -18,14 +19,18 @@ public class Dish implements Serializable {
      */
 	private static final long serialVersionUID = 3377898359032737970L;
 
-	/** Constructor of dish
+    /**
+     * Day format used by the api and saved in the dish.
+     */
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-mm-dd");
+
+    /** Constructor of dish
      *
      * @param id_dishes
      * @param date
      * @param text
      * @param priceStudent
      * @param priceOfficial
-     * @param context - is needed to have access to the R File [included the string-array for the days
      */
 	public Dish(
 		int id_dishes,
@@ -116,9 +121,8 @@ public class Dish implements Serializable {
         Calendar cal = Calendar.getInstance();
         if (matches){
            //converting String into calendar object
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
             try{
-                cal.setTime(sdf.parse(getDate()));
+                cal.setTime(DATE_FORMAT.parse(getDate()));
                 Log.d(TAG, "Calendarvalues changed to:\n" + cal.toString());
             }
             catch (ParseException pe){
@@ -142,6 +146,15 @@ public class Dish implements Serializable {
         String retValue = DAYS[cal.get(Calendar.DAY_OF_WEEK) -1]; // Sonday = -1
         Log.d(TAG, "returnValue of getDay " + retValue);
         return retValue;
+    }
+
+    /**
+     * Method that determines if the dish is served today.
+     * @return true if dish is served today.
+     * @throws ParseException
+     */
+    public boolean isServedToday() throws ParseException {
+        return getDate().equals(DATE_FORMAT.format(new Date()));
     }
 
 	private int id_dishes;

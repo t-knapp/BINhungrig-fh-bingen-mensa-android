@@ -3,9 +3,11 @@ package de.fhbingen.mensa;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
 
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.NavUtils;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
@@ -41,7 +43,8 @@ import android.widget.TextView;
 
 public class DishDetailActivity extends SherlockActivity {
 
-	private Mensa mensa;
+    public static final int DISABLED_ALPHA = 50;
+    private Mensa mensa;
 	private Dish dish;
 	private ImageView iv;
 	private TextView tv;
@@ -63,7 +66,7 @@ public class DishDetailActivity extends SherlockActivity {
 		iv           = (ImageView) findViewById(R.id.dish_picture);
 		dish         = (Dish) getIntent().getExtras().getSerializable("data");
 		labelRatings = (TextView) findViewById(R.id.textView_headingDoRating);
-				
+
 		//Set dish-text
 		tv = (TextView) findViewById(R.id.dish_text);
 		tv.setText(dish.getText());
@@ -554,5 +557,21 @@ public class DishDetailActivity extends SherlockActivity {
         startActivity(webView);
     }
 
-	
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onResume();
+        MenuItem actionTakePhoto = menu.findItem(R.id.action_take_photo);
+        try {
+            actionTakePhoto.setEnabled(dish.isServedToday());
+            if (!dish.isServedToday()) {
+                Drawable cameraIcon = actionTakePhoto.getIcon();
+                cameraIcon.setAlpha(DISABLED_ALPHA);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            actionTakePhoto.setEnabled(true);
+        }
+        return true;
+    }
 }

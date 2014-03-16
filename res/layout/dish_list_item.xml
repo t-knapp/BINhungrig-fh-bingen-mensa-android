@@ -21,36 +21,43 @@
 
     <TextView
         android:id="@+id/textView_dish_name"
-        android:layout_width="fill_parent"
+        android:layout_width="210dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:text="NAME"
+        android:text="Capeletti (M, 11) mit Pesto und Pinienkernen gefüllt dazu Basilikumsauce"
         android:textSize="@dimen/dish_list_item_name_font_size"
         android:textStyle="bold"
         android:layout_toRightOf="@id/imageView_dish"
-        android:layout_alignTop="@id/imageView_dish"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/dish_list_item_name_top_margin"
          />
-
-    <TextView
-        android:id="@+id/textView_price"
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="5dp"
-        android:text="PREIS"
-        android:textSize="@dimen/dish_list_item_price_font_size"
-        />
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="5dp"
+        >
+        <TextView
+            android:id="@+id/textView_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
 
-    <TextView
-        android:id="@+id/textView_rating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView_dish_name"
-        android:layout_below="@+id/textView_dish_name"
-        android:text="BEWERTUNG"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="@dimen/dish_list_item_rating_font_size"
-        />
+            android:text="2,10 €"
+            android:textSize="@dimen/dish_list_item_price_font_size"
+            />
+
+        <TextView
+            android:id="@+id/textView_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView_price"
+            android:layout_below="@+id/textView_price"
+            android:layout_marginTop="2dp"
+            android:text="# 3,8"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textSize="@dimen/dish_list_item_rating_font_size"
+            />
+    </RelativeLayout>
 
 </RelativeLayout>

@@ -39,6 +39,7 @@
     <string name="title_activity_gallery">Bildergalerie</string>
     <string name="btn_label_complain">Bild als unangemessen melden</string>
     <string name="NoDishes">Heute bleibt die Küche kalt.</string>
+    <string name="auto_download_large_pictures_description_toast">Um die volle Auflösung zu laden, klicken Sie auf das Vorschaubild.</string>
 
     <!-- Action Names -->
     <string name="action_settings">Einstellungen</string>

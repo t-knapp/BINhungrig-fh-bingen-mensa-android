@@ -4,13 +4,10 @@ import android.app.ListFragment;
 import android.os.Bundle;
 import android.content.SharedPreferences;
 import android.support.v4.app.NavUtils;
-import android.widget.CheckedTextView;
+import android.widget.*;
 import com.actionbarsherlock.view.Menu;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -93,5 +90,9 @@ public class SettingsActivity extends SherlockActivity implements OnItemSelected
         CheckedTextView autoDownload = (CheckedTextView) view;
         autoDownload.toggle();
         SettingsHelper.setIsAutoDownloadLargePicturesEnabled(autoDownload.isChecked());
+        if (!autoDownload.isChecked()) {
+            Toast.makeText(getApplicationContext(), R.string.auto_download_large_pictures_description_toast ,
+                    Toast.LENGTH_LONG).show();
+        }
     }
 }

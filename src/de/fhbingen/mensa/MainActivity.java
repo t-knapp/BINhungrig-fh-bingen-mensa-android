@@ -1,7 +1,10 @@
 package de.fhbingen.mensa;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,7 +19,8 @@ import com.actionbarsherlock.view.MenuItem;
 import de.fhbingen.mensa.Fragments.ListFragment;
 
 import java.util.Calendar;
-
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 public class MainActivity extends SherlockFragmentActivity {
 
@@ -24,24 +28,48 @@ public class MainActivity extends SherlockFragmentActivity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.view_pager);
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.view_pager);
         Log.i(TAG, "ContentView is set");
 
         //Connect to Mensa
         mensa = (Mensa) getApplication();
-                
+
         //Setting the ViewPager
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         myFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
 
-        
         // The PagerTabStripe is set automatically!
 
         //Start LoadWeekTask, Save to Map. Provide Access to this Map
         context = viewPager.getContext();
+
         final String query = Mensa.APIURL + "getWeek=" + Mensa.getCurrentWeek();
-        new LoadWeekTask(false).execute(query);
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo == null || !netInfo.isConnectedOrConnecting()) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.offline_title);
+            builder.setMessage(R.string.you_are_offline);
+            builder.setPositiveButton(R.string.reload, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    new LoadWeekTask(false).execute(query);
+                }
+            });
+            builder.setNegativeButton(R.string.quit, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    System.exit(1);
+                }
+            });
+
+            builder.setCancelable(false);
+            builder.create().show();
+        } else {
+            new LoadWeekTask(false).execute(query);
+        }
 	}
 
     @Override

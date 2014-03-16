@@ -22,7 +22,7 @@ public class Dish implements Serializable {
     /**
      * Day format used by the api and saved in the dish.
      */
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-mm-dd");
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     /** Constructor of dish
      *
@@ -154,6 +154,8 @@ public class Dish implements Serializable {
      * @throws ParseException
      */
     public boolean isServedToday() throws ParseException {
+        Log.d(TAG, "dish.date : " + getDate());
+        Log.d(TAG, "now.date  : " + DATE_FORMAT.format(new Date()));
         return getDate().equals(DATE_FORMAT.format(new Date()));
     }
 

@@ -492,16 +492,23 @@ public class DishDetailActivity extends SherlockActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onResume();
-        MenuItem actionTakePhoto = menu.findItem(R.id.action_take_photo);
+        final MenuItem actionTakePhoto   = menu.findItem(R.id.action_take_photo);
+        final MenuItem actionShowGallery = menu.findItem(R.id.action_show_gallery);
         try {
-            actionTakePhoto.setEnabled(dish.isServedToday());
-            if (!dish.isServedToday()) {
-                Drawable cameraIcon = actionTakePhoto.getIcon();
+            final boolean dishServedToday = dish.isServedToday();
+            actionTakePhoto.setEnabled(dishServedToday);
+            actionShowGallery.setEnabled(dishServedToday);
+            if (!dishServedToday) {
+                final Drawable cameraIcon = actionTakePhoto.getIcon();
                 cameraIcon.setAlpha(DISABLED_ALPHA);
+
+                final Drawable galleryIcon = actionShowGallery.getIcon();
+                galleryIcon.setAlpha(DISABLED_ALPHA);
             }
         } catch (ParseException e) {
             e.printStackTrace();
             actionTakePhoto.setEnabled(true);
+            actionShowGallery.setEnabled(true);
         }
         return true;
     }

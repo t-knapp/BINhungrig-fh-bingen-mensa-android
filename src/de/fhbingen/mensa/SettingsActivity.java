@@ -4,6 +4,7 @@ import android.app.ListFragment;
 import android.os.Bundle;
 import android.content.SharedPreferences;
 import android.support.v4.app.NavUtils;
+import android.widget.CheckedTextView;
 import com.actionbarsherlock.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,6 +21,9 @@ public class SettingsActivity extends SherlockActivity implements OnItemSelected
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        CheckedTextView autoDownload = (CheckedTextView) findViewById(R.id.auto_download_large_pictures);
+        autoDownload.setChecked(SettingsHelper.isAutoDownloadLargePicturesEnabled());
 
         Spinner spinner = (Spinner) findViewById(R.id.spinnerUser);
 		// Create an ArrayAdapter using the string array and a default spinner layout
@@ -84,4 +88,10 @@ public class SettingsActivity extends SherlockActivity implements OnItemSelected
 	}
 
 	private int roleIndex;
+
+    public void onAutoDownloadLargePicturesCheckboxClicked(View view) {
+        CheckedTextView autoDownload = (CheckedTextView) view;
+        autoDownload.toggle();
+        SettingsHelper.setIsAutoDownloadLargePicturesEnabled(autoDownload.isChecked());
+    }
 }

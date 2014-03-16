@@ -44,6 +44,7 @@
     <string name="action_settings">Einstellungen</string>
     <string name="action_take_photo">Bild aufnehmen</string>
     <string name="action_show_gallery">Bildergalerie</string>
+    <string name="auto_download_large_pictures">Bilder in voller Auflösung automatisch laden</string>
 
 
 </resources>

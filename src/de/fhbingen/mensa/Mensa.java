@@ -24,13 +24,16 @@ public class Mensa extends Application {
 	public final static String PREF_USER = "UserSettings";
 	
 	public static UserRole userRole;
-	
+
+    private static Mensa MENSA;
+
 	public enum UserRole {
 		STUDENT, OFFICIAL
 	}
 
 	public Mensa() {
-		dayMap = new HashMap<String, List<Dish>>();
+        MENSA = this;
+        dayMap = new HashMap<String, List<Dish>>();
 	}
 
     /**
@@ -200,4 +203,7 @@ public class Mensa extends Application {
         );
 	}
 
+    public static Mensa getMensa() {
+        return MENSA;
+    }
 }

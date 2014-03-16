@@ -29,10 +29,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
-import com.actionbarsherlock.view.Menu;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -40,13 +37,14 @@ import android.widget.RatingBar;
 import android.widget.Toast;
 import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.TextView;
+import android.view.View.OnClickListener;
 
 public class DishDetailActivity extends SherlockActivity {
 
     public static final int DISABLED_ALPHA = 50;
     private Mensa mensa;
 	private Dish dish;
-	private ImageView iv;
+	private ImageView imageView;
 	private TextView tv;
 	private RatingBar bar;
 	private Button btn;
@@ -63,7 +61,7 @@ public class DishDetailActivity extends SherlockActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
 
 		mensa        = (Mensa) this.getApplication();
-		iv           = (ImageView) findViewById(R.id.dish_picture);
+		imageView = (ImageView) findViewById(R.id.dish_picture);
 		dish         = (Dish) getIntent().getExtras().getSerializable("data");
 		labelRatings = (TextView) findViewById(R.id.textView_headingDoRating);
 
@@ -101,7 +99,7 @@ public class DishDetailActivity extends SherlockActivity {
 		// else
 		//     show default image
 		//     add listener for picture intent
-		//final ImageView iv = (ImageView) findViewById(R.id.dish_picture);
+		//final ImageView imageView = (ImageView) findViewById(R.id.dish_picture);
 		
 		byte[] thumbBytes = dish.getThumb();
 		
@@ -111,58 +109,31 @@ public class DishDetailActivity extends SherlockActivity {
 			if(pictureBytes != null){
 				//Show large image
 				setPicture(pictureBytes);
-				
-				iv.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-                        showGallery(); //TODO does view need to be transmitted?
-					}
-				});
-								
 			} else {
 				// Show thumbnail
 				byte[] decodedString = Base64.decode(thumbBytes, Base64.DEFAULT);
 				
 				setPicture(decodedString);
-				
-				//TODO: Move listener to private property for reuse.
-				iv.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						Log.d("DDA", "downloadLargePicture");
-						
-						new LoadPictureActivity(DishDetailActivity.this).execute(
-								Mensa.APIURL + "getDishPhotoData=" + dish.getId_pictures()
-						);
-						
-						iv.setOnClickListener(null);
-					}
-				});
-			}
-			
-			//TODO: Photolistener.
-			iv.setOnLongClickListener(new OnLongClickListener() {
-				
-				@Override
-				public boolean onLongClick(View v) {
-					Log.d("DDA", "startPhotoIntent");
-					return true;
-				}
-			});
-			
-			
-		} else {
-			iv.setOnClickListener(new StartPhotoListener());			
-		}
-		
 
-		iv.setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                return instance.takeDishPicture();
-            }
-        });
+                final LoadPictureActivity loadPictureActivity =
+                    new LoadPictureActivity(DishDetailActivity.this);
+
+                if (SettingsHelper.isAutoDownloadLargePicturesEnabled()) {
+                    loadPictureActivity.execute(
+                            Mensa.APIURL + "getDishPhotoData=" + dish.getId_pictures()
+                    );
+                } else {
+                    imageView.setOnClickListener(new OnClickListener() {
+
+                        @Override
+                        public void onClick(View v) {
+                            loadPictureActivity.execute(Mensa.APIURL + "getDishPhotoData=" + dish.getId_pictures());
+                            imageView.setOnClickListener(null);
+                        }
+                    });
+                }
+			}
+		}
 				
 		//Rating
 		bar = (RatingBar) findViewById(R.id.ratingBarDish);
@@ -231,7 +202,7 @@ public class DishDetailActivity extends SherlockActivity {
     public void setPicture(byte[] pictureBytes){
 		if(pictureBytes != null){
 			if(pictureBytes.length > 0){
-				iv.setImageBitmap(BitmapFactory.decodeByteArray(pictureBytes, 0, pictureBytes.length));
+				imageView.setImageBitmap(BitmapFactory.decodeByteArray(pictureBytes, 0, pictureBytes.length));
 			}
 		}
 	}
@@ -313,20 +284,6 @@ public class DishDetailActivity extends SherlockActivity {
 				byte[] decodedString = Base64.decode(data.getBytes(), Base64.DEFAULT);
 				mensa.setDishPicture(dish.getDate(), dish.getId_dishes(), decodedString);
 				setPicture(decodedString);
-
-				//Update listener
-				iv.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Log.d("DDA", "startWebView");
-
-						Intent webView = new Intent(v.getContext(), GalleryActivity.class);
-						webView.putExtra("id_dishes", dish.getId_dishes());
-						webView.putExtra("id_pictures", dish.getId_pictures());
-						startActivity(webView);
-
-					}
-				});
 			}
 			//dialog.dismiss();
 			pg.setVisibility(View.GONE);
@@ -387,35 +344,6 @@ public class DishDetailActivity extends SherlockActivity {
 	\_|   |_|\___|\__|\__,_|_|  \___|      \____/ \__|\__,_|_| |_|
 	 */
 
-    /**
-     * Used when there is NO picture for the current dish yet.
-     */
-	private class StartPhotoListener implements OnClickListener{
-
-		@Override
-		public void onClick(View v) {
-
-			//Intent i = new Intent(v.getContext(), ImagePickActivity.class);
-			//startActivity(i);
-
-			Intent intent 	 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-			mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),
-							   "tmp_avatar_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
-
-			intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
-
-			try {
-				intent.putExtra("return-data", true);
-
-				startActivityForResult(intent, PICK_FROM_CAMERA);
-			} catch (ActivityNotFoundException e) {
-				e.printStackTrace();
-			}
-
-		}
-
-	}
 
 	private Uri mImageCaptureUri;
 
@@ -485,8 +413,8 @@ public class DishDetailActivity extends SherlockActivity {
 		            byte[] byteArray = stream.toByteArray();
 
 		            //TODO: Save Picture in mensas collection
-		            // Only set iv if no picture is set before.
-		            iv.setImageBitmap(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
+		            // Only set imageView if no picture is set before.
+		            imageView.setImageBitmap(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
 
 		            byte[] encodedBytes = Base64.encode(byteArray, Base64.DEFAULT);
 

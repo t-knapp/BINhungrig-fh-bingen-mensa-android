@@ -20,6 +20,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/textView_settings_price"
-        android:layout_below="@+id/textView_settings_price" />
+        android:layout_below="@id/textView_settings_price" />
 
+    <CheckedTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/spinnerUser"
+        android:text="@string/auto_download_large_pictures"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:gravity="left|center_vertical"
+        android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+        android:clickable="true"
+        android:id="@+id/auto_download_large_pictures"
+        android:onClick="onAutoDownloadLargePicturesCheckboxClicked"
+        />
 </RelativeLayout>

@@ -141,13 +141,23 @@ public class DishDetailActivity extends SherlockActivity {
 		//Rating
 		bar = (RatingBar) findViewById(R.id.ratingBarDish);
 		btn = (Button) findViewById(R.id.button_complain);
-		
-		int dbRating = db.selectRating(dish.getId_dishes());
+
+        try {
+            if(!dish.isServedToday()){
+                bar.setEnabled(false);
+                btn.setEnabled(false);
+                labelRatings.setText("Keine Bewertung möglich");
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        int dbRating = db.selectRating(dish.getId_dishes());
 		if(dbRating != -1){
 			bar.setRating(dbRating);
 			btn.setVisibility(View.GONE);
 			bar.setIsIndicator(true);
-			labelRatings.setText("Deine Bewertung");
+			labelRatings.setText("Eigene Bewertung");
 		} else {
 		
 			bar.setOnRatingBarChangeListener(new OnRatingBarChangeListener() {

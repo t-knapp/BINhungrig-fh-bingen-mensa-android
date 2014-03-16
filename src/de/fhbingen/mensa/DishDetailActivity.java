@@ -123,12 +123,15 @@ public class DishDetailActivity extends SherlockActivity {
                             Mensa.APIURL + "getDishPhotoData=" + dish.getId_pictures()
                     );
                 } else {
+                    imageView.setClickable(true);
+                    imageView.setFocusable(true);
                     imageView.setOnClickListener(new OnClickListener() {
 
                         @Override
                         public void onClick(View v) {
                             loadPictureActivity.execute(Mensa.APIURL + "getDishPhotoData=" + dish.getId_pictures());
-                            imageView.setOnClickListener(null);
+                            imageView.setClickable(false);
+                            imageView.setFocusable(false);
                         }
                     });
                 }

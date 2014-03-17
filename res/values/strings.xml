@@ -53,5 +53,8 @@
     <string name="action_show_gallery">Bildergalerie</string>
     <string name="auto_download_large_pictures">Bilder in voller Auflösung automatisch laden</string>
 
+    <!-- Messages for a better Usability -->
+    <string name="noCrop">Bitte installieren Sie eine App, um das Bild zu beschneiden.</string>
+
 
 </resources>

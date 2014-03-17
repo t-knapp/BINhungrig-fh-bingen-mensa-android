@@ -2,11 +2,19 @@ package de.fhbingen.mensa;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
 
+import android.content.ClipData;
+import android.content.Context;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.NavUtils;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -27,6 +35,7 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.content.CursorLoader;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -115,34 +124,34 @@ public class DishDetailActivity extends SherlockActivity {
 				byte[] decodedString = Base64.decode(thumbBytes, Base64.DEFAULT);
 				
 				setPicture(decodedString);
-
+				
                 final LoadPictureActivity loadPictureActivity =
                     new LoadPictureActivity(DishDetailActivity.this);
-
+					
                 if (SettingsHelper.isAutoDownloadLargePicturesEnabled()) {
                     loadPictureActivity.execute(
-                            Mensa.APIURL + "getDishPhotoData=" + dish.getId_pictures()
-                    );
+								Mensa.APIURL + "getDishPhotoData=" + dish.getId_pictures()
+						);
                 } else {
                     imageView.setClickable(true);
                     imageView.setFocusable(true);
                     imageView.setOnClickListener(new OnClickListener() {
-
+						
                         @Override
                         public void onClick(View v) {
                             loadPictureActivity.execute(Mensa.APIURL + "getDishPhotoData=" + dish.getId_pictures());
                             imageView.setClickable(false);
                             imageView.setFocusable(false);
-                        }
-                    });
-                }
+					}
+				});
 			}
+				}
 		}
-				
+		
 		//Rating
 		bar = (RatingBar) findViewById(R.id.ratingBarDish);
 		btn = (Button) findViewById(R.id.button_complain);
-
+		
         try {
             if(!dish.isServedToday()){
                 bar.setEnabled(false);
@@ -153,7 +162,7 @@ public class DishDetailActivity extends SherlockActivity {
             e.printStackTrace();
         }
 
-        int dbRating = db.selectRating(dish.getId_dishes());
+		int dbRating = db.selectRating(dish.getId_dishes());
 		if(dbRating != -1){
 			bar.setRating(dbRating);
 			btn.setVisibility(View.GONE);
@@ -298,7 +307,7 @@ public class DishDetailActivity extends SherlockActivity {
 				byte[] decodedString = Base64.decode(data.getBytes(), Base64.DEFAULT);
 				mensa.setDishPicture(dish.getDate(), dish.getId_dishes(), decodedString);
 				setPicture(decodedString);
-			}
+					}
 			//dialog.dismiss();
 			pg.setVisibility(View.GONE);
 		}
@@ -359,40 +368,75 @@ public class DishDetailActivity extends SherlockActivity {
 	 */
 
 
-	private Uri mImageCaptureUri;
+    private Uri getmImageCaptureUri(){
+        if (mImageCaptureUri == null){
+            Log.i(TAG, "ExternalStorage is writable [getImageCaptureUri]: " + writableExternalStorage());
+            if (writableExternalStorage()) {
+                // the default path for saving pictures for the active user
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                if (!path.exists()){
+                    path.mkdir();
+                }
+
+                File file = new File(
+                        path,
+                        "mensa_tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"
+                );
+
+                mImageCaptureUri = Uri.fromFile(file);
+            }
+            else{
+                Log.e(TAG, "External Storage is not writeable!");
+            }
+
+        }
+        return mImageCaptureUri;
+    }
+
+    private Uri getmOutPutUri(){
+        if (mOutPutUri == null){
+            Log.i(TAG, "ExternalStorage is writable [getmOutPutUri]: " + writableExternalStorage());
+            if (writableExternalStorage()) {
+                // the default path for saving pictures for the active user
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                if (!path.exists()){
+                   path.mkdir();
+                }
+
+                File file = new File(
+                        path,
+                        "mensa_output_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"
+                );
+
+                mOutPutUri = Uri.fromFile(file);
+            }
+            else{
+                Log.e(TAG, "External Storage is not writeable!");
+            }
+        }
+        return mOutPutUri;
+    }
+
+    private Uri mImageCaptureUri;
+    private Uri mOutPutUri;
+
 
     private static final int PICK_FROM_CAMERA = 1;
     private static final int CROP_FROM_CAMERA = 2;
-	private void doCrop() {
-    	Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setType("image/*");
 
-        List<ResolveInfo> list = getPackageManager().queryIntentActivities( intent, 0 );
+    private void doCrop(Uri inputUri, Uri outputUri) {
+        try{
+            Log.d(TAG, "In doCrop");
 
-        int size = list.size();
+            final Intent cropIntent = getCropImageIntent(inputUri, outputUri);
+            Log.d(TAG, "Starting the Intent for Cropping " + cropIntent.toString());
+            startActivityForResult(cropIntent, CROP_FROM_CAMERA);
 
-        if (size == 0) {
-        	Toast.makeText(this, "Can not find image crop app", Toast.LENGTH_SHORT).show();
 
-            return;
-        } else {
-        	intent.setData(mImageCaptureUri);
-
-            intent.putExtra("outputX", 500);
-            intent.putExtra("outputY", 500);
-            intent.putExtra("aspectX", 1);
-            intent.putExtra("aspectY", 1);
-            intent.putExtra("scale", false);
-            intent.putExtra("return-data", true);
-
-        	if (size == 1) {
-        		Intent i 		= new Intent(intent);
-	        	ResolveInfo res	= list.get(0);
-
-	        	i.setComponent( new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
-
-	        	startActivityForResult(i, CROP_FROM_CAMERA);
         	}
+        catch(Exception e){
+            Log.e(TAG, "Cannot crop image");
+            Toast.makeText(this, R.string.noCrop, Toast.LENGTH_LONG);
         }
 	}
 
@@ -408,19 +452,119 @@ public class DishDetailActivity extends SherlockActivity {
     	}
     }
 	@Override
+    /**
+     * @param requestCode Code of the request
+     * @param resultCode Code of the result
+     * @param data the returned intent
+     */
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "requestCode " + requestCode + " resultCode: " + resultCode );
 	    if (resultCode != RESULT_OK) return;
 
 	    switch (requestCode) {
+            // Photo from the camera -> must be croped
 		    case PICK_FROM_CAMERA:
-		    	doCrop();
+                // Uri for cropping
+                final Uri uri;
+                // Uri is set in the intent
+                if (data != null && data.getData() != null){
+                    uri = data.getData();
+                }
+                else{
+                   uri = getmImageCaptureUri();
+                }
+                Log.d(TAG, "in Pick_FROM_CAMERA" + uri.toString());
+
+                doCrop(uri, getmImageCaptureUri());
 
 		    	break;
+            // Cropped photo -> must be saved
 		    case CROP_FROM_CAMERA:
-		        Bundle extras = data.getExtras();
+                Log.d(TAG, "in crop_from_camera onActivityResult");
 
+                try{
+                    /*File file = new File(getmImageCaptureUri().getPath());
+                    if (file == null){
+                        file = new File(getmImageCaptureUri().toString());
+                    }
+                    Log.d(TAG, "file to URI" + file.toURI() + " getmImageCaptureUri " + getmImageCaptureUri() + " equals ? " + (file.toURI().equals(getmImageCaptureUri())));
+                    Bitmap bitmap = BitmapFactory.decodeFile(
+                            file.getAbsolutePath()
+                    );
+                    if (bitmap == null){
+                        bitmap = BitmapFactory.decodeFile(
+                                getmImageCaptureUri().getPath()
+                        );
+                    }
+                    if (bitmap == null){
+                        FileInputStream fis = null;
+                        try{
+                            fis = new FileInputStream(file);
+                        }
+                        catch (FileNotFoundException ex){
+                            Log.e(TAG, "FileNotFountException for getmImageCaptureUri");
+                        }
+                        bitmap = BitmapFactory.decodeStream(fis);
+                    } */
+
+                    Bitmap bitmap = BitmapFactory.decodeStream(
+                            getContentResolver().openInputStream(getmImageCaptureUri())
+                    );
+                    Log.i(TAG, "Bitmap: " + bitmap.getWidth() + bitmap.getHeight());
+
+
+
+                    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outStream);
+                    byte[]  byteArray = outStream.toByteArray();
+
+                    //TODO: Save Picture in mensas collection
+                    // Only set iv if no picture is set before.
+
+
+                   byte[] encodedBytes = Base64.encode(byteArray, Base64.DEFAULT);
+
+                    try {
+                        String dataString = new String(encodedBytes, "UTF-8").replaceAll("\\n", "");
+                        String queryString = Mensa.APIURL + "insertDishPhoto="+dish.getId_dishes()+"&data=";
+
+                        new UploadPictureTask().execute(
+                                queryString,
+                                dataString
+                        );
+                    } catch (UnsupportedEncodingException e) {
+                        // TODO Auto-generated catch block
+                        Log.e(TAG, e.toString());
+                    }
+
+                    iv.setImageBitmap(bitmap);
+                    iv.setImageURI(getmImageCaptureUri());
+                    iv.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            showGallery(); //TODO does view need to be transmitted?
+                        }
+                    });
+
+
+                }
+                catch(Exception e){
+                    Log.e(TAG, e.toString() + "\n" + e.getMessage());
+                }
+                finally {
+                   /* File f = new File(getmOutPutUri().getPath());
+                    if (f.exists()) f.delete();
+                    File fi = new File(getmImageCaptureUri().getPath());
+                    if (fi.exists()) fi.delete(); */
+                }
+               /* Bundle extras = data.getExtras();
+
+                Log.d(TAG, "Extras: " + ( (extras == null) ? "null" : extras.toString()) );
 		        if (extras != null) {
 		            Bitmap photo = extras.getParcelable("data");
+                    Log.d(TAG, "photo is null? " + (photo == null));
+                    iv.setImageBitmap(photo);
+
 
 		            ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		            photo.compress(Bitmap.CompressFormat.JPEG, 85, stream);
@@ -451,10 +595,9 @@ public class DishDetailActivity extends SherlockActivity {
 
 		            //mImageView.setImageBitmap(photo);
 		        }
+                */
 
-		        File f = new File(mImageCaptureUri.getPath());
 
-		        if (f.exists()) f.delete();
 
 		        break;
 
@@ -471,11 +614,9 @@ public class DishDetailActivity extends SherlockActivity {
 
         Intent intent 	 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        mImageCaptureUri = Uri.fromFile(new File(Environment
-                .getExternalStorageDirectory(),
-                "tmp_avatar_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
 
-        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+            // imageCapture needed because its the input for cropping
+          intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, getmImageCaptureUri());
 
         try {
             intent.putExtra("return-data", true);
@@ -484,6 +625,8 @@ public class DishDetailActivity extends SherlockActivity {
         } catch (ActivityNotFoundException e) {
             e.printStackTrace();
         }
+
+
         return true;
     }
 
@@ -497,6 +640,59 @@ public class DishDetailActivity extends SherlockActivity {
         webView.putExtra("id_dishes", dish.getId_dishes());
         webView.putExtra("id_pictures", dish.getId_pictures());
         startActivity(webView);
+    }
+
+    /**
+     * Adding the extras to the intent which should crop the image
+     * outputX and outputY look at @param photoSize.
+     * aspectx and aspectY is set to 1.
+     * Image should not scaled, but cropped.
+     *
+     * @param photoSize the "endsize" of the image -> its a sqaure image
+     * @param cropIntent the intent on which the extras should be set
+     */
+    private void addCropExtras(Intent cropIntent, int photoSize){
+        cropIntent.putExtra("outputX", photoSize);
+        cropIntent.putExtra("outputY", photoSize);
+        cropIntent.putExtra("aspectX", 1);
+        cropIntent.putExtra("aspectY", 1);
+        cropIntent.putExtra("scale", false);
+        cropIntent.putExtra("return-data", false);
+        cropIntent.putExtra("crop", true);
+        cropIntent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+    }
+
+    private void addPhotoPickerExtras(Intent cropIntent, Uri photoUri){
+        cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+        //cropIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        //cropIntent.setClipData(ClipData.newRawUri(MediaStore.EXTRA_OUTPUT, photoUri));
+    }
+
+    /**
+     * Creates an Intent for cropping an Image
+     * @param inputUri - represents the data with which the Intent should do it's magic
+     * @param outputUri - represents the path on which the Output should be saved
+     * @return the intent for cropping an Image
+     */
+    private Intent getCropImageIntent(Uri inputUri, Uri outputUri){
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(inputUri, "image/*");
+        addPhotoPickerExtras(intent, outputUri);
+        addCropExtras(intent, 500);
+        return intent;
+    }
+
+    /**
+     *
+     * @return true if the externalStorage is writable
+     */
+    private boolean writableExternalStorage(){
+        String state = Environment.getExternalStorageState();
+        // only if it's true the external storage is writeable!
+        if (Environment.MEDIA_MOUNTED.equals(state)){
+            return true;
+        }
+        return false;
     }
 
 
@@ -523,6 +719,23 @@ public class DishDetailActivity extends SherlockActivity {
             actionTakePhoto.setEnabled(true);
             actionShowGallery.setEnabled(true);
         }
-        return true;
+
+    private String getRealPathFromURI(Uri contentUri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+
+        //This method was deprecated in API level 11
+        //Cursor cursor = managedQuery(contentUri, proj, null, null, null);
+
+        CursorLoader cursorLoader = new CursorLoader(
+                this,
+                contentUri, proj, null, null, null);
+        Cursor cursor = cursorLoader.loadInBackground();
+
+        int column_index =
+                cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
     }
+
+    private final String TAG = "DishDetailActivity";
 }

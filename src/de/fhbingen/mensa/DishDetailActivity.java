@@ -42,6 +42,7 @@ import android.view.View.OnClickListener;
 public class DishDetailActivity extends SherlockActivity {
 
     public static final int DISABLED_ALPHA = 50;
+    public static final int ENABLED_ALPHA = 255;
     private Mensa mensa;
 	private Dish dish;
 	private ImageView imageView;
@@ -508,12 +509,14 @@ public class DishDetailActivity extends SherlockActivity {
             final boolean dishServedToday = dish.isServedToday();
             actionTakePhoto.setEnabled(dishServedToday);
             actionShowGallery.setEnabled(dishServedToday);
+            final Drawable cameraIcon = actionTakePhoto.getIcon();
+            final Drawable galleryIcon = actionShowGallery.getIcon();
             if (!dishServedToday) {
-                final Drawable cameraIcon = actionTakePhoto.getIcon();
                 cameraIcon.setAlpha(DISABLED_ALPHA);
-
-                final Drawable galleryIcon = actionShowGallery.getIcon();
                 galleryIcon.setAlpha(DISABLED_ALPHA);
+            } else {
+                cameraIcon.setAlpha(ENABLED_ALPHA);
+                galleryIcon.setAlpha(ENABLED_ALPHA);
             }
         } catch (ParseException e) {
             e.printStackTrace();

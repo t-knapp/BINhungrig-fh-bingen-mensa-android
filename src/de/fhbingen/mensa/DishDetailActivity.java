@@ -358,15 +358,6 @@ public class DishDetailActivity extends SherlockActivity {
 			}
 		}
     }
-	/*
-	______ _      _                         _____ _          __  __
-	| ___ (_)    | |                       /  ___| |        / _|/ _|
-	| |_/ /_  ___| |_ _   _ _ __ ___ ______\ `--.| |_ _   _| |_| |_
-	|  __/| |/ __| __| | | | '__/ _ \______|`--. \ __| | | |  _|  _|
-	| |   | | (__| |_| |_| | | |  __/      /\__/ / |_| |_| | | | |
-	\_|   |_|\___|\__|\__,_|_|  \___|      \____/ \__|\__,_|_| |_|
-	 */
-
 
     private Uri getmImageCaptureUri(){
         if (mImageCaptureUri == null){
@@ -537,68 +528,18 @@ public class DishDetailActivity extends SherlockActivity {
                         Log.e(TAG, e.toString());
                     }
 
-                    iv.setImageBitmap(bitmap);
-                    iv.setImageURI(getmImageCaptureUri());
-                    iv.setOnClickListener(new OnClickListener() {
+                    imageView.setImageBitmap(bitmap);
+                    imageView.setImageURI(getmImageCaptureUri());
+                    imageView.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             showGallery(); //TODO does view need to be transmitted?
                         }
                     });
-
-
                 }
                 catch(Exception e){
                     Log.e(TAG, e.toString() + "\n" + e.getMessage());
                 }
-                finally {
-                   /* File f = new File(getmOutPutUri().getPath());
-                    if (f.exists()) f.delete();
-                    File fi = new File(getmImageCaptureUri().getPath());
-                    if (fi.exists()) fi.delete(); */
-                }
-               /* Bundle extras = data.getExtras();
-
-                Log.d(TAG, "Extras: " + ( (extras == null) ? "null" : extras.toString()) );
-		        if (extras != null) {
-		            Bitmap photo = extras.getParcelable("data");
-                    Log.d(TAG, "photo is null? " + (photo == null));
-                    iv.setImageBitmap(photo);
-
-
-		            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		            photo.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-		            byte[] byteArray = stream.toByteArray();
-
-		            //TODO: Save Picture in mensas collection
-		            // Only set imageView if no picture is set before.
-		            imageView.setImageBitmap(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
-
-		            byte[] encodedBytes = Base64.encode(byteArray, Base64.DEFAULT);
-
-		            try {
-		            	String dataString = new String(encodedBytes, "UTF-8").replaceAll("\\n", "");
-		            	String queryString = Mensa.APIURL + "insertDishPhoto="+dish.getId_dishes()+"&data=";
-
-		            	new UploadPictureTask().execute(
-							queryString,
-							dataString
-							);
-					} catch (UnsupportedEncodingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-		            //Log.d("IPA", "encodedBytes.lenght: " + encodedBytes.length);
-
-		            //mImageView.setImageBitmap(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
-
-		            //mImageView.setImageBitmap(photo);
-		        }
-                */
-
-
-
 		        break;
 
 	    }
@@ -699,7 +640,7 @@ public class DishDetailActivity extends SherlockActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onResume();
-        final MenuItem actionTakePhoto   = menu.findItem(R.id.action_take_photo);
+        final MenuItem actionTakePhoto = menu.findItem(R.id.action_take_photo);
         final MenuItem actionShowGallery = menu.findItem(R.id.action_show_gallery);
         try {
             final boolean dishServedToday = dish.isServedToday();
@@ -719,6 +660,8 @@ public class DishDetailActivity extends SherlockActivity {
             actionTakePhoto.setEnabled(true);
             actionShowGallery.setEnabled(true);
         }
+        return true;
+    }
 
     private String getRealPathFromURI(Uri contentUri) {
         String[] proj = { MediaStore.Images.Media.DATA };

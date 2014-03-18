@@ -26,7 +26,7 @@ dependencies {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.2"
+    buildToolsVersion "19.0.3"
 
     defaultConfig {
         minSdkVersion 10
@@ -54,5 +54,49 @@ android {
         // by a similar customization.
         debug.setRoot('build-types/debug')
         release.setRoot('build-types/release')
+    }
+
+    signingConfigs {
+        release {
+            if (System.console() != null) {
+                //See: https://stackoverflow.com/questions/18328730/how-to-create-a-release-signed-apk-file-using-gradle
+                // We can leave these in environment variables
+                storeFile file(System.getenv("MOCO_KEYSTORE"))
+                keyAlias System.getenv("MOCO_KEY_ALIAS")
+
+                // These two lines make gradle believe that the signingConfigs
+                // section is complete. Without them, tasks like installRelease
+                // will not be available!
+                storePassword "notYourRealPassword"
+                keyPassword "notYourRealPassword"
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            runProguard true
+            proguardFile 'proguard-android.txt'
+            proguardFile getDefaultProguardFile('proguard-android.txt')
+            signingConfig signingConfigs.release
+        }
+    }
+}
+    
+task askForPasswords << {
+    // Must create String because System.readPassword() returns char[]
+    // (and assigning that below fails silently)
+    if (System.console() != null) {
+        def storePw = new String(System.console().readPassword("\nKeystore password: "))
+        def keyPw  = new String(System.console().readPassword("Key password: "))
+
+        android.signingConfigs.release.storePassword = storePw
+        android.signingConfigs.release.keyPassword = keyPw
+    }
+}
+
+tasks.whenTaskAdded { theTask -> 
+    if (theTask.name.equals("packageRelease")) {
+        theTask.dependsOn "askForPasswords"
     }
 }

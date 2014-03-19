@@ -55,7 +55,6 @@
                 android:layout_marginTop="10dp"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
-                android:text="@string/hello_world"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <RelativeLayout

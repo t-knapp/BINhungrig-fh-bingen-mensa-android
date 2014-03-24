@@ -16,7 +16,7 @@
         android:layout_marginRight="4dp"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_menu_example_dish"
+        android:src="@drawable/ic_no_dish_icon"
         />
 
     <TextView

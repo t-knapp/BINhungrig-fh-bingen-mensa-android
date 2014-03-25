@@ -147,7 +147,7 @@ public class DishDetailActivity extends SherlockActivity {
             if(!dish.isServedToday()){
                 bar.setEnabled(false);
                 btn.setEnabled(false);
-                labelRatings.setText("Keine Bewertung möglich");
+                labelRatings.setText(R.string.no_rating_possible);
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -158,7 +158,7 @@ public class DishDetailActivity extends SherlockActivity {
 			bar.setRating(dbRating);
 			btn.setVisibility(View.GONE);
 			bar.setIsIndicator(true);
-			labelRatings.setText("Eigene Bewertung");
+			labelRatings.setText(R.string.own_rating);
 		} else {
 		
 			bar.setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
@@ -331,7 +331,7 @@ public class DishDetailActivity extends SherlockActivity {
 			if(result != null && result.equals("true")){
 				btn.setVisibility(View.GONE);
 				bar.setIsIndicator(true);
-				labelRatings.setText("Deine Bewertung");
+				labelRatings.setText(R.string.own_rating);
 
 				//Store rating and id in SQLite
 				db.insertRating(dish.getId_dishes(), (int)bar.getRating());

@@ -508,7 +508,7 @@ public class DishDetailActivity extends SherlockActivity {
         try {
             final boolean dishServedToday = dish.isServedToday();
             actionTakePhoto.setEnabled(dishServedToday);
-            actionShowGallery.setEnabled(dishServedToday);
+            actionShowGallery.setEnabled(dishServedToday && dish.getId_pictures() != -1); /* enable if pic available */
             final Drawable cameraIcon = actionTakePhoto.getIcon();
             final Drawable galleryIcon = actionShowGallery.getIcon();
             if (!dishServedToday) {
@@ -516,7 +516,11 @@ public class DishDetailActivity extends SherlockActivity {
                 galleryIcon.setAlpha(DISABLED_ALPHA);
             } else {
                 cameraIcon.setAlpha(ENABLED_ALPHA);
-                galleryIcon.setAlpha(ENABLED_ALPHA);
+                if(dish.getId_pictures() != -1) {
+                    galleryIcon.setAlpha(ENABLED_ALPHA);
+                } else {
+                    galleryIcon.setAlpha(DISABLED_ALPHA);
+                }
             }
         } catch (ParseException e) {
             e.printStackTrace();

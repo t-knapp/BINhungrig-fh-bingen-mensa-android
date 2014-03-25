@@ -44,6 +44,9 @@
     <string name="no_rating_possible">Keine Bewertung möglich</string>
     <string name="own_rating">Eigene Bewertung</string>
 
+    <!-- MainActivity -->
+    <string name="mensa_already_closed">Heute bereits geschlossen</string>
+
     <!-- OfflineDialog -->
     <string name="offline_title">Keine Verbindung</string>
     <string name="you_are_offline">Es besteht keine Verbindung zum Internet. Stellen Sie die Verbindung her und drücken Sie auf \"Nochmal versuchen\".</string>

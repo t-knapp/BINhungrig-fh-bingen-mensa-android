@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.widget.ListView;
+import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -201,6 +202,13 @@ public class MainActivity extends SherlockFragmentActivity {
             // Connection between viewpager und fragmentadapter
             if(!append){
                 viewPager.setAdapter(myFragmentPagerAdapter);
+
+                //Swipe to next day if mensa is already closed
+                if(mensa.isAlreadyClosed()){
+                    viewPager.setCurrentItem(1);
+                    Toast.makeText(context,R.string.mensa_already_closed, Toast.LENGTH_LONG).show();
+                }
+
             } else {
                 //Updating MUST NOT be done after execute() because
                 //assync task. We MUST update after the execution!

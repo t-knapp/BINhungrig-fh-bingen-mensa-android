@@ -1,10 +1,8 @@
 package de.fhbingen.mensa;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
@@ -205,5 +203,26 @@ public class Mensa extends Application {
 
     public static Mensa getMensa() {
         return MENSA;
+    }
+
+    /**
+     * Determines if mensa has already closed NOW.
+     * Mensa never opens on weekends, therefore <b>on weekends returns false</b>
+     * @return true if closed, false if not
+     */
+    public static boolean isAlreadyClosed(){
+        final Calendar rightNow = Calendar.getInstance(Locale.GERMAN);
+
+        final int DAY_OF_WEEK = rightNow.get(Calendar.DAY_OF_WEEK);
+        if(DAY_OF_WEEK == Calendar.SATURDAY || DAY_OF_WEEK == Calendar.SUNDAY){
+            return false;
+        }
+
+        final Calendar closesAt = Calendar.getInstance(Locale.GERMAN);
+        closesAt.set(Calendar.HOUR_OF_DAY, 14); /* HOUR_OF_DAY means 24h format, HOUR 12h */
+        closesAt.set(Calendar.MINUTE, 30); /* half an hour tolerance */
+        closesAt.set(Calendar.SECOND, 0);
+
+        return closesAt.before(rightNow);
     }
 }

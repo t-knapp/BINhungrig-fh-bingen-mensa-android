@@ -507,16 +507,27 @@ public class DishDetailActivity extends SherlockActivity {
         final MenuItem actionShowGallery = menu.findItem(R.id.action_show_gallery);
         try {
             final boolean dishServedToday = dish.isServedToday();
-            final boolean alreadyClosed   = mensa.isAlreadyClosed();
-            actionTakePhoto.setEnabled(dishServedToday && !alreadyClosed);
-            actionShowGallery.setEnabled(dishServedToday && !alreadyClosed && dish.getId_pictures() != -1); /* enable if pic available */
+            final boolean alreadyClosed   = mensa.isAlreadyClosed(); /* is it too late? */
+            final boolean stillClosed     = mensa.isStillClosed();   /* or is it too soon? */
+
+            actionTakePhoto.setEnabled(
+                    dishServedToday
+                    && !alreadyClosed
+                    && !stillClosed);
+            actionShowGallery.setEnabled(
+                    dishServedToday
+                    && !alreadyClosed
+                    && dish.getId_pictures() != -1
+                    && !stillClosed); /* enable if pic available */
+
             final Drawable cameraIcon = actionTakePhoto.getIcon();
             final Drawable galleryIcon = actionShowGallery.getIcon();
+
             if (!dishServedToday) {
                 cameraIcon.setAlpha(DISABLED_ALPHA);
                 galleryIcon.setAlpha(DISABLED_ALPHA);
             } else {
-                if(!alreadyClosed){
+                if(!alreadyClosed && !stillClosed){
                     cameraIcon.setAlpha(ENABLED_ALPHA);
                     if(dish.getId_pictures() != -1){
                         galleryIcon.setAlpha(ENABLED_ALPHA);

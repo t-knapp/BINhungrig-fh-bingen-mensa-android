@@ -225,4 +225,20 @@ public class Mensa extends Application {
 
         return closesAt.before(rightNow);
     }
+
+    public static boolean isStillClosed(){
+        final Calendar rightNow = Calendar.getInstance(Locale.GERMAN);
+
+        final int DAY_OF_WEEK = rightNow.get(Calendar.DAY_OF_WEEK);
+        if(DAY_OF_WEEK == Calendar.SATURDAY || DAY_OF_WEEK == Calendar.SUNDAY){
+            return false;
+        }
+
+        final Calendar opensAt = Calendar.getInstance(Locale.GERMAN);
+        opensAt.set(Calendar.HOUR_OF_DAY, 11); /* HOUR_OF_DAY means 24h format, HOUR 12h */
+        opensAt.set(Calendar.MINUTE, 0); /* half an hour tolerance */
+        opensAt.set(Calendar.SECOND, 0);
+
+        return opensAt.after(rightNow);
+    }
 }

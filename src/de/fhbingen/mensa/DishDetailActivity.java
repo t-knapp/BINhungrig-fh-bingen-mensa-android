@@ -144,7 +144,7 @@ public class DishDetailActivity extends SherlockActivity {
 		btn = (Button) findViewById(R.id.button_complain);
 
         try {
-            if(!dish.isServedToday()){
+            if(!dish.isServedToday() || mensa.isStillClosed() || mensa.isAlreadyClosed()){
                 bar.setEnabled(false);
                 btn.setEnabled(false);
                 labelRatings.setText(R.string.no_rating_possible);

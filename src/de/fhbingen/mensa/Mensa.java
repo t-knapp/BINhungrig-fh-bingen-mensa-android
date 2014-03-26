@@ -194,7 +194,7 @@ public class Mensa extends Application {
 		//Log.d("UTILS", calendar.toString());
 		return String.format(
 				Locale.GERMAN,
-                "%d.%02d.%d",
+                "%02d.%02d.%d",
                 calendar.get(Calendar.DAY_OF_MONTH),
                 calendar.get(Calendar.MONTH) + 1,
                 calendar.get(Calendar.YEAR)

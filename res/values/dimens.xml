@@ -13,5 +13,5 @@
     <dimen name="dish_list_item_price_font_size">18sp</dimen>
     <dimen name="dish_list_item_name_top_margin">4dp</dimen>
 
-    <dimen name="about_picture_size">250dp</dimen>
+    <dimen name="about_picture_size">210dp</dimen>
 </resources>

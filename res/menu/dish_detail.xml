@@ -10,6 +10,6 @@
         android:id="@+id/action_show_gallery"
         android:icon="@drawable/ic_action_picture"
         android:title="@string/action_show_gallery"
-        android:showAsAction="ifRoom" />
+        android:showAsAction="always" />
 
 </menu>

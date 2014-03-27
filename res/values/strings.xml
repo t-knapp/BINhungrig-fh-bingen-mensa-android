@@ -61,6 +61,21 @@
     <string name="action_take_photo">Bild aufnehmen</string>
     <string name="action_show_gallery">Bildergalerie</string>
     <string name="auto_download_large_pictures">Bilder in voller Auflösung automatisch laden</string>
+    <string name="action_disclaimer">Haftungsausschluss</string>
+    <string name="action_about">Über diese App</string>
 
-
+    <!--About and disclaimer -->
+    <string name="aboutText">
+        Die BINhungrig App und die benötigte Infrasturktur wird in liebevoller Handarbeit entwickelt von:\n\n
+        <b>Android</b>\n
+        Anna-Katharina Wickert\n
+        Tobias Knapp\n
+        Maximilian Berger\n
+        \n<b>iOS</b>\n
+        Yannic Remmet\n
+        Sven Helli\n\n
+        Außerdem wird diese App auf <a href="https://github.com/t-knapp/BINhungrig-fh-bingen-mensa-android">GitHub</a> als Open Source Projekt entwickelt.
+    </string>
+    <string name="disclaimerText">Eltern haften für ihre Kinder!</string>
+    <string name="app_desctiption">Speiseplan App für die Mensa der FH-Bingen</string>
 </resources>

@@ -85,10 +85,11 @@ public class MainActivity extends SherlockFragmentActivity {
         switch (item.getItemId()) {
             case R.id.action_settings:
                 Intent settings = new Intent(this, SettingsActivity.class);
-                //startActivity(settings);
-
                 startActivityForResult(settings, 1337);
                 return true;
+            case R.id.action_about:
+                Intent about = new Intent(this, AboutActivity.class);
+                startActivity(about);
             default:
                 return super.onOptionsItemSelected(item);
         }

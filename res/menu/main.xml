@@ -7,12 +7,6 @@
         android:showAsAction="never"/>
 
     <item
-        android:id="@+id/action_disclaimer"
-        android:orderInCategory="200"
-        android:title="@string/action_disclaimer"
-        android:showAsAction="never"/>
-
-    <item
         android:id="@+id/action_about"
         android:orderInCategory="300"
         android:title="@string/action_about"

@@ -372,7 +372,6 @@ public class DishDetailActivity extends SherlockActivity {
     private byte[] cropCenterOfImage() throws PictureFileEmptyException {
         if(mImageCaptureUri != null){
             final String path = mImageCaptureUri.getPath();
-
             final Bitmap sourceBitmap   =  BitmapFactory.decodeFile(path);
 
             final int sourceHeight = sourceBitmap.getHeight();
@@ -466,8 +465,7 @@ public class DishDetailActivity extends SherlockActivity {
     private boolean takeDishPicture() {
         final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        mImageCaptureUri = Uri.fromFile(new File(Environment
-                .getExternalStorageDirectory(),
+        mImageCaptureUri = Uri.fromFile(new File(getApplicationContext().getExternalCacheDir(),
                 "mensa_dish.jpg"));
 
         intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
@@ -506,31 +504,25 @@ public class DishDetailActivity extends SherlockActivity {
                     dishServedToday
                     && !alreadyClosed
                     && !stillClosed);
-            actionShowGallery.setEnabled(
-                    dishServedToday
-                    && !alreadyClosed
-                    && dish.getId_pictures() != -1
-                    && !stillClosed); /* enable if pic available */
+
+            actionShowGallery.setEnabled(dish.hasPicture());
 
             final Drawable cameraIcon = actionTakePhoto.getIcon();
             final Drawable galleryIcon = actionShowGallery.getIcon();
 
-            if (!dishServedToday) {
-                cameraIcon.setAlpha(DISABLED_ALPHA);
-                galleryIcon.setAlpha(DISABLED_ALPHA);
+            if (dishServedToday && !alreadyClosed && !stillClosed) {
+                cameraIcon.setAlpha(ENABLED_ALPHA);
             } else {
-                if(!alreadyClosed && !stillClosed){
-                    cameraIcon.setAlpha(ENABLED_ALPHA);
-                    if(dish.getId_pictures() != -1){
-                        galleryIcon.setAlpha(ENABLED_ALPHA);
-                    } else {
-                        galleryIcon.setAlpha(DISABLED_ALPHA);
-                    }
-                } else {
-                    cameraIcon.setAlpha(DISABLED_ALPHA);
-                    galleryIcon.setAlpha(DISABLED_ALPHA);
-                }
+                cameraIcon.setAlpha(DISABLED_ALPHA);
+
             }
+
+            if (dish.hasPicture()) {
+                galleryIcon.setAlpha(ENABLED_ALPHA);
+            } else {
+                galleryIcon.setAlpha(DISABLED_ALPHA);
+            }
+
         } catch (ParseException e) {
             e.printStackTrace();
             actionTakePhoto.setEnabled(true);

@@ -1,8 +1,6 @@
 package de.fhbingen.mensa;
 
 import android.content.Context;
-import android.util.Log;
-
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -110,6 +108,9 @@ public class Dish implements Serializable {
         this.id_pictures = id_pictures;
     }
 
+    public boolean hasPicture() {
+        return getId_pictures() != -1;
+    }
 
 
 

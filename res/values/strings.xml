@@ -65,12 +65,13 @@
     <string name="aboutText">
         Die BINhungrig App und die benötigte Infrasturktur wird in liebevoller Handarbeit entwickelt von:\n\n
         <b>Android</b>\n
-        Lorem\n
-        Ipsum\n
-        dolor\n
+        Anna-Katharina Wickert\n
+        Tobias Knapp\n
+        Maximilian Berger\n
         \n<b>iOS</b>\n
-        sit\n
-        amet\n
+        Yannic Remmet\n
+        Sven Helli\n\n
+        Außerdem wird diese App auf <a href="https://github.com/t-knapp/BINhungrig-fh-bingen-mensa-android">GitHub</a> als Open Source Projekt entwickelt.
     </string>
     <string name="disclaimerText">Eltern haften für ihre Kinder!</string>
     <string name="app_desctiption">Speiseplan App für die Mensa der FH-Bingen</string>

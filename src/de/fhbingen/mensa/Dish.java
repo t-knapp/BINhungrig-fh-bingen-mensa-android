@@ -105,7 +105,15 @@ public class Dish implements Serializable {
 		this.picture = picture;
 	}
 
-	public int getId_pictures() {
+    public void setPicture(byte[] picture, int id_pictures) {
+        this.picture = picture;
+        this.id_pictures = id_pictures;
+    }
+
+
+
+
+    public int getId_pictures() {
 		return id_pictures;
 	}
 
@@ -116,6 +124,13 @@ public class Dish implements Serializable {
      */
     public boolean isServedToday() throws ParseException {
         return getDate().equals(DATE_FORMAT.format(new Date()));
+    }
+
+    @Override
+    public String toString(){
+        return "Dish (id_dishes: " + id_dishes + "; date: " + date + "; text: " + text + "; id_pictures: "
+                + id_pictures + "; thumb: " + thumb + "; picture: " + picture + "; avgRating: " + avgRating
+                + "; priceStd: " + priceStudent + "; priceOff: " + priceOfficial;
     }
 
 	private int id_dishes;

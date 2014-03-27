@@ -43,6 +43,9 @@
     <!-- DishDetailActivity -->
     <string name="no_rating_possible">Keine Bewertung möglich</string>
     <string name="own_rating">Eigene Bewertung</string>
+    <string name="toast_upload_successful">Upload erfolgreich</string>
+    <string name="toast_upload_failed">Fehler beim Hochladen des Photos</string>
+    <string name="toast_takephoto_failed">Fehler beim Aufnehmen des Photos</string>
 
     <!-- MainActivity -->
     <string name="mensa_already_closed">Heute bereits geschlossen</string>

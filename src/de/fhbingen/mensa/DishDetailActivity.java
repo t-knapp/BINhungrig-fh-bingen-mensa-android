@@ -12,6 +12,7 @@ import android.support.v4.app.NavUtils;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Menu;
+import de.fhbingen.mensa.Exceptions.PictureFileEmptyException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -62,9 +63,11 @@ public class DishDetailActivity extends SherlockActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
 
 		mensa        = (Mensa) this.getApplication();
-		imageView = (ImageView) findViewById(R.id.dish_picture);
+		imageView    = (ImageView) findViewById(R.id.dish_picture);
 		dish         = (Dish) getIntent().getExtras().getSerializable("data");
 		labelRatings = (TextView) findViewById(R.id.textView_headingDoRating);
+
+        Log.d("mensa.Mensa", dish.toString());
 
 		//Set dish-text
 		tv = (TextView) findViewById(R.id.dish_text);
@@ -104,7 +107,8 @@ public class DishDetailActivity extends SherlockActivity {
 		
 		byte[] thumbBytes = dish.getThumb();
 		
-		if(thumbBytes.length > 0){
+		//if(thumbBytes.length > 0){
+        if(dish.getId_pictures() != -1){
 			
 			byte[] pictureBytes = dish.getPicture();
 			if(pictureBytes != null){
@@ -362,102 +366,96 @@ public class DishDetailActivity extends SherlockActivity {
 	private Uri mImageCaptureUri;
 
     private static final int PICK_FROM_CAMERA = 1;
-    private static final int CROP_FROM_CAMERA = 2;
-	private void doCrop() {
-    	Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setType("image/*");
 
-        List<ResolveInfo> list = getPackageManager().queryIntentActivities( intent, 0 );
+    private byte[] uploadedBytes;
 
-        int size = list.size();
+    private byte[] cropCenterOfImage() throws PictureFileEmptyException {
+        if(mImageCaptureUri != null){
+            final String path = mImageCaptureUri.getPath();
 
-        if (size == 0) {
-        	Toast.makeText(this, "Can not find image crop app", Toast.LENGTH_SHORT).show();
+            final Bitmap sourceBitmap   =  BitmapFactory.decodeFile(path);
 
-            return;
+            final int sourceHeight = sourceBitmap.getHeight();
+            final int sourceWidth  = sourceBitmap.getWidth();
+            final int sourceMin = Math.min(sourceHeight, sourceWidth);
+
+            int x,y;
+
+            if(sourceMin == sourceHeight){
+                x = sourceWidth/2 - sourceMin/2;
+                y = 0;
+            } else {
+                x = 0;
+                y = sourceHeight/2 - sourceMin/2;
+            }
+
+            final Bitmap centerArea = Bitmap.createBitmap(sourceBitmap, x, y, sourceMin, sourceMin);
+            final Bitmap resized    = Bitmap.createScaledBitmap(centerArea, 800, 800, false);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            resized.compress(Bitmap.CompressFormat.JPEG, 85, stream);
+
+            return stream.toByteArray();
         } else {
-        	intent.setData(mImageCaptureUri);
-
-            intent.putExtra("outputX", 500);
-            intent.putExtra("outputY", 500);
-            intent.putExtra("aspectX", 1);
-            intent.putExtra("aspectY", 1);
-            intent.putExtra("scale", false);
-            intent.putExtra("return-data", true);
-
-        	if (size == 1) {
-        		Intent i 		= new Intent(intent);
-	        	ResolveInfo res	= list.get(0);
-
-	        	i.setComponent( new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
-
-	        	startActivityForResult(i, CROP_FROM_CAMERA);
-        	}
+            throw new PictureFileEmptyException();
         }
-	}
+    }
 
-	private void toast(){
-    	Toast.makeText(this, "Upload erfolgreich", Toast.LENGTH_LONG).show();
+    private void uploadPicture(byte[] byteArray){
+
+        byte[] encodedBytes = Base64.encode(byteArray, Base64.DEFAULT);
+
+        try {
+            final String dataString = new String(encodedBytes, "UTF-8").replaceAll("\\n", "");
+            final String queryString = Mensa.APIURL + "insertDishPhoto="+dish.getId_dishes()+"&data=";
+
+            new UploadPictureTask().execute(
+                    queryString,
+                    dataString
+            );
+        } catch (UnsupportedEncodingException e) {
+            Toast.makeText(this, R.string.toast_upload_failed, Toast.LENGTH_LONG).show();
+        }
     }
 
 	private class UploadPictureTask extends UploadBinaryTask {
 
         @Override
     	protected void onPostExecute(String result) {
-    		toast();
+            Log.d("mensa.Mensa", "Result : " + result);
+
+            Toast.makeText(DishDetailActivity.this, R.string.toast_upload_successful, Toast.LENGTH_LONG).show();
+
+            final int newPicId = Integer.parseInt(result);
+
+            //Notify Mensa and UI
+            if(dish.getId_pictures() == -1){
+                mensa.setDishPicture(dish.getDate(), dish.getId_dishes(), uploadedBytes, newPicId);
+                imageView.setImageBitmap(BitmapFactory.decodeByteArray(uploadedBytes, 0, uploadedBytes.length));
+            }
     	}
+
     }
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (resultCode != RESULT_OK) return;
 
 	    switch (requestCode) {
 		    case PICK_FROM_CAMERA:
-		    	doCrop();
 
-		    	break;
-		    case CROP_FROM_CAMERA:
-		        Bundle extras = data.getExtras();
+                try {
+                    uploadedBytes = cropCenterOfImage();
 
-		        if (extras != null) {
-		            Bitmap photo = extras.getParcelable("data");
+                    uploadPicture(uploadedBytes);
 
-		            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		            photo.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-		            byte[] byteArray = stream.toByteArray();
-
-		            //TODO: Save Picture in mensas collection
-		            // Only set imageView if no picture is set before.
-		            imageView.setImageBitmap(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
-
-		            byte[] encodedBytes = Base64.encode(byteArray, Base64.DEFAULT);
-
-		            try {
-		            	String dataString = new String(encodedBytes, "UTF-8").replaceAll("\\n", "");
-		            	String queryString = Mensa.APIURL + "insertDishPhoto="+dish.getId_dishes()+"&data=";
-
-		            	new UploadPictureTask().execute(
-							queryString,
-							dataString
-							);
-					} catch (UnsupportedEncodingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-		            //Log.d("IPA", "encodedBytes.lenght: " + encodedBytes.length);
-
-		            //mImageView.setImageBitmap(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
-
-		            //mImageView.setImageBitmap(photo);
-		        }
-
-		        File f = new File(mImageCaptureUri.getPath());
-
-		        if (f.exists()) f.delete();
-
-		        break;
-
+                    final File f = new File(mImageCaptureUri.getPath());
+                    if (f.exists()) {
+                        f.delete();
+                    }
+                } catch (PictureFileEmptyException e) {
+                    Toast.makeText(this, R.string.toast_takephoto_failed, Toast.LENGTH_LONG).show();
+                }
+                break;
 	    }
 	}
 
@@ -466,20 +464,16 @@ public class DishDetailActivity extends SherlockActivity {
      * @return true
      */
     private boolean takeDishPicture() {
-        //Intent i = new Intent(v.getContext(), ImagePickActivity.class);
-        //startActivity(i);
-
-        Intent intent 	 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         mImageCaptureUri = Uri.fromFile(new File(Environment
                 .getExternalStorageDirectory(),
-                "tmp_avatar_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+                "mensa_dish.jpg"));
 
         intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
 
         try {
             intent.putExtra("return-data", true);
-
             startActivityForResult(intent, PICK_FROM_CAMERA);
         } catch (ActivityNotFoundException e) {
             e.printStackTrace();
@@ -491,8 +485,6 @@ public class DishDetailActivity extends SherlockActivity {
      * Will show the gallery view for the current dish.
      */
     private void showGallery() {
-        Log.d("DDA", "startWebView");
-
         Intent webView = new Intent(this, GalleryActivity.class);
         webView.putExtra("id_dishes", dish.getId_dishes());
         webView.putExtra("id_pictures", dish.getId_pictures());
@@ -507,8 +499,8 @@ public class DishDetailActivity extends SherlockActivity {
         final MenuItem actionShowGallery = menu.findItem(R.id.action_show_gallery);
         try {
             final boolean dishServedToday = dish.isServedToday();
-            final boolean alreadyClosed   = mensa.isAlreadyClosed(); /* is it too late? */
-            final boolean stillClosed     = mensa.isStillClosed();   /* or is it too soon? */
+            final boolean alreadyClosed   = Mensa.isAlreadyClosed(); /* is it too late? */
+            final boolean stillClosed     = Mensa.isStillClosed();   /* or is it too soon? */
 
             actionTakePhoto.setEnabled(
                     dishServedToday

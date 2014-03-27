@@ -79,7 +79,7 @@ public class Mensa extends Application {
 		}
 	}
 
-	public void setDishPicture(String dateQuery, int id_dishes, byte[] decodedData){
+	public void setDishPicture(String dateQuery, int id_dishes, byte[] decodedData, int id_pictures){
 		
 		if(dateQuery == null) return;
 		if(dateQuery.isEmpty()) return;
@@ -90,11 +90,28 @@ public class Mensa extends Application {
 		
 		for (Dish dish : dayList) {
 			if(dish.getId_dishes() == id_dishes){
-				dish.setPicture(decodedData);
+				dish.setPicture(decodedData, id_pictures);
 			}
 		}
 		
 	}
+
+    public void setDishPicture(String dateQuery, int id_dishes, byte[] decodedData){
+
+        if(dateQuery == null) return;
+        if(dateQuery.isEmpty()) return;
+        if(decodedData == null) return;
+        if(decodedData.length == 0) return;
+
+        List<Dish> dayList = dayMap.get(dateQuery);
+
+        for (Dish dish : dayList) {
+            if(dish.getId_dishes() == id_dishes){
+                dish.setPicture(decodedData);
+            }
+        }
+
+    }
 	
 	public void setAvgRating(String dateQuery, int id_dishes, double avg){
 		if(dateQuery == null) return;

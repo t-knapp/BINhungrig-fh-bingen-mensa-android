@@ -55,6 +55,17 @@
             >
         </activity>
         <activity
+            android:name="de.fhbingen.mensa.AboutActivity"
+            android:label="@string/action_about"
+            android:parentActivityName="de.fhbingen.mensa.MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.fhbingen.mensa.MainActivity" />
+            >
+        </activity>
+
+        <activity
             android:name="de.fhbingen.mensa.GalleryActivity"
             android:label="@string/title_activity_gallery"
             android:screenOrientation="portrait"

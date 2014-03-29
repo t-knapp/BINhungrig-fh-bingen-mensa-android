@@ -140,9 +140,9 @@ public class MainActivity extends SherlockFragmentActivity {
         	final Calendar rightNow = Calendar.getInstance();
 
         	if(position == 0){
-        		return "Heute";
+        		return getString(R.string.today);
         	} else if (position == 1) {
-        		return "Morgen";
+        		return getString(R.string.tomorrow);
         	} else {
         		rightNow.add(Calendar.DAY_OF_MONTH, position);
         		return Mensa.toDDMMYYYY(rightNow); // DD.MM.YYYY
@@ -188,7 +188,7 @@ public class MainActivity extends SherlockFragmentActivity {
                 //Do not show if next week is loading @ Saturdays Fragment
                 d = new ProgressDialog(context);
                 d.setCancelable(false);
-                d.setMessage("Lade Speiseplan");
+                d.setMessage(getString(R.string.loading_dishes));
                 d.show();
             }
         }

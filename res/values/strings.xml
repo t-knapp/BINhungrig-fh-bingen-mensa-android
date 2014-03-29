@@ -49,6 +49,9 @@
 
     <!-- MainActivity -->
     <string name="mensa_already_closed">Heute bereits geschlossen</string>
+    <string name="loading_dishes">Lade Speiseplan ...</string>
+    <string name="today">Heute</string>
+    <string name="tomorrow">Morgen</string>
 
     <!-- OfflineDialog -->
     <string name="offline_title">Keine Verbindung</string>

@@ -137,14 +137,23 @@ public class Mensa extends Application {
 	}
 
     public int daysTillSunday(){
-        //NOW -> Sunday
+        /*
+        Sun -> 1
+        Mon -> 7
+        Tue -> 6
+        Wed -> 5
+        Thu -> 4
+        Fri -> 3
+        Sat -> 2
+         */
         final Calendar rightNow = Calendar.getInstance();
-        final Calendar sunday = Calendar.getInstance();
+
+        final Calendar sunday = (Calendar) rightNow.clone();
         sunday.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
 
         final long diff = sunday.getTimeInMillis() - rightNow.getTimeInMillis();
 
-        return (int)(diff / (24 * 60 * 60 * 1000) + 1);
+        return (int) Math.ceil(diff / (24 * 60 * 60 * 1000f)) + 1;
     }
 
 	/**

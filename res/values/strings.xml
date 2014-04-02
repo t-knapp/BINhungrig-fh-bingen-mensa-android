@@ -37,7 +37,7 @@
     <string name="dummy_numberRatings">n Bewertungen</string>
     <string name="title_activity_gallery">Bildergalerie</string>
     <string name="btn_label_complain">Bild als unangemessen melden</string>
-    <string name="NoDishes">Heute bleibt die Küche kalt.</string>
+    <string name="NoDishes">Kein Speiseplan verfügbar.</string>
     <string name="auto_download_large_pictures_description_toast">Um die volle Auflösung zu laden, klicken Sie auf das Vorschaubild.</string>
 
     <!-- DishDetailActivity -->

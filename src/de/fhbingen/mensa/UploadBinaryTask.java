@@ -21,6 +21,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import org.apache.http.params.HttpProtocolParams;
 
 public class UploadBinaryTask extends AsyncTask<String, Void, String> {
 
@@ -28,7 +29,10 @@ public class UploadBinaryTask extends AsyncTask<String, Void, String> {
 	protected String doInBackground(String... args) {
 		StringBuilder builder = new StringBuilder();
 		HttpClient client = new DefaultHttpClient();
-		HttpPost httpPost = new HttpPost(args[0]);
+        //<issue 11> https://github.com/t-knapp/BINhungrig-fh-bingen-mensa-android/issues/11
+        client.getParams().setParameter(HttpProtocolParams.USER_AGENT, Mensa.getUserAgentString());
+        //</issue 11>
+        HttpPost httpPost = new HttpPost(args[0]);
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
 		nameValuePairs.add(new BasicNameValuePair("data", args[1]));
 		try {

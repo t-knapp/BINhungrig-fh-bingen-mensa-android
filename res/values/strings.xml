@@ -79,6 +79,10 @@
         Sven Helli\n\n
         Außerdem wird diese App auf <a href="https://github.com/t-knapp/BINhungrig-fh-bingen-mensa-android">GitHub</a> als Open Source Projekt entwickelt.
     </string>
+
+    <!-- [Content|UploadBinary]Task -->
+    <string name="user_agent_prefix">BINhungrig/android/</string>
+
     <string name="disclaimerText">Eltern haften für ihre Kinder!</string>
     <string name="app_desctiption">Speiseplan App für die Mensa der FH-Bingen</string>
 </resources>

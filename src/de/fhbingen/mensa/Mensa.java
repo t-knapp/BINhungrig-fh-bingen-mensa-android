@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -267,4 +269,24 @@ public class Mensa extends Application {
 
         return opensAt.after(rightNow);
     }
+
+    //<issue 11> https://github.com/t-knapp/BINhungrig-fh-bingen-mensa-android/issues/11
+    private static Context context;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Mensa.context = getApplicationContext();
+    }
+
+    public static final String getUserAgentString(){
+        try {
+            return context.getString(R.string.user_agent_prefix)
+                    + context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.d(TAG, "getUserAgentString() : PackageManager.NameNotFoundException");
+            return context.getString(R.string.user_agent_prefix) + "UNAVAILABLE";
+        }
+    }
+    //</issue 11>
 }

@@ -20,8 +20,8 @@ public class CustomBar extends View {
 			cI = 4;
 		}
 		
-		Resources resources = this.getResources();
-	    DisplayMetrics metrics = resources.getDisplayMetrics();
+		final Resources resources = this.getResources();
+	    final DisplayMetrics metrics = resources.getDisplayMetrics();
 	    dens = metrics.densityDpi;
 		
 		paint = new Paint();
@@ -42,7 +42,7 @@ public class CustomBar extends View {
 	protected void onDraw(Canvas c) {
 		
 		paint.setColor(colors[colorIndex]);
-		if(max > 0){
+        if(max > 0){
 			c.drawRect(
 				0, 
 				0, 
@@ -51,12 +51,13 @@ public class CustomBar extends View {
 				paint
 			);
 		}
-		
+
+        //If no votes committed.
 		if(value == 0){			
 			c.drawRect(
 				0,
 				0,
-				11 * (dens / 160), /* calculate px equivalent of 12 dp */
+				2 * (dens / 160), /* calculate px equivalent of 2 dp */
 				getHeight(),
 				paint
 			);
@@ -65,7 +66,7 @@ public class CustomBar extends View {
 		paint.setColor(Color.BLACK);
 		c.drawText(
 			Integer.toString(value),
-			2 * (dens / 160),
+			3 * (dens / 160), /* calculate px equivalent of 3 dp */
 			getHeight() * 3/4f,
 			paint
 		);
@@ -77,7 +78,7 @@ public class CustomBar extends View {
 	private int max = 0;
 	private int value = 0;
 	private final Paint paint;
-	private static final int[] colors = { 0xFFFF8B5A, 0xFFFFB234, 0xFFFFD834, 0xFFADD633, 0xFF9FC05A};
+	private static final int[] colors = { 0xFFFF8B5A, 0xFFFFB234, 0xFFFFD834, 0xFFADD633, 0xFF9FC05A };
 	private static int cI = 4;
 	private float dens;
 

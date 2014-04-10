@@ -53,7 +53,7 @@ public class CustomBar extends View {
 		}
 
         //If no votes committed.
-		if(value == 0){			
+        if(value == 0){
 			c.drawRect(
 				0,
 				0,

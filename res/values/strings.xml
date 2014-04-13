@@ -83,6 +83,26 @@
     <!-- [Content|UploadBinary]Task -->
     <string name="user_agent_prefix">BINhungrig/android/</string>
 
+    <!-- Ingredients Activity -->
+    <string name="ingredients">
+        1 mit Farbstoff\n
+        2 mit Konservierungsstoff\n
+        3 mit Antioxidationsmittel\n
+        4 mit Geschmacksverstärker (ohne Glutamat)\n
+        5 geschwefelt\n
+        6 geschwärzt\n
+        7 Zitrusfrüchte gewachst\n
+        8 mit Phosphat\n
+        9 mit Süßungsmittel\n
+        10 enthält eine Phentanylalaninquelle\n
+        11 glutenhaltiges Getreide (Weizen, Gerste, Roggen, Hafer, Dinkel, Kamut oder Hybridstämme davon)\n
+        G Geflügelfleisch\n
+        K Kalbfleisch\n
+        M Milch\n
+        R Rindschleisch\n
+        S Schweinefleisch
+    </string>
+
     <string name="disclaimerText">Eltern haften für ihre Kinder!</string>
     <string name="app_desctiption">Speiseplan App für die Mensa der FH-Bingen</string>
 </resources>

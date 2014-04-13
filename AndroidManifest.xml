@@ -77,6 +77,19 @@
                 android:value="de.fhbingen.mensa.DishDetailActivity" />
             >
         </activity>
+
+        <activity
+            android:name="de.fhbingen.mensa.IngredientsActivity"
+            android:label="Zusatzstoffe und Informationen"
+            android:screenOrientation="portrait"
+            android:parentActivityName="de.fhbingen.mensa.MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="de.fhbingen.mensa.MainActivity" />
+            >
+        </activity>
+
     </application>
 
 </manifest>

@@ -84,6 +84,7 @@
     <string name="user_agent_prefix">BINhungrig/android/</string>
 
     <!-- Ingredients Activity -->
+    <string name="ingredients_info">Das Studierendenwerk muss nach geltendem Lebensmittelrecht zugelassene Zusatzstoffe kennzeichnen.\n\nIm Speiseplan sind die Zusatzstoffe durch Nummern entsprechend kenntlich gemacht.</string>
     <string name="ingredients">
         1 mit Farbstoff\n
         2 mit Konservierungsstoff\n
@@ -102,6 +103,23 @@
         R Rindschleisch\n
         S Schweinefleisch
     </string>
+    <string name="ingredient_1">mit Farbstoff</string>
+    <string name="ingredient_2">mit Konservierungsstoff</string>
+    <string name="ingredient_3">mit Antioxidationsmittel</string>
+    <string name="ingredient_4">mit Geschmacksverstärker (ohne Glutamat)</string>
+    <string name="ingredient_5">geschwefelt</string>
+    <string name="ingredient_6">geschwärzt</string>
+    <string name="ingredient_7">Zitrusfrüchte gewachst</string>
+    <string name="ingredient_8">mit Phosphat</string>
+    <string name="ingredient_9">mit Süßungsmittel</string>
+    <string name="ingredient_10">enthält eine Phentanylalaninquelle</string>
+    <string name="ingredient_11">glutenhaltiges Getreide (Weizen, Gerste, Roggen, Hafer, Dinkel, Kamut oder Hybridstämme davon)</string>
+    <string name="ingredient_G">Geflügelfleisch</string>
+    <string name="ingredient_K">Kalbfleisch</string>
+    <string name="ingredient_M">Milch</string>
+    <string name="ingredient_R">Rindschleisch</string>
+    <string name="ingredient_S">Schweinefleisch</string>
+
 
     <string name="disclaimerText">Eltern haften für ihre Kinder!</string>
     <string name="app_desctiption">Speiseplan App für die Mensa der FH-Bingen</string>

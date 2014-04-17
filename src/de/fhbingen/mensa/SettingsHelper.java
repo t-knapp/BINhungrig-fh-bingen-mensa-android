@@ -2,11 +2,9 @@ package de.fhbingen.mensa;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 
-/**
- * Created by Maxi on 16.03.14.
- */
 public class SettingsHelper {
     public static boolean isAutoDownloadLargePicturesEnabled() {
         return settings.getBoolean("isAutoDownloadLargePicturesEnabled", true);
@@ -17,7 +15,12 @@ public class SettingsHelper {
         editor.apply();
     }
 
-    private static SharedPreferences settings = Mensa.getMensa().getApplicationContext().getSharedPreferences(Mensa.PREF_USER, Context.MODE_PRIVATE);
+    public static boolean hasCamera() {
+        return applicationContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+    }
+
+    private static Context applicationContext = Mensa.getMensa().getApplicationContext();
+    private static SharedPreferences settings = applicationContext.getSharedPreferences(Mensa.PREF_USER, Context.MODE_PRIVATE);
     private static SharedPreferences.Editor editor = settings.edit();
 
 

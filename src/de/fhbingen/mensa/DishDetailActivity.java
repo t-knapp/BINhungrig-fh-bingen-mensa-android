@@ -499,25 +499,33 @@ public class DishDetailActivity extends SherlockActivity {
             final boolean dishServedToday = dish.isServedToday();
             final boolean alreadyClosed   = Mensa.isAlreadyClosed(); /* is it too late? */
             final boolean stillClosed     = Mensa.isStillClosed();   /* or is it too soon? */
+            final boolean hasCamera = SettingsHelper.hasCamera();
 
-            actionTakePhoto.setEnabled(
-                    dishServedToday
-                    && !alreadyClosed
-                    && !stillClosed);
+            final boolean isActionPhotoEnabled = dishServedToday
+                                        && !alreadyClosed
+                                        && !stillClosed
+                                        && hasCamera;
+            final boolean isActionGalleryEnabled = dish.hasPicture();
 
-            actionShowGallery.setEnabled(dish.hasPicture());
+            Log.d("CAMERA", String.format("dishServedToday: %b, alreadyClosed: %b, stillClosed: %b, hasCamera: %b, " +
+                    "isActionPhotoEnabled: %b", dishServedToday, alreadyClosed, stillClosed, hasCamera,
+                    isActionPhotoEnabled));
+
+            actionTakePhoto.setEnabled(isActionPhotoEnabled);
+            actionShowGallery.setEnabled(isActionGalleryEnabled);
 
             final Drawable cameraIcon = actionTakePhoto.getIcon();
             final Drawable galleryIcon = actionShowGallery.getIcon();
 
-            if (dishServedToday && !alreadyClosed && !stillClosed) {
+            actionTakePhoto.setVisible(hasCamera);
+            
+            if (isActionPhotoEnabled) {
                 cameraIcon.setAlpha(ENABLED_ALPHA);
             } else {
                 cameraIcon.setAlpha(DISABLED_ALPHA);
-
             }
 
-            if (dish.hasPicture()) {
+            if (isActionGalleryEnabled) {
                 galleryIcon.setAlpha(ENABLED_ALPHA);
             } else {
                 galleryIcon.setAlpha(DISABLED_ALPHA);

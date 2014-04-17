@@ -7,6 +7,12 @@
         android:showAsAction="never"/>
 
     <item
+        android:id="@+id/action_ingredients"
+        android:orderInCategory="200"
+        android:title="Zusatzstoffe"
+        android:showAsAction="never"/>
+
+    <item
         android:id="@+id/action_about"
         android:orderInCategory="300"
         android:title="@string/action_about"

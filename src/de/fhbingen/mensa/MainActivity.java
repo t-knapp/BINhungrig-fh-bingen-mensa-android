@@ -90,6 +90,10 @@ public class MainActivity extends SherlockFragmentActivity {
                 Intent settings = new Intent(this, SettingsActivity.class);
                 startActivityForResult(settings, 1337);
                 return true;
+            case R.id.action_ingredients:
+                Intent ingredients = new Intent(this, IngredientsActivity.class);
+                startActivity(ingredients);
+                return true;
             case R.id.action_about:
                 Intent about = new Intent(this, AboutActivity.class);
                 startActivity(about);

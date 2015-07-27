@@ -12,6 +12,16 @@
     <dimen name="dish_list_item_rating_font_size">16sp</dimen>
     <dimen name="dish_list_item_price_font_size">18sp</dimen>
     <dimen name="dish_list_item_name_top_margin">4dp</dimen>
+    <dimen name="dish_list_item_name_right_margin">60dp</dimen> <!-- Equals: Price and Star layout width + margin + 4dp -->
+
+    <dimen name="dish_list_item_price_star_layout_width">50dp</dimen>
+    <dimen name="dish_list_item_price_star_layout_margin_right">6dp</dimen>
+
+    <dimen name="ingredient_numbers__left_right">8dp</dimen>
+    <dimen name="ingredient_view_margin_top_bottom">10dp</dimen>
+    <dimen name="ingredient_view_margin_left_right">20dp</dimen>
+    <dimen name="ingredient_descriptor_margin_bottom">15dp</dimen>
+    <dimen name="ingredient_margin_bottom">3dp</dimen>
 
     <dimen name="about_picture_size">210dp</dimen>
 </resources>

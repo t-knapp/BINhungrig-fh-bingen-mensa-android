@@ -15,6 +15,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import org.apache.http.params.HttpProtocolParams;
 
 public class ContentTask extends AsyncTask<String, Void, String> {
 
@@ -22,7 +23,8 @@ public class ContentTask extends AsyncTask<String, Void, String> {
 	protected String doInBackground(String... args) {
 		StringBuilder builder = new StringBuilder();
 		HttpClient client = new DefaultHttpClient();
-		HttpGet httpGet = new HttpGet(args[0]);
+        client.getParams().setParameter(HttpProtocolParams.USER_AGENT, Mensa.getUserAgentString());
+        HttpGet httpGet = new HttpGet(args[0]);
 		try {
 			HttpResponse response = client.execute(httpGet);
 			StatusLine statusLine = response.getStatusLine();
@@ -47,5 +49,4 @@ public class ContentTask extends AsyncTask<String, Void, String> {
 		}
 		return builder.toString();
 	}
-
 }

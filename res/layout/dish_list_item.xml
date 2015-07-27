@@ -21,7 +21,7 @@
 
     <TextView
         android:id="@+id/textView_dish_name"
-        android:layout_width="210dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Capeletti (M, 11) mit Pesto und Pinienkernen gefüllt dazu Basilikumsauce"
         android:textSize="@dimen/dish_list_item_name_font_size"
@@ -29,13 +29,14 @@
         android:layout_toRightOf="@id/imageView_dish"
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/dish_list_item_name_top_margin"
+        android:layout_marginRight="@dimen/dish_list_item_name_right_margin"
          />
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/dish_list_item_price_star_layout_width"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="8dp"
+        android:layout_marginRight="@dimen/dish_list_item_price_star_layout_margin_right"
         android:layout_marginLeft="5dp"
         >
         <TextView
@@ -43,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:text="2,10 €"
+            android:text="2,36 €"
             android:textSize="@dimen/dish_list_item_price_font_size"
             />
 

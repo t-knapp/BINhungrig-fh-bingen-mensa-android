@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/scrollView"
+>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:shrinkColumns="1"
+        android:paddingBottom="@dimen/ingredient_view_margin_top_bottom"
+        android:paddingTop="@dimen/ingredient_view_margin_top_bottom"
+        android:paddingLeft="@dimen/ingredient_view_margin_left_right"
+        android:paddingRight="@dimen/ingredient_view_margin_left_right"
+        >
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_descriptor_margin_bottom">
+
+            <TextView
+                android:text="@string/ingredients_info"
+                android:id="@+id/textView33"
+                android:layout_span="2"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_margin_bottom">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="1"
+                android:id="@+id/textView"
+                android:textColor="@color/fh_bingen_blue"
+                android:paddingRight="@dimen/ingredient_numbers__left_right"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_column="0"/>
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/ingredient_1"
+                android:id="@+id/textView2"
+                android:layout_column="1"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_margin_bottom"
+            >
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="2"
+                android:id="@+id/textView3"
+                android:textColor="@color/fh_bingen_blue"
+                android:paddingRight="@dimen/ingredient_numbers__left_right"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/ingredient_2"
+                android:id="@+id/textView4"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_margin_bottom">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="3"
+                android:id="@+id/textView5"
+                android:textColor="@color/fh_bingen_blue"
+                android:paddingRight="@dimen/ingredient_numbers__left_right"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/ingredient_3"
+                android:id="@+id/textView6"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_margin_bottom">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="4"
+                android:id="@+id/textView7"
+                android:textColor="@color/fh_bingen_blue"
+                android:paddingRight="@dimen/ingredient_numbers__left_right"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/ingredient_4"
+                android:id="@+id/textView8"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_margin_bottom">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="5"
+                android:id="@+id/textView9"
+                android:textColor="@color/fh_bingen_blue"
+                android:paddingRight="@dimen/ingredient_numbers__left_right"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/ingredient_5"
+                android:id="@+id/textView10"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_margin_bottom">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="6"
+                android:id="@+id/textView11"
+                android:textColor="@color/fh_bingen_blue"
+                android:paddingRight="@dimen/ingredient_numbers__left_right"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/ingredient_6"
+                android:id="@+id/textView12"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_margin_bottom">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="7"
+                android:id="@+id/textView13"
+                android:textColor="@color/fh_bingen_blue"
+                android:paddingRight="@dimen/ingredient_numbers__left_right"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/ingredient_7"
+                android:id="@+id/textView14"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_margin_bottom">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="8"
+                android:id="@+id/textView15"
+                android:textColor="@color/fh_bingen_blue"
+                android:paddingRight="@dimen/ingredient_numbers__left_right"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/ingredient_8"
+                android:id="@+id/textView16"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_margin_bottom">
+
+            <TextView
+
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="9"
+                android:id="@+id/textView17"
+                android:textColor="@color/fh_bingen_blue"
+                android:paddingRight="@dimen/ingredient_numbers__left_right"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/ingredient_9"
+                android:id="@+id/textView18"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_margin_bottom">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="10"
+                android:id="@+id/textView19"
+                android:textColor="@color/fh_bingen_blue"
+                android:paddingRight="@dimen/ingredient_numbers__left_right"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/ingredient_10"
+                android:id="@+id/textView20"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_margin_bottom">
+
+            <TextView
+
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="11"
+                android:id="@+id/textView21"
+                android:textColor="@color/fh_bingen_blue"
+                android:paddingRight="@dimen/ingredient_numbers__left_right"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/ingredient_11"
+                android:id="@+id/textView22"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_margin_bottom">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="G"
+                android:id="@+id/textView23"
+                android:textColor="@color/fh_bingen_blue"
+                android:paddingRight="@dimen/ingredient_numbers__left_right"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/ingredient_G"
+                android:id="@+id/textView24"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_margin_bottom">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="K"
+                android:id="@+id/textView25"
+                android:textColor="@color/fh_bingen_blue"
+                android:paddingRight="@dimen/ingredient_numbers__left_right"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/ingredient_K"
+                android:id="@+id/textView26"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_margin_bottom">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="M"
+                android:id="@+id/textView27"
+                android:textColor="@color/fh_bingen_blue"
+                android:paddingRight="@dimen/ingredient_numbers__left_right"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/ingredient_M"
+                android:id="@+id/textView28"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_margin_bottom">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="R"
+                android:id="@+id/textView29"
+                android:textColor="@color/fh_bingen_blue"
+                android:paddingRight="@dimen/ingredient_numbers__left_right"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/ingredient_R"
+                android:id="@+id/textView30"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/ingredient_margin_bottom">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="S"
+                android:id="@+id/textView31"
+                android:textColor="@color/fh_bingen_blue"
+                android:paddingRight="@dimen/ingredient_numbers__left_right"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/ingredient_S"
+                android:id="@+id/textView32"/>
+        </TableRow>
+
+    </TableLayout>
+</ScrollView>

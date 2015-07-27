@@ -20,6 +20,9 @@ import com.actionbarsherlock.view.MenuItem;
 import de.fhbingen.mensa.Fragments.ListFragment;
 
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.Map;
+
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
@@ -87,6 +90,10 @@ public class MainActivity extends SherlockFragmentActivity {
                 Intent settings = new Intent(this, SettingsActivity.class);
                 startActivityForResult(settings, 1337);
                 return true;
+            case R.id.action_ingredients:
+                Intent ingredients = new Intent(this, IngredientsActivity.class);
+                startActivity(ingredients);
+                return true;
             case R.id.action_about:
                 Intent about = new Intent(this, AboutActivity.class);
                 startActivity(about);
@@ -140,12 +147,16 @@ public class MainActivity extends SherlockFragmentActivity {
         	final Calendar rightNow = Calendar.getInstance();
 
         	if(position == 0){
-        		return "Heute";
+        		return getString(R.string.today);
         	} else if (position == 1) {
-        		return "Morgen";
+        		return getString(R.string.tomorrow);
         	} else {
         		rightNow.add(Calendar.DAY_OF_MONTH, position);
-        		return Mensa.toDDMMYYYY(rightNow); // DD.MM.YYYY
+
+                final String dayName = rightNow.getDisplayName(Calendar.DAY_OF_WEEK,
+                        Calendar.LONG, Locale.GERMAN);
+
+        		return dayName + ", " + Mensa.toDDMMYYYY(rightNow); // DD.MM.YYYY
         	}
         }
 
@@ -188,7 +199,7 @@ public class MainActivity extends SherlockFragmentActivity {
                 //Do not show if next week is loading @ Saturdays Fragment
                 d = new ProgressDialog(context);
                 d.setCancelable(false);
-                d.setMessage("Lade Speiseplan");
+                d.setMessage(getString(R.string.loading_dishes));
                 d.show();
             }
         }

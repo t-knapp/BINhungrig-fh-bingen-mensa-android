@@ -3,6 +3,9 @@
 
     <string name="app_name">BINhungrig</string>
 
+    <!-- ActionBar Items -->
+    <string name="action_bar_change_building">Gebäude wechseln</string>
+
     <!-- Dish -->
     <!-- Days of the week - static variable -->
     <string-array name="dayName_array">
@@ -123,4 +126,7 @@
 
     <string name="disclaimerText">Eltern haften für ihre Kinder!</string>
     <string name="app_desctiption">Speiseplan App für die Mensa der FH-Bingen</string>
+    <string name="title_activity_day_overview">DayOverviewActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_main_activity_slide">MainActivitySlide</string>
 </resources>

@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="de.fhbingen.mensa.MainActivitySlide">
+
+    <item android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+
+    <item android:id="@+id/action_change_building"
+        android:title="@string/action_bar_change_building"
+        android:orderInCategory="50"
+        android:showAsAction="always"
+        android:icon="@mipmap/ic_store_mall_directory_white" />
+</menu>

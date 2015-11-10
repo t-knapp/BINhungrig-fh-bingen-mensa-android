@@ -1,6 +1,6 @@
 task wrapper(type: Wrapper) {
     gradleVersion = '2.5'
-    }
+}
 
 apply plugin: 'com.android.application'
 
@@ -22,18 +22,20 @@ repositories {
 }
 
 dependencies {
-    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
-    compile 'com.android.support:support-v4:19.0.+'
 
     // ActiveAndroid SQLite ORM
-    compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
 
     // Spring Template for REST Calls
-    compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.6.3'
 
     // EventBus for communication between Service, Activity, Thread
+    compile 'com.android.support:support-v4:19.1.0'
+    compile 'com.android.support:support-v4:19.1.0'
+    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+    compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
+    compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.6.3'
     compile 'de.greenrobot:eventbus:2.4.0'
+    compile 'com.android.support:support-v13:19.1.0'
 }
 
 android {
@@ -96,7 +98,7 @@ android {
                 }
 
                 storeFile file(keystorePath)
-                
+
                 // These two lines make gradle believe that the signingConfigs
                 // section is complete. Without them, tasks like installRelease
                 // will not be available!
@@ -115,13 +117,13 @@ android {
         }
     }
 }
-    
+
 task askForPasswords << {
     // Must create String because System.readPassword() returns char[]
     // (and assigning that below fails silently)
     if (System.console() != null) {
         def storePw = new String(System.console().readPassword("\nKeystore password: "))
-        def keyPw  = new String(System.console().readPassword("Key password: "))
+        def keyPw = new String(System.console().readPassword("Key password: "))
 
         android.signingConfigs.release.storePassword = storePw
         android.signingConfigs.release.keyPassword = keyPw

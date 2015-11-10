@@ -1,20 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.fhbingen.mensa"
-    android:versionCode="9"
-    android:versionName="2014-04-18" >
+    android:versionCode="10"
+    android:versionName="2015-11-10" >
 
-    <!--<uses-sdk
+    <!--
+        <uses-sdk
         android:minSdkVersion="10"
-        android:targetSdkVersion="19" />-->
+        android:targetSdkVersion="19" />
+    -->
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" android:required="false"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18" />
+    <uses-permission
+        android:name="android.permission.CAMERA"
+        android:required="false" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
 
-    <uses-feature android:name="android.hardware.camera" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
 
     <supports-screens
         android:anyDensity="true"
@@ -22,83 +32,129 @@
         android:normalScreens="true"
         android:resizeable="true"
         android:smallScreens="true"
-        android:xlargeScreens="true"/>
+        android:xlargeScreens="true" />
+
+    <!-- ActiveAndroid ORM -->
+    <meta-data android:name="AA_DB_NAME" android:value="mensa_dev1.db" />
+    <meta-data android:name="AA_DB_VERSION" android:value="1" />
+    <meta-data
+        android:name="AA_MODELS"
+        android:value="de.fhbingen.mensa.data.orm.Building,
+                       de.fhbingen.mensa.data.orm.Date,
+                       de.fhbingen.mensa.data.orm.Delete,
+                       de.fhbingen.mensa.data.orm.Dish,
+                       de.fhbingen.mensa.data.orm.OfferedAt,
+                       de.fhbingen.mensa.data.orm.Rating,
+                       de.fhbingen.mensa.data.orm.Sequence" />
+    <meta-data android:name="AA_SERIALIZERS"
+        android:value="de.fhbingen.mensa.data.serializer.SqlDateSerializer,
+                       de.fhbingen.mensa.data.serializer.SqlTimeSerializer" />
+
 
     <application
-        android:name="de.fhbingen.mensa.Mensa"
+        android:name=".Mensa"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <activity
-            android:name="de.fhbingen.mensa.MainActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop"
-            >
 
+        <!--
+        <activity
+            android:name=".DayOverviewActivity"
+            android:label="@string/title_activity_day_overview" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="de.fhbingen.mensa.DishDetailActivity"
-            android:label="@string/title_activity_dish_detail"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop"
-            android:parentActivityName="de.fhbingen.mensa.MainActivity" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.fhbingen.mensa.MainActivity" />
-            >
-        </activity>
-        <activity
-            android:name="de.fhbingen.mensa.SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:screenOrientation="portrait"
-            android:parentActivityName="de.fhbingen.mensa.MainActivity" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.fhbingen.mensa.MainActivity" />
-            >
-        </activity>
-        <activity
-            android:name="de.fhbingen.mensa.AboutActivity"
-            android:label="@string/action_about"
-            android:parentActivityName="de.fhbingen.mensa.MainActivity" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.fhbingen.mensa.MainActivity" />
-            >
-        </activity>
+        -->
 
+        <!--
         <activity
-            android:name="de.fhbingen.mensa.GalleryActivity"
+            android:name=".DayOverviewActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        -->
+
+        <!--
+        <activity
+            android:name=".DishDetailActivity"
+            android:label="@string/title_activity_dish_detail"
+            android:launchMode="singleTop"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" >
+
+            
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.fhbingen.mensa.MainActivity" />
+            >
+        </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" >
+
+            
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.fhbingen.mensa.MainActivity" />
+            >
+        </activity>
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/action_about"
+            android:parentActivityName=".MainActivity" >
+
+            
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.fhbingen.mensa.MainActivity" />
+            >
+        </activity>
+        <activity
+            android:name=".GalleryActivity"
             android:label="@string/title_activity_gallery"
-            android:screenOrientation="portrait"
-            android:parentActivityName="de.fhbingen.mensa.DishDetailActivity" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
+            android:parentActivityName=".DishDetailActivity"
+            android:screenOrientation="portrait" >
+
+            
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.fhbingen.mensa.DishDetailActivity" />
             >
         </activity>
+        <activity
+            android:name=".IngredientsActivity"
+            android:label="Zusatzstoffe und Informationen"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" >
+
+            
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.fhbingen.mensa.MainActivity" />
+            >
+        </activity>
+        -->
 
         <activity
-            android:name="de.fhbingen.mensa.IngredientsActivity"
-            android:label="Zusatzstoffe und Informationen"
-            android:screenOrientation="portrait"
-            android:parentActivityName="de.fhbingen.mensa.MainActivity" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="de.fhbingen.mensa.MainActivity" />
-            >
+            android:name=".MainActivitySlide"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
     </application>

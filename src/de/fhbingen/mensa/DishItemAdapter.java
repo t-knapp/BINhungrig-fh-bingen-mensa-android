@@ -15,20 +15,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class DishItemAdapter extends ArrayAdapter<Dish> {
+public class DishItemAdapter extends ArrayAdapter<DishOld> {
 
-	public DishItemAdapter(Context context, List<Dish> dishes) {
+	public DishItemAdapter(Context context, List<DishOld> dishes) {
 		super(context, R.layout.dish_list_item, dishes);
 		this.context = context;
 
-        dishIdMap = new HashMap<Dish, Integer>();
+        dishIdMap = new HashMap<DishOld, Integer>();
         for (int i=0; i < dishes.size(); i++){
             dishIdMap.put(dishes.get(i), i);
         }
 	}
 
     public long getItemId(int position){
-        Dish item = getItem(position);
+        DishOld item = getItem(position);
         return dishIdMap.get(item);
     }
 
@@ -36,7 +36,7 @@ public class DishItemAdapter extends ArrayAdapter<Dish> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE
         );
-        Dish dish = getItem(position);
+        DishOld dish = getItem(position);
 
         View rowView = inflater.inflate(
                 R.layout.dish_list_item,
@@ -84,5 +84,5 @@ public class DishItemAdapter extends ArrayAdapter<Dish> {
 	}
 
     private Context context;
-    private HashMap<Dish, Integer> dishIdMap;
+    private HashMap<DishOld, Integer> dishIdMap;
 }

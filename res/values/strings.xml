@@ -6,7 +6,7 @@
     <!-- ActionBar Items -->
     <string name="action_bar_change_building">Gebäude wechseln</string>
 
-    <!-- Dish -->
+    <!-- DishOld -->
     <!-- Days of the week - static variable -->
     <string-array name="dayName_array">
         <item>Sonntag</item>
@@ -129,4 +129,32 @@
     <string name="title_activity_day_overview">DayOverviewActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_main_activity_slide">MainActivitySlide</string>
+
+    <!-- Strings related to Settings -->
+    <string name="settings_title_main">Einstellungen</string>
+
+    <!-- Setting: HiRes Photos -->
+    <string name="settings_title_photos">Bilder in voller Auflösung laden</string>
+    <string name="settings_desc_photos">Automatischer Download verbraucht mehr Datenvolumen</string>
+
+    <!-- Setting: User role -->
+    <string name="settings_title_user_role">Preise zeigen für</string>
+    <string-array name="settings_items_user_role">
+        <item>Studierende</item>
+        <item>Nicht Studierende</item>
+    </string-array>
+    <string-array name="settings_values_user_role">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <!-- Setting: Subscribed Buildings -->
+    <string name="settings_title_subscribed_buildings">Abonierte Mensen</string>
+    <string-array name="settings_items_subscribed_buildings">
+    </string-array>
+    <string-array name="settings_values_subscribed_buildings">
+    </string-array>
+    <string-array name="settings_values_default_subscribed_buildings">
+    </string-array>
+
 </resources>

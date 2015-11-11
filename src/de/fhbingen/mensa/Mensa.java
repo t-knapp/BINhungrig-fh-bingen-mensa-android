@@ -1,9 +1,6 @@
 package de.fhbingen.mensa;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -33,7 +30,7 @@ public class Mensa extends Application {
 
 	public Mensa() {
         MENSA = this;
-        dayMap = new HashMap<String, List<Dish>>();
+        dayMap = new HashMap<String, List<DishOld>>();
 	}
 
     /**
@@ -58,11 +55,11 @@ public class Mensa extends Application {
 				// Log.d(TAG, "Date " + objDate);
 
 				if (!dayMap.containsKey(objDate)) {
-					dayMap.put(objDate, new LinkedList<Dish>());
+					dayMap.put(objDate, new LinkedList<DishOld>());
 				}
 
 				dayMap.get(objDate).add(
-					new Dish(
+					new DishOld(
 						jsonObject.getInt("id_dishes"),
 						objDate,
 						jsonObject.getString("text"),
@@ -88,9 +85,9 @@ public class Mensa extends Application {
 		if(decodedData == null) return;
 		if(decodedData.length == 0) return;
 		
-		List<Dish> dayList = dayMap.get(dateQuery);
+		List<DishOld> dayList = dayMap.get(dateQuery);
 		
-		for (Dish dish : dayList) {
+		for (DishOld dish : dayList) {
 			if(dish.getId_dishes() == id_dishes){
 				dish.setPicture(decodedData, id_pictures);
 			}
@@ -105,9 +102,9 @@ public class Mensa extends Application {
         if(decodedData == null) return;
         if(decodedData.length == 0) return;
 
-        List<Dish> dayList = dayMap.get(dateQuery);
+        List<DishOld> dayList = dayMap.get(dateQuery);
 
-        for (Dish dish : dayList) {
+        for (DishOld dish : dayList) {
             if(dish.getId_dishes() == id_dishes){
                 dish.setPicture(decodedData);
             }
@@ -119,9 +116,9 @@ public class Mensa extends Application {
 		if(dateQuery == null) return;
 		if(dateQuery.isEmpty()) return;
 		
-		List<Dish> dayList = dayMap.get(dateQuery);
+		List<DishOld> dayList = dayMap.get(dateQuery);
 		
-		for (Dish dish : dayList) {
+		for (DishOld dish : dayList) {
 			if(dish.getId_dishes() == id_dishes){
 				dish.setAvgRating(avg);
 			}
@@ -129,7 +126,7 @@ public class Mensa extends Application {
 	}
 
 	
-	public List<Dish> getDay(String cal) {
+	public List<DishOld> getDay(String cal) {
 		return dayMap.get(cal);
 	}
 
@@ -196,7 +193,7 @@ public class Mensa extends Application {
     }
 
 	// private Database db;
-	private HashMap<String, List<Dish>> dayMap;
+	private HashMap<String, List<DishOld>> dayMap;
 	private boolean nextWeekLoaded = false;
 	/*
 	 _   _ _   _ _     

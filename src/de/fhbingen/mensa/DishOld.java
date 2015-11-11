@@ -4,13 +4,9 @@ import android.content.Context;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.regex.Pattern;
 
-import de.fhbingen.mensa.Exceptions.NotExcepectedServerAnswer;
-
-public class Dish implements Serializable {
+public class DishOld implements Serializable {
 
     /**
      * 
@@ -30,15 +26,15 @@ public class Dish implements Serializable {
      * @param priceStudent
      * @param priceOfficial
      */
-	public Dish(
-		int id_dishes,
-		String date,
-		String text,
-		double priceStudent,
-		double priceOfficial,
-		double avgRating,
-		int id_pictures,
-		String thumb/*,
+	public DishOld(
+			int id_dishes,
+			String date,
+			String text,
+			double priceStudent,
+			double priceOfficial,
+			double avgRating,
+			int id_pictures,
+			String thumb/*,
         Context context*/)
 	{
 		this.id_dishes = id_dishes;
@@ -129,7 +125,7 @@ public class Dish implements Serializable {
 
     @Override
     public String toString(){
-        return "Dish (id_dishes: " + id_dishes + "; date: " + date + "; text: " + text + "; id_pictures: "
+        return "DishOld (id_dishes: " + id_dishes + "; date: " + date + "; text: " + text + "; id_pictures: "
                 + id_pictures + "; thumb: " + thumb + "; picture: " + picture + "; avgRating: " + avgRating
                 + "; priceStd: " + priceStudent + "; priceOff: " + priceOfficial;
     }
@@ -150,5 +146,5 @@ public class Dish implements Serializable {
 	
     private Context context;
 
-    private final static String TAG = Dish.class.getName();
+    private final static String TAG = DishOld.class.getName();
 }

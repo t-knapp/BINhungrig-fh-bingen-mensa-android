@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/settings_title_main"
+    android:key="pref_key_storage_settings" >
+
+    <!-- HiRes Photos -->
+    <CheckBoxPreference
+        android:key="pref_key_high_res_photos"
+        android:summary="@string/settings_desc_photos"
+        android:title="@string/settings_title_photos"
+        android:defaultValue="false" />
+
+    <!-- User Role -->
+    <ListPreference
+        android:key="pref_key_user_role"
+        android:title="@string/settings_title_user_role"
+        android:entries="@array/settings_items_user_role"
+        android:entryValues="@array/settings_values_user_role"
+        android:defaultValue="0"
+        />
+
+    <!-- Subscribed Buildings -->
+    <MultiSelectListPreference
+        android:key="pref_key_subscribed_buildings"
+        android:title="@string/settings_title_subscribed_buildings"
+        android:entries="@array/settings_items_subscribed_buildings"
+        android:entryValues="@array/settings_values_subscribed_buildings"
+        android:defaultValue="@array/settings_values_default_subscribed_buildings"
+        />
+
+
+
+</PreferenceScreen>

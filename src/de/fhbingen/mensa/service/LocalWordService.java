@@ -88,12 +88,12 @@ public class LocalWordService extends Service {
                     for (final Dish d : dishes) {
                         selectedDish = new Select().from(d.getClass()).where("dishId = ?", d.getDishId()).executeSingle();
                         if (selectedDish != null) {
-                            //Update Dish in DB
-                            Log.d(TAG, "Updating Dish " + selectedDish.getDishId());
+                            //Update DishOld in DB
+                            Log.d(TAG, "Updating DishOld " + selectedDish.getDishId());
                             selectedDish.update(d).save();
                         } else {
-                            //New Dish
-                            Log.d(TAG, "Creating new Dish " + d.getDishId());
+                            //New DishOld
+                            Log.d(TAG, "Creating new DishOld " + d.getDishId());
                             d.save();
                         }
                     }
@@ -143,7 +143,7 @@ public class LocalWordService extends Service {
                 }
 
                 private void applyDeletes(List<Delete> deletes) {
-                    final String packagePrefix = "de.fhbingen.myapplication.data.";
+                    final String packagePrefix = "de.fhbingen.mensa.data.orm.";
                     Class cls;
                     for (final Delete d : deletes) {
                         try {
@@ -166,7 +166,7 @@ public class LocalWordService extends Service {
                             //Building
                             updateBuildings(changes.getBuildings());
 
-                            //Dish
+                            //DishOld
                             updateDishes(changes.getDishes());
 
                             //Date
@@ -275,7 +275,7 @@ public class LocalWordService extends Service {
 
         private static final String TAG = "MyBinder";
 
-        LocalWordService getService(){
+        public LocalWordService getService(){
             Log.d(TAG, "MyBinder.getService");
             return LocalWordService.this;
         }

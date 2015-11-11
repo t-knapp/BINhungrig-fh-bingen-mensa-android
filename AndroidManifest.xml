@@ -35,21 +35,18 @@
         android:xlargeScreens="true" />
 
     <!-- ActiveAndroid ORM -->
-    <meta-data android:name="AA_DB_NAME" android:value="mensa_dev1.db" />
-    <meta-data android:name="AA_DB_VERSION" android:value="1" />
+    <meta-data
+        android:name="AA_DB_NAME"
+        android:value="mensa_dev1.db" />
+    <meta-data
+        android:name="AA_DB_VERSION"
+        android:value="1" />
     <meta-data
         android:name="AA_MODELS"
-        android:value="de.fhbingen.mensa.data.orm.Building,
-                       de.fhbingen.mensa.data.orm.Date,
-                       de.fhbingen.mensa.data.orm.Delete,
-                       de.fhbingen.mensa.data.orm.Dish,
-                       de.fhbingen.mensa.data.orm.OfferedAt,
-                       de.fhbingen.mensa.data.orm.Rating,
-                       de.fhbingen.mensa.data.orm.Sequence" />
-    <meta-data android:name="AA_SERIALIZERS"
-        android:value="de.fhbingen.mensa.data.serializer.SqlDateSerializer,
-                       de.fhbingen.mensa.data.serializer.SqlTimeSerializer" />
-
+        android:value="de.fhbingen.mensa.data.orm.Building,                        de.fhbingen.mensa.data.orm.Date,                        de.fhbingen.mensa.data.orm.Delete,                        de.fhbingen.mensa.data.orm.Dish,                        de.fhbingen.mensa.data.orm.OfferedAt,                        de.fhbingen.mensa.data.orm.Rating,                        de.fhbingen.mensa.data.orm.Sequence" />
+    <meta-data
+        android:name="AA_SERIALIZERS"
+        android:value="de.fhbingen.mensa.data.serializer.SqlDateSerializer,                        de.fhbingen.mensa.data.serializer.SqlTimeSerializer" />
 
     <application
         android:name=".Mensa"
@@ -70,6 +67,7 @@
         </activity>
         -->
 
+
         <!--
         <activity
             android:name=".DayOverviewActivity"
@@ -83,6 +81,7 @@
             </intent-filter>
         </activity>
         -->
+
 
         <!--
         <activity
@@ -157,6 +156,18 @@
             </intent-filter>
         </activity>
 
+        <service
+            android:name=".service.LocalWordService"
+            android:enabled="true"
+            android:exported="false"
+            android:label="LocalWordService" >
+        </service>
+
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/action_settings"
+            android:parentActivityName="de.fhbingen.mensa.MainActivitySlide" >
+        </activity>
     </application>
 
 </manifest>

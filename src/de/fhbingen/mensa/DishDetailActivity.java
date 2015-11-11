@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
-import java.util.List;
 import java.util.Locale;
 
 import android.graphics.drawable.Drawable;
@@ -19,13 +18,10 @@ import org.json.JSONObject;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
@@ -45,7 +41,7 @@ public class DishDetailActivity extends SherlockActivity {
     public static final int DISABLED_ALPHA = 50;
     public static final int ENABLED_ALPHA = 255;
     private Mensa mensa;
-	private Dish dish;
+	private DishOld dish;
 	private ImageView imageView;
 	private TextView tv;
 	private RatingBar bar;
@@ -64,7 +60,7 @@ public class DishDetailActivity extends SherlockActivity {
 
 		mensa        = (Mensa) this.getApplication();
 		imageView    = (ImageView) findViewById(R.id.dish_picture);
-		dish         = (Dish) getIntent().getExtras().getSerializable("data");
+		dish         = (DishOld) getIntent().getExtras().getSerializable("data");
 		labelRatings = (TextView) findViewById(R.id.textView_headingDoRating);
 
         Log.d("mensa.Mensa", dish.toString());

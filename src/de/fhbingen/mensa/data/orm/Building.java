@@ -3,6 +3,7 @@ package de.fhbingen.mensa.data.orm;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.sql.Date;
@@ -95,5 +96,21 @@ public class Building extends Model {
             }
         }
         return this;
+    }
+
+    public static Building findByBuildingId(final long buildingId){
+        return findByBuildingId(Long.toString(buildingId));
+    }
+
+    public static Building findByBuildingId(final String buildingId){
+        return new Select().from(Building.class).where("buildingId = ?", buildingId).executeSingle();
+    }
+
+    public static List<Building> findAll(){
+        return new Select().from(Building.class).orderBy("buildingId").execute();
+    }
+
+    public String getName() {
+        return name;
     }
 }

@@ -6,22 +6,41 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.activeandroid.ActiveAndroid;
+import com.activeandroid.query.Select;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
+import de.fhbingen.mensa.data.orm.Building;
+import de.fhbingen.mensa.data.orm.Date;
+import de.fhbingen.mensa.data.orm.Dish;
+import de.fhbingen.mensa.data.orm.OfferedAt;
+import de.fhbingen.mensa.data.orm.Sequence;
+import de.fhbingen.mensa.service.LocalWordService;
+
 public class MainActivitySlide extends Activity implements ActionBar.TabListener {
+
+    private final String TAG = MainActivity.class.getSimpleName();
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -50,6 +69,12 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        //Initialize ActiveAndroid SQLite ORM
+        ActiveAndroid.initialize(this);
+
+        // Start data Service
+        Intent intent = new Intent(this, LocalWordService.class);
+        startService(intent);
 
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
@@ -99,6 +124,39 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, de.fhbingen.mensa.SettingsActivity.class);
+            startActivity(intent);
+
+            return true;
+        } else if (id == R.id.action_change_building) {
+            //TODO: Spinner dialog with all subscribed buildings
+
+            List<Building> buildings = new Select().from(Building.class).execute();
+            for (final Building b : buildings) {
+                Log.v(TAG, b.toString());
+            }
+
+            List<Dish> dishes = new Select().from(Dish.class).execute();
+            for (final Dish d : dishes) {
+                Log.v(TAG, d.toString());
+            }
+
+            List<Date> dates = new Select().from(Date.class).execute();
+            for (final Date d : dates) {
+                Log.v(TAG, d.toString());
+            }
+
+            List<OfferedAt> offeredAt = new Select().from(OfferedAt.class).execute();
+            for (final OfferedAt oA : offeredAt) {
+                Log.v(TAG, oA.toString());
+            }
+
+            Sequence seq = new Select().from(Sequence.class).where("seq_name = ?", Sequence.SEQNAME).executeSingle();
+            if(seq == null){
+                seq = new Sequence();
+            }
+            Log.v(TAG, "Sequence: " + seq.toString());
+
             return true;
         }
 
@@ -156,7 +214,7 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
                 default:
                     final Calendar cal = Calendar.getInstance();
                     cal.add(Calendar.DAY_OF_YEAR, position - 1);
-                    Date date = cal.getTime();
+                    java.util.Date date = cal.getTime();
                     // @see: https://docs.oracle.com/javase/tutorial/i18n/format/simpleDateFormat.html
                     SimpleDateFormat formatter = new SimpleDateFormat("EEE, d. MMM", Locale.GERMAN);
                     return formatter.format(date);
@@ -198,4 +256,35 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
             return rootView;
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Intent intent= new Intent(this, LocalWordService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unbindService(mConnection);
+    }
+
+    private LocalWordService s;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            LocalWordService.MyBinder b = (LocalWordService.MyBinder) binder;
+            s = b.getService();
+
+            Toast.makeText(MainActivitySlide.this, "Connected", Toast.LENGTH_SHORT)
+                    .show();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            s =  null;
+        }
+    };
 }

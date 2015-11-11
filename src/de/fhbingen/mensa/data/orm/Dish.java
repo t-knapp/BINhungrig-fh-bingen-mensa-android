@@ -80,7 +80,7 @@ public class Dish extends Model {
     //TODO: Code-Style
     public static final List<Dish> selectForDateAndBuilding(final java.sql.Date date, final long subscribedBuilding){
         //String buildings = Arrays.toString(subscribedBuildingIds).replace("[", "").replace("]", "").trim();
-        //Log.d("Dish.Select...", buildings);
+        //Log.d("DishOld.Select...", buildings);
         final From tmp = new Select().from(Dish.class)
                 .join(OfferedAt.class).on("dishId = fk_dishId")
                 .join(Date.class).on("fk_dateId = dateId")
@@ -93,7 +93,7 @@ public class Dish extends Model {
     //TODO: Code-Style
     public static String getSqlStatementForDateAndBuilding(final java.sql.Date date, final long subscribedBuilding){
         //String buildings = Arrays.toString(subscribedBuildingIds).replace("[", "").replace("]", "").trim();
-        //Log.d("Dish.Select...", buildings);
+        //Log.d("DishOld.Select...", buildings);
         final String tableName = Cache.getTableInfo(Dish.class).getTableName();
         final From tmp = new Select(tableName + ".*, " + tableName + ".dishId as _id").from(Dish.class)
                 .join(OfferedAt.class).on("dishId = fk_dishId")
@@ -116,7 +116,7 @@ public class Dish extends Model {
     @Override
     public String toString() {
         return String.format(
-                "Dish [id: %d, seq: %d, title: %s, priceStd: %f, priceNonStd: %f, fk_buildingId: %d]",
+                "DishOld [id: %d, seq: %d, title: %s, priceStd: %f, priceNonStd: %f, fk_buildingId: %d]",
                 dishId, seq, title, priceStd, priceNonStd, buildingId
         );
     }

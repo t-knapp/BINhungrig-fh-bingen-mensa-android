@@ -1,6 +1,5 @@
 package de.fhbingen.mensa.Fragments;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,8 +14,6 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragment;
 import de.fhbingen.mensa.*;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ListFragment extends SherlockFragment {
@@ -69,7 +66,7 @@ public class ListFragment extends SherlockFragment {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id){
                     Intent detail = new Intent(view.getContext().getApplicationContext(), DishDetailActivity.class);
-                    detail.putExtra("data", (Dish)listview.getItemAtPosition(position));
+                    detail.putExtra("data", (DishOld)listview.getItemAtPosition(position));
                     startActivity(detail);
                 }
             });
@@ -105,7 +102,7 @@ public class ListFragment extends SherlockFragment {
     private Mensa mensa;
     private ListView listview;
     private View view;
-    private List<Dish> dList;
+    private List<DishOld> dList;
     private DishItemAdapter adapter;
     // String for finding an value in the bundle
     private static final String DATE_IDENTIFY = "DATE";

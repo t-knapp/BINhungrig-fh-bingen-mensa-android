@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Binder;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.activeandroid.ActiveAndroid;
@@ -14,9 +15,12 @@ import com.activeandroid.query.Select;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import de.fhbingen.mensa.SettingsFragment;
 import de.fhbingen.mensa.data.Changes;
 import de.fhbingen.mensa.data.event.ServiceEvent;
 import de.fhbingen.mensa.data.orm.Building;
@@ -200,49 +204,69 @@ public class LocalWordService extends Service {
                     //Clear
                     //clearDB();
 
-                    try {
-                        //Simulate Activity
-                        Thread.sleep(10000);
 
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                        Log.d("myThread", "running ...");
+                        isRunning = true;
 
+                        try {
+                            //Simulate Activity
+                            Thread.sleep(3000);
 
-                    Sequence seq = new Select().from(Sequence.class).where("seq_name = ?", Sequence.SEQNAME).executeSingle();
-                    if (seq == null) {
-                        seq = new Sequence();
-                        seq.save();
-                    }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
 
-                    long seqNum = seq.getLastSequence();
+                        // Current Sequence
+                        Sequence seq = new Select().from(Sequence.class).where("seq_name = ?", Sequence.SEQNAME).executeSingle();
+                        if (seq == null) {
+                            seq = new Sequence();
+                            seq.save();
+                        }
 
-                    String url = "http://192.168.2.165:8080/changes?buildings={buildings}&seq={seq}";
+                        long seqNum = seq.getLastSequence();
 
-                    RestTemplate restTemplate = new RestTemplate();
+                        // Subscribed Buildings
+                        Set<String> subscribedBuildings = PreferenceManager
+                                .getDefaultSharedPreferences(getApplicationContext())
+                                .getStringSet(SettingsFragment.REF_KEY_BUILDINGS, null);
+                        String[] buildingIds;
+                        if(subscribedBuildings != null){
+                            buildingIds = subscribedBuildings.toArray(new String[subscribedBuildings.size()]);
+                        } else {
+                            //TODO: Fix ugly ...
+                            buildingIds = new String[] {"-1"};
+                        }
 
-                    restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+                        //String url = "http://192.168.178.28:8080/changes?buildings={buildings}&seq={seq}";
+                        //String url = "http://192.168.2.165:8080/changes?buildings={buildings}&seq={seq}";
 
-                    //TOOD: Builder new Long[] {4l,8l}
-                    Changes result = restTemplate.getForObject(url, Changes.class, "4,8", seqNum);
+                        RestTemplate restTemplate = new RestTemplate();
 
-                    Log.d("myThread", "/GET");
-                    if (result.needToUpdate) {
-                        Log.d("myThread", "#buildings: " + result.getBuildings().size());
-                        Log.d("myThread", "#dishes:    " + result.getDishes().size());
-                        Log.d("myThread", "#deletes:   " + result.getDeletes().size());
-                        Log.d("myThread", "#ratings:   " + result.getRatings().size());
-                        Log.d("myThread", "#date:      " + result.getDates().size());
-                        Log.d("myThread", "#offeredAt: " + result.getOfferedAt().size());
-                    }
-                    Log.d("myThread", "sequence:   " + result.getSequence().getLastSequence());
+                        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
-                    updateDatabase(result);
+                        //Changes result = restTemplate.getForObject(url, Changes.class, "4,8", seqNum);
 
+                        String url = new UrlBuilder().setSequence(seqNum).setBuildings(buildingIds).getChangesUrl();
+                        Log.d(TAG, url);
 
+                        Changes result = restTemplate.getForObject(url, Changes.class);
 
-                    //Stop service once it finishes its task
-                    stopSelf();
+                        Log.d("myThread", "/GET");
+                        if (result.needToUpdate) {
+                            Log.d("myThread", "#buildings: " + result.getBuildings().size());
+                            Log.d("myThread", "#dishes:    " + result.getDishes().size());
+                            Log.d("myThread", "#deletes:   " + result.getDeletes().size());
+                            Log.d("myThread", "#ratings:   " + result.getRatings().size());
+                            Log.d("myThread", "#date:      " + result.getDates().size());
+                            Log.d("myThread", "#offeredAt: " + result.getOfferedAt().size());
+                        }
+                        Log.d("myThread", "sequence:   " + result.getSequence().getLastSequence());
+
+                        updateDatabase(result);
+
+                        //Stop service once it finishes its task
+                        stopSelf();
+
                 }
             }).start();
 
@@ -285,6 +309,46 @@ public class LocalWordService extends Service {
             //TODO: Send rating to server
             //TODO: Store rating local with dishId and dateId in DB
         }
+    }
+
+    public class UrlBuilder {
+        public static final String BASE = "http://192.168.178.28:8080";
+        ///changes?buildings={buildings}&seq={seq}";
+        ///changes?buildings=&seq=0
+        public UrlBuilder() { }
+
+        private long sequence;
+        private long[] buildings;
+
+        public UrlBuilder setSequence(final long sequence){
+            this.sequence = sequence;
+            return this;
+        }
+
+        public UrlBuilder setBuildings(final long[] buildingsIds){
+            this.buildings = buildingsIds;
+            return this;
+        }
+        public UrlBuilder setBuildings(final String[] buildingsIds){
+            buildings = new long[buildingsIds.length];
+            for (int i = 0; i < buildings.length; i++) {
+                buildings[i] = Long.valueOf(buildingsIds[i]);
+            }
+            return this;
+        }
+
+
+        public String getChangesUrl(){
+            final StringBuilder sb = new StringBuilder();
+            sb.append(BASE).append("/changes?").append("seq=").append(sequence);
+            sb.append("&buildings=");
+            for(int i = 0; i < buildings.length - 1; i++){
+                sb.append(buildings[i]).append(",");
+            }
+            sb.append(buildings[buildings.length-1]);
+            return sb.toString();
+        }
+
     }
 
 }

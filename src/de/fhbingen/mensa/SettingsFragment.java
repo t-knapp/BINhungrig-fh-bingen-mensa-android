@@ -27,6 +27,8 @@ import de.fhbingen.mensa.data.orm.Building;
  */
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener{
 
+    public final static String REF_KEY_BUILDINGS = "pref_key_subscribed_buildings";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +36,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         addPreferencesFromResource(R.xml.preferences);
 
         // Set Values for buildings
-        setupChooseBuildingControl("pref_key_subscribed_buildings");
+        setupChooseBuildingControl(REF_KEY_BUILDINGS);
     }
 
     private void setupChooseBuildingControl(final String preferenceKey){
@@ -63,20 +65,18 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
         if(key.equals("pref_key_user_role")){
             pref.setSummary(((ListPreference) pref).getEntry());
-        } else if (key.equals("pref_key_subscribed_buildings")){
+        } else if (key.equals(REF_KEY_BUILDINGS)){
             final Set<String> values = ((MultiSelectListPreference) pref).getValues();
-
             pref.setSummary(buildingIdsToSummary(values));
         }
+
+        //TODO: Notify Service to update UrlBuilder
     }
 
     private String buildingIdsToSummary(final Set<String> values){
         final List<String> buildingNames = new ArrayList<String>();
-        Building b;
         for(String value : values){
-            b = Building.findByBuildingId(value);
-            if(b != null)
-                buildingNames.add(b.getName());
+            buildingNames.add(Building.findByBuildingId(value).getName());
         }
         return TextUtils.join(", ", buildingNames.toArray());
     }
@@ -94,8 +94,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         preference.setSummary(value);
 
         // Set Summary for Subscribed Buildings
-        preference = findPreference("pref_key_subscribed_buildings");
-        final Set<String> values = getPreferenceManager().getSharedPreferences().getStringSet("pref_key_subscribed_buildings", null);
+        preference = findPreference(REF_KEY_BUILDINGS);
+        final Set<String> values = getPreferenceManager().getSharedPreferences().getStringSet(REF_KEY_BUILDINGS, null);
 
         preference.setSummary(buildingIdsToSummary(values));
     }
@@ -105,4 +105,5 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();
     }
+
 }

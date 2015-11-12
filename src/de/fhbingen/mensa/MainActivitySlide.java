@@ -3,15 +3,18 @@ package de.fhbingen.mensa;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -20,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import de.fhbingen.mensa.data.orm.Building;
 import de.fhbingen.mensa.data.orm.Date;
@@ -129,8 +134,39 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
 
             return true;
         } else if (id == R.id.action_change_building) {
-            //TODO: Spinner dialog with all subscribed buildings
 
+            final Set<String> subscribedBuildingIds = PreferenceManager
+                    .getDefaultSharedPreferences(this)
+                    .getStringSet(SettingsFragment.REF_KEY_BUILDINGS, null);
+
+            if(subscribedBuildingIds == null){
+                Toast.makeText(this, R.string.toast_no_building_subscribed, Toast.LENGTH_LONG).show();
+                return true;
+            }
+            final String[] arValues = subscribedBuildingIds.toArray(new String[subscribedBuildingIds.size()]);
+            final String[] arItems  = new String[subscribedBuildingIds.size()];
+
+            for(int i = 0; i < subscribedBuildingIds.size(); i++){
+                arItems[i] = Building.findByBuildingId(arValues[i]).getName();
+            }
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.dialog_title_select_building);
+            builder.setItems(arItems, new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int position) {
+
+                    dialog.dismiss();
+
+                    Log.v(TAG, arValues[position] + " -> " + arItems[position]);
+                }
+
+            });
+
+            builder.show();
+
+/*
             List<Building> buildings = new Select().from(Building.class).execute();
             for (final Building b : buildings) {
                 Log.v(TAG, b.toString());
@@ -156,7 +192,7 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
                 seq = new Sequence();
             }
             Log.v(TAG, "Sequence: " + seq.toString());
-
+*/
             return true;
         }
 

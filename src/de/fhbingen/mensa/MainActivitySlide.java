@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -23,25 +24,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
-import com.activeandroid.query.Select;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import de.fhbingen.mensa.data.orm.Building;
-import de.fhbingen.mensa.data.orm.Date;
-import de.fhbingen.mensa.data.orm.Dish;
-import de.fhbingen.mensa.data.orm.OfferedAt;
-import de.fhbingen.mensa.data.orm.Sequence;
-import de.fhbingen.mensa.service.LocalWordService;
+import de.fhbingen.mensa.service.UpdateContentService;
 
 public class MainActivitySlide extends Activity implements ActionBar.TabListener {
 
@@ -65,6 +59,9 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d(TAG, "onCreate()");
+
         setContentView(R.layout.activity_main_activity_slide);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -78,8 +75,10 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
         ActiveAndroid.initialize(this);
 
         // Start data Service
-        Intent intent = new Intent(this, LocalWordService.class);
+        // TODO: Just bind to running service
+        Intent intent = new Intent(this, UpdateContentService.class);
         startService(intent);
+
 
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
@@ -143,6 +142,7 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
                 Toast.makeText(this, R.string.toast_no_building_subscribed, Toast.LENGTH_LONG).show();
                 return true;
             }
+
             final String[] arValues = subscribedBuildingIds.toArray(new String[subscribedBuildingIds.size()]);
             final String[] arItems  = new String[subscribedBuildingIds.size()];
 
@@ -150,9 +150,25 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
                 arItems[i] = Building.findByBuildingId(arValues[i]).getName();
             }
 
+            // Get buildingId of last used building
+            final int currentBuildingId = PreferenceManager
+                    .getDefaultSharedPreferences(this)
+                    .getInt(SettingsFragment.REF_KEY_CURRENT_BUILDINGID, SettingsFragment.DUMMY_INT_NOT_USED);
+            int selectedItem = 0;
+            if(currentBuildingId != SettingsFragment.DUMMY_INT_NOT_USED) {
+                boolean found = false;
+                for (int i = 0; i < arValues.length && !found; i++) {
+                    if (currentBuildingId == Integer.parseInt(arValues[i])) {
+                        selectedItem = i;
+                        found = true;
+                    }
+                }
+            }
+
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.dialog_title_select_building);
-            builder.setItems(arItems, new DialogInterface.OnClickListener() {
+            //builder.setItems(arItems, new DialogInterface.OnClickListener() {
+            builder.setSingleChoiceItems(arItems, selectedItem,  new DialogInterface.OnClickListener() {
 
                 @Override
                 public void onClick(DialogInterface dialog, int position) {
@@ -160,6 +176,12 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
                     dialog.dismiss();
 
                     Log.v(TAG, arValues[position] + " -> " + arItems[position]);
+
+                    //TODO: Used common reference to sharedPrefs???
+                    final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(builder.getContext());
+                    final SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putInt(SettingsFragment.REF_KEY_CURRENT_BUILDINGID, Integer.parseInt(arValues[position]));
+                    editor.commit();
                 }
 
             });
@@ -296,7 +318,7 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
     @Override
     protected void onResume() {
         super.onResume();
-        Intent intent= new Intent(this, LocalWordService.class);
+        Intent intent= new Intent(this, UpdateContentService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -306,12 +328,12 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
         unbindService(mConnection);
     }
 
-    private LocalWordService s;
+    private UpdateContentService s;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
-            LocalWordService.MyBinder b = (LocalWordService.MyBinder) binder;
+            UpdateContentService.MyBinder b = (UpdateContentService.MyBinder) binder;
             s = b.getService();
 
             Toast.makeText(MainActivitySlide.this, "Connected", Toast.LENGTH_SHORT)

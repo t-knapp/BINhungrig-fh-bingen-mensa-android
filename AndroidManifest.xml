@@ -157,10 +157,10 @@
         </activity>
 
         <service
-            android:name=".service.LocalWordService"
+            android:name=".service.UpdateContentService"
             android:enabled="true"
             android:exported="false"
-            android:label="LocalWordService" >
+            android:label="UpdateContentService" >
         </service>
 
         <activity

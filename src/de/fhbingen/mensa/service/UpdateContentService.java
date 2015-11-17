@@ -2,6 +2,7 @@ package de.fhbingen.mensa.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Binder;
@@ -17,8 +18,9 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import de.fhbingen.mensa.SettingsFragment;
@@ -189,10 +191,9 @@ public class UpdateContentService extends Service {
     public void onEvent(SettingsChangeEvent event) {
         Log.d(TAG, "onEvent: SettingsChangeEvent: " + event.getChangePreference());
 
-        //TODO: Workaround: If buildings changed, set local sequence to 0 to fetch all data
-        //TODO: Better: Use a sequence per building
+        //TODO: Server uses Map of BuildingId:BuildingSequence
 
-        // Run update if subscribed buildings changed
+        // Run update if subscribed Buildings changed
         if(event.getChangePreference().equals(SettingsFragment.REF_KEY_BUILDINGS)) {
             doWork();
         }
@@ -212,36 +213,45 @@ public class UpdateContentService extends Service {
             public void run() {
                 Log.d(TAG, "run()");
 
-                // Subscribed Buildings
-                final Set<String> subscribedBuildings = PreferenceManager
-                        .getDefaultSharedPreferences(getApplicationContext())
+
+                final UrlBuilder urlBuilder = new UrlBuilder();
+
+                // Subscribed Buildings with BuildingSequence
+                final SharedPreferences sharedPreferences = PreferenceManager
+                        .getDefaultSharedPreferences(getApplicationContext());
+                final Set<String> subscribedBuildings = sharedPreferences
                         .getStringSet(SettingsFragment.REF_KEY_BUILDINGS, null);
-                String[] buildingIds;
+
                 boolean firstRun = true;
                 if(subscribedBuildings != null){
-                    buildingIds = subscribedBuildings.toArray(new String[subscribedBuildings.size()]);
+                    String strBuildingSequence;
+                    for(final String strBuildingId : subscribedBuildings){
+                        strBuildingSequence = sharedPreferences.getString(
+                                SettingsFragment.REF_PREFIX_BUILDINGSEQ + strBuildingId, "0");
+                        urlBuilder.addBuildingWithSequence(strBuildingId, strBuildingSequence);
+                    }
                     firstRun = false;
-                } else {
-                    //TODO: Fix ugly ...
-                    buildingIds = new String[] {"1703"};
                 }
 
                 // Current Sequence
-                Sequence seq = new Select().from(Sequence.class).where("seq_name = ?", Sequence.SEQNAME).executeSingle();
+                Sequence seq = new Select()
+                        .from(Sequence.class)
+                        .where("seq_name = ?", Sequence.SEQNAME)
+                        .executeSingle();
                 if (seq == null) {
                     seq = new Sequence();
                     seq.save();
                 }
                 long seqNum = seq.getLastSequence();
+                urlBuilder.setSequence(seqNum);
 
-                final RestTemplate restTemplate = new RestTemplate();
-
-                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-
-                String url = new UrlBuilder().setSequence(seqNum).setBuildings(buildingIds).getChangesUrl();
-
+                // Get URL from Builder
+                String url = urlBuilder.getChangesUrl();
                 Log.d(TAG, url);
 
+                // Do REST call
+                final RestTemplate restTemplate = new RestTemplate();
+                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 Changes result = restTemplate.getForObject(url, Changes.class);
 
                 Log.d("myThread", "/GET");
@@ -256,11 +266,19 @@ public class UpdateContentService extends Service {
                 Log.d("myThread", "sequence:   " + result.getSequence().getLastSequence());
 
                 if(firstRun){
-                    //Just update buildings, skipping all other data and sequence
+                    //Just update Buildings, skipping all other data and sequence
                     updateBuildings(result.getBuildings());
                 } else {
                     //Update all data for subscribed buidlings
                     updateDatabase(result);
+
+                    // Set BuildingSequences for further updates
+                    final String strLastSequence = Long.toString(result.getSequence().getLastSequence());
+                    final SharedPreferences.Editor editor = sharedPreferences.edit();
+                    for(final String strBuildingId : urlBuilder.getBuildingsIds()){
+                        editor.putString(SettingsFragment.REF_PREFIX_BUILDINGSEQ + strBuildingId, strLastSequence);
+                    }
+                    editor.apply();
                 }
 
                 //Stop service once it finishes its task
@@ -318,28 +336,35 @@ public class UpdateContentService extends Service {
         //public static final String BASE = "http://192.168.178.28:8080";
         public static final String BASE = "http://192.168.2.165:8080";
 
-        public UrlBuilder() { }
+        public UrlBuilder() {
+            sequence = 0;
+        }
 
         private long sequence;
-        private String[] buildings;
+        private final Map<String, String> mapOfBuildings = new HashMap<String, String>();
 
         public UrlBuilder setSequence(final long sequence){
             this.sequence = sequence;
             return this;
         }
 
-        public UrlBuilder setBuildings(final String[] buildingsIds){
-            buildings = buildingsIds;
+        public UrlBuilder addBuildingWithSequence(final String buildingId, final String buildingSequence){
+            mapOfBuildings.put(buildingId, buildingSequence);
             return this;
+        }
+
+        public Set<String> getBuildingsIds(){
+            return mapOfBuildings.keySet();
         }
 
         public String getChangesUrl(){
             final StringBuilder sb = new StringBuilder();
-            sb.append(BASE).append("/changes?").append("seq=").append(sequence);
-            if(buildings != null) {
-                sb.append("&buildings=");
-                sb.append(TextUtils.join(",", buildings));
+            sb.append(BASE).append("/dev/changes?seq=").append(sequence);
+
+            for(final Map.Entry<String, String> entry : mapOfBuildings.entrySet()){
+                sb.append("&" + entry.getKey() + "=" + entry.getValue());
             }
+
             return sb.toString();
         }
 

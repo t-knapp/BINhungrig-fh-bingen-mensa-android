@@ -7,7 +7,9 @@ import android.preference.ListPreference;
 import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,9 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
     // Key for storing the current selected building in MainActivity
     public final static String REF_KEY_CURRENT_BUILDINGID = "pref_key_current_building";
+
+    // Prefix of Key for buildingSequences
+    public final static String REF_PREFIX_BUILDINGSEQ = "building_sequence_";
 
     // Dummy Int value for not used
     public final static int DUMMY_INT_NOT_USED = 1703;
@@ -71,7 +76,28 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         if(key.equals(REF_KEY_USERROLE)){
             pref.setSummary(((ListPreference) pref).getEntry());
         } else if (key.equals(REF_KEY_BUILDINGS)){
+            // Selected buildingIds new added
             final Set<String> values = ((MultiSelectListPreference) pref).getValues();
+
+            // Set individual sequences for every building to zero
+            SharedPreferences prefs = getPreferenceManager().getSharedPreferences();
+            SharedPreferences.Editor editor = prefs.edit();
+            Integer currentBuildingId = null;
+            for(final String value : values) {
+                if(currentBuildingId == null){
+                    currentBuildingId = Integer.parseInt(value);
+                }
+                if(!prefs.contains(REF_PREFIX_BUILDINGSEQ + value)) {
+                    editor.putString(REF_PREFIX_BUILDINGSEQ + value, "0");
+                }
+            }
+
+            // Set current selected building
+            editor.putInt(REF_KEY_CURRENT_BUILDINGID, currentBuildingId);
+
+            editor.commit();
+
+            // Set Item Summary
             pref.setSummary(buildingIdsToSummary(values));
         }
 

@@ -126,7 +126,7 @@ public class Dish extends Model {
     @Override
     public String toString() {
         return String.format(
-                "DishOld [id: %d, seq: %d, title: %s, priceStd: %f, priceNonStd: %f, fk_buildingId: %d]",
+                "Dish [id: %d, seq: %d, title: %s, priceStd: %f, priceNonStd: %f, fk_buildingId: %d]",
                 dishId, seq, title, priceStd, priceNonStd, buildingId
         );
     }

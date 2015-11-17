@@ -13,6 +13,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -24,17 +25,26 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
+import com.activeandroid.Cache;
+import com.activeandroid.query.Select;
 
+import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import de.fhbingen.mensa.data.orm.Building;
+import de.fhbingen.mensa.data.orm.Dish;
+import de.fhbingen.mensa.data.orm.OfferedAt;
+import de.fhbingen.mensa.data.orm.Sequence;
 import de.fhbingen.mensa.service.UpdateContentService;
 
 public class MainActivitySlide extends Activity implements ActionBar.TabListener {
@@ -188,7 +198,7 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
 
             builder.show();
 
-/*
+
             List<Building> buildings = new Select().from(Building.class).execute();
             for (final Building b : buildings) {
                 Log.v(TAG, b.toString());
@@ -199,8 +209,8 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
                 Log.v(TAG, d.toString());
             }
 
-            List<Date> dates = new Select().from(Date.class).execute();
-            for (final Date d : dates) {
+            List<de.fhbingen.mensa.data.orm.Date> dates = new Select().from(de.fhbingen.mensa.data.orm.Date.class).execute();
+            for (final de.fhbingen.mensa.data.orm.Date d : dates) {
                 Log.v(TAG, d.toString());
             }
 
@@ -214,7 +224,7 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
                 seq = new Sequence();
             }
             Log.v(TAG, "Sequence: " + seq.toString());
-*/
+
             return true;
         }
 
@@ -290,6 +300,9 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
+        // Date argument in yyyy-MM-yy format
+        private static final String ARG_DATE = "arg_date";
+
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -297,7 +310,16 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
         public static PlaceholderFragment newInstance(int sectionNumber) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            //args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+
+            // Put date in yyyy-MM-dd format as argument in fragment
+            final Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DAY_OF_YEAR, sectionNumber - 2);
+            java.util.Date date = cal.getTime();
+            // @see: https://docs.oracle.com/javase/tutorial/i18n/format/simpleDateFormat.html
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN);
+            args.putString(ARG_DATE, formatter.format(date));
+
             fragment.setArguments(args);
             return fragment;
         }
@@ -305,12 +327,38 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
         public PlaceholderFragment() {
         }
 
+        private DishCursorAdapter dishCursorAdapter;
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main_activity_slide, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+
+            final Date date = Date.valueOf(getArguments().getString(ARG_DATE));
+            final int currentBuildingId = PreferenceManager
+                    .getDefaultSharedPreferences(getActivity())
+                    .getInt(SettingsFragment.REF_KEY_CURRENT_BUILDINGID, SettingsFragment.DUMMY_INT_NOT_USED);
+
+            //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+            //textView.setText(getString(R.string.section_format, getArguments().getString(ARG_DATE)));
+
+            // Build View
+
+            String stmtnew = Dish.getSqlStatementForDateAndBuilding(date, 1703);
+            Log.v("new", stmtnew);
+
+            String[] argsNew = new String[] {date.toString(), Integer.toString(currentBuildingId)};
+            Log.v("new", Arrays.toString(argsNew));
+
+            Cursor dishCursorNew = Cache.openDatabase().rawQuery(stmtnew, argsNew);
+
+            Log.d("onCreateView()", "count: " + dishCursorNew.getCount());
+            ListView listView = (ListView) rootView.findViewById(R.id.listView_dishes);
+            dishCursorAdapter = new DishCursorAdapter(container.getContext(), dishCursorNew);
+            listView.setAdapter(dishCursorAdapter);
+
+            //dishCursorNew.close();
+
             return rootView;
         }
     }

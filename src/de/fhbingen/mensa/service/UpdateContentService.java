@@ -189,6 +189,9 @@ public class UpdateContentService extends Service {
     public void onEvent(SettingsChangeEvent event) {
         Log.d(TAG, "onEvent: SettingsChangeEvent: " + event.getChangePreference());
 
+        //TODO: Workaround: If buildings changed, set local sequence to 0 to fetch all data
+        //TODO: Better: Use a sequence per building
+
         // Run update if subscribed buildings changed
         if(event.getChangePreference().equals(SettingsFragment.REF_KEY_BUILDINGS)) {
             doWork();

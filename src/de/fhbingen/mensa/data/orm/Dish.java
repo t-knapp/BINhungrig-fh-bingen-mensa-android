@@ -47,6 +47,12 @@ public class Dish extends Model {
     @Column(name = "title")
     public  String title;
 
+    @Column(name = "ingredients")
+    public String ingredients;
+
+    @Column(name = "type")
+    public byte type;
+
     @Column(name = "priceStd")
     public float priceStd;
 
@@ -99,13 +105,17 @@ public class Dish extends Model {
                 .join(OfferedAt.class).on("dishId = fk_dishId")
                 .join(Date.class).on("fk_dateId = dateId")
                         //.join(Building.class).on("buildingId = fk_buildingId")
-                .where("date = ? AND fk_buildingId = ?", date, subscribedBuilding);
+                .where("date = ? AND fk_buildingId = ?", date, subscribedBuilding)
+                .orderBy("dishId DESC");
         //.and("buildingId IN (?)", buildings);
-        return tmp.toSql();
+        String sql = tmp.toSql();
+        Log.v("getSqlStatement...", sql);
+        return  sql;
     }
 
 
     public static Cursor fetchResultCursor(final java.sql.Date date, final long subscribedBuilding){
+        Log.v("fetchResultCursor()", String.format("(%s, %d)", date.toString(), subscribedBuilding));
         return Cache.openDatabase().rawQuery(
                 getSqlStatementForDateAndBuilding(date, subscribedBuilding),
                 new String[] {date.toString(), Long.toString(subscribedBuilding)}

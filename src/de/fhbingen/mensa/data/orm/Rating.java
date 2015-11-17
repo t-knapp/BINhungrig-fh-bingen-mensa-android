@@ -20,7 +20,7 @@ public class Rating extends Model {
     public long seq;
 
     @Column(name = "date")
-    public Date date;
+    public String date;
 
     @Column(name = "value")
     public short value;
@@ -35,7 +35,7 @@ public class Rating extends Model {
     public String toString() {
         return String.format(
                 "Rating [id: %d, seq: %d, date: %s, value: %d, priceNonStd: %f, fk_dishId: %d]",
-                ratingId, seq, date.toString(), value, dishId
+                ratingId, seq, date, value, dishId
         );
     }
 }

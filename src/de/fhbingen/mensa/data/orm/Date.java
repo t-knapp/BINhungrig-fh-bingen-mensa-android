@@ -17,7 +17,7 @@ public class Date extends Model {
     private long seq;
 
     @Column(name = "date")
-    private java.sql.Date date;
+    private String date;
 
     //TODO: getDishes: Join Dishes via OfferedAt
 
@@ -29,7 +29,7 @@ public class Date extends Model {
         return seq;
     }
 
-    public java.sql.Date getDate() {
+    public String getDate() {
         return date;
     }
 

@@ -53,11 +53,14 @@ public class Dish extends Model {
     @Column(name = "type")
     public byte type;
 
-    @Column(name = "priceStd")
+    public static final String COL_PRICE_STD = "priceStd";
+    @Column(name = COL_PRICE_NON_STD)
     public float priceStd;
 
-    @Column(name = "priceNonStd")
+    public static final String COL_PRICE_NON_STD = "priceNonStd";
+    @Column(name = COL_PRICE_NON_STD)
     public float priceNonStd;
+
 
     //@Column(name = "fk_buildingId")
     //public Building building;

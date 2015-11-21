@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -25,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +46,7 @@ import java.util.Set;
 import de.fhbingen.mensa.data.orm.Building;
 import de.fhbingen.mensa.data.orm.Dish;
 import de.fhbingen.mensa.data.orm.OfferedAt;
+import de.fhbingen.mensa.data.orm.Rating;
 import de.fhbingen.mensa.data.orm.Sequence;
 import de.fhbingen.mensa.service.UpdateContentService;
 
@@ -209,6 +212,11 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
                 Log.v(TAG, d.toString());
             }
 
+            List<Rating> ratings = new Select().from(Rating.class).execute();
+            for (final Rating r : ratings){
+                Log.v(TAG, r.toString());
+            }
+
             List<de.fhbingen.mensa.data.orm.Date> dates = new Select().from(de.fhbingen.mensa.data.orm.Date.class).execute();
             for (final de.fhbingen.mensa.data.orm.Date d : dates) {
                 Log.v(TAG, d.toString());
@@ -345,19 +353,27 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
             // Build View
 
             String stmtnew = Dish.getSqlStatementForDateAndBuilding(date, 1703);
-            Log.v("new", stmtnew);
+            //Log.v("new", stmtnew);
 
             String[] argsNew = new String[] {date.toString(), Integer.toString(currentBuildingId)};
-            Log.v("new", Arrays.toString(argsNew));
+            //Log.v("new", Arrays.toString(argsNew));
 
             Cursor dishCursorNew = Cache.openDatabase().rawQuery(stmtnew, argsNew);
 
-            Log.d("onCreateView()", "count: " + dishCursorNew.getCount());
-            ListView listView = (ListView) rootView.findViewById(R.id.listView_dishes);
+            //Log.d("onCreateView()", "count: " + dishCursorNew.getCount());
+            final ListView listView = (ListView) rootView.findViewById(R.id.listView_dishes);
             dishCursorAdapter = new DishCursorAdapter(container.getContext(), dishCursorNew);
             listView.setAdapter(dishCursorAdapter);
 
-            //dishCursorNew.close();
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    final Intent detail = new Intent(view.getContext(), DishDetailActivity.class);
+                    final SQLiteCursor cursor = (SQLiteCursor) parent.getAdapter().getItem(position);
+                    detail.putExtra("dishId", cursor.getInt(cursor.getColumnIndex("dishId")));
+                    startActivity(detail);
+                }
+            });
 
             return rootView;
         }

@@ -9,6 +9,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.From;
 import com.activeandroid.query.Select;
+import com.activeandroid.util.SQLiteUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -54,7 +55,7 @@ public class Dish extends Model {
     public byte type;
 
     public static final String COL_PRICE_STD = "priceStd";
-    @Column(name = COL_PRICE_NON_STD)
+    @Column(name = COL_PRICE_STD)
     public float priceStd;
 
     public static final String COL_PRICE_NON_STD = "priceNonStd";
@@ -72,6 +73,38 @@ public class Dish extends Model {
     public int getDishId() {
         return dishId;
     }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getIngredients() {
+        return ingredients;
+    }
+
+    public int getSeq() {
+        return seq;
+    }
+
+    public byte getType() {
+        return type;
+    }
+
+    public float getPriceStd() {
+        return priceStd;
+    }
+
+    public float getPriceNonStd() {
+        return priceNonStd;
+    }
+
+    public long getBuildingId() {
+        return buildingId;
+    }
+
+    //
+    // Methods
+    //
 
     public Dish update(final Dish newer){
         if(newer.dishId == this.dishId) {
@@ -123,6 +156,35 @@ public class Dish extends Model {
                 getSqlStatementForDateAndBuilding(date, subscribedBuilding),
                 new String[] {date.toString(), Long.toString(subscribedBuilding)}
         );
+    }
+
+    public static Dish findByDishId(final int dishId){
+        return new Select().from(Dish.class).where("dishId = ?", dishId).executeSingle();
+    }
+
+    public float getAvgRating(){
+        final String sql = "SELECT AVG(`value`) AS `AVG` FROM `Ratings` WHERE `" + Rating.COL_FK_DISHID + "` = ?";
+        final Cursor cursor = Cache.openDatabase().rawQuery(sql, new String[]{Integer.toString(dishId)});
+        final float result = cursor.getFloat(cursor.getColumnIndexOrThrow("AVG"));
+        cursor.close();
+        return result;
+    }
+
+    public float getAvgRatingForDate(final String date){
+        final String sql = String.format(
+                "SELECT AVG(`value`) AS `AVG` FROM `Ratings` WHERE `%s` = ? AND `%s` = ?"
+                , Rating.COL_FK_DISHID
+                , Rating.COL_DATE
+        );
+        final Cursor cursor = Cache.openDatabase().rawQuery(sql,
+                new String[]{
+                        Integer.toString(dishId)
+                        , date
+                }
+        );
+        final float result = cursor.getFloat(cursor.getColumnIndexOrThrow("AVG"));
+        cursor.close();
+        return result;
     }
 
 

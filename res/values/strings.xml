@@ -43,7 +43,7 @@
     <string name="NoDishes">Kein Speiseplan verfügbar.</string>
     <string name="auto_download_large_pictures_description_toast">Um die volle Auflösung zu laden, klicken Sie auf das Vorschaubild.</string>
 
-    <!-- DishDetailActivity -->
+    <!-- DishDetailActivityOld -->
     <string name="no_rating_possible">Keine Bewertung möglich</string>
     <string name="own_rating">Eigene Bewertung</string>
     <string name="toast_upload_successful">Upload erfolgreich</string>

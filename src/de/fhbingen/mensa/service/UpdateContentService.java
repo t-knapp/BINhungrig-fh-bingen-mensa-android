@@ -36,6 +36,7 @@ import de.fhbingen.mensa.data.orm.Date;
 import de.fhbingen.mensa.data.orm.Delete;
 import de.fhbingen.mensa.data.orm.Dish;
 import de.fhbingen.mensa.data.orm.OfferedAt;
+import de.fhbingen.mensa.data.orm.Rating;
 import de.fhbingen.mensa.data.orm.Sequence;
 import de.greenrobot.event.EventBus;
 
@@ -165,8 +166,11 @@ public class UpdateContentService extends Service {
                 //Building
                 updateBuildings(changes.getBuildings());
 
-                //DishOld
+                //Dish
                 updateDishes(changes.getDishes());
+
+                //Ratings
+                updateRatings(changes.getRatings());
 
                 //Date
                 updateDates(changes.getDates());
@@ -189,6 +193,23 @@ public class UpdateContentService extends Service {
         } else {
             Log.v(TAG, "Nothing to update.");
             EventBus.getDefault().post(new ServiceEvent(ServiceEvent.EventType.ALLREADYUPTODATE, "Nothing to do here."));
+        }
+    }
+
+    private void updateRatings(List<Rating> ratings) {
+        Rating selectedRating;
+        for (final Rating r : ratings) {
+            selectedRating = new Select()
+                    .from(r.getClass())
+                    .where(Rating.COL_RATINGID + " = ? ", r.getRatingId())
+                    .executeSingle();
+            if (selectedRating != null) {
+                Log.d(TAG, "Updating Rating [dish: " + r.getDishId() + ", date: " + r.getDate() + ", value: " + r.getValue() + "]");
+                selectedRating.update(r).save();
+            } else {
+                Log.d(TAG, "Creating new Rating [dish: " + r.getDishId() + ", date: " + r.getDate() + ", value: " + r.getValue() + "]");
+                r.save();
+            }
         }
     }
 

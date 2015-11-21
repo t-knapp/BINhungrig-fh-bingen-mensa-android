@@ -1,10 +1,13 @@
 package de.fhbingen.mensa.service;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -25,6 +28,7 @@ import java.util.Set;
 
 import de.fhbingen.mensa.SettingsFragment;
 import de.fhbingen.mensa.data.Changes;
+import de.fhbingen.mensa.data.event.NetworkStatusEvent;
 import de.fhbingen.mensa.data.event.ServiceEvent;
 import de.fhbingen.mensa.data.event.SettingsChangeEvent;
 import de.fhbingen.mensa.data.orm.Building;
@@ -39,7 +43,8 @@ public class UpdateContentService extends Service {
 
     private static final String TAG = UpdateContentService.class.getSimpleName();
 
-    private boolean isRunning  = false;
+    private boolean isRunning   = false;
+    private boolean isConnected = false;
 
     public static void clearDB(){
         SQLiteDatabase db = ActiveAndroid.getDatabase();
@@ -199,10 +204,23 @@ public class UpdateContentService extends Service {
         }
     };
 
+    // EventBus NetworkStatus
+    public void onEvent(NetworkStatusEvent event){
+        this.isConnected = event.isConnected();
+
+        // TODO: Start doWork if online again?
+    }
+
     /**
      * Do blocking network stuff in separate thread.
      */
     private void doWork(){
+
+        if (!this.isConnected){
+            Log.v(TAG, "doWork(); Skipping b.c. offline");
+            return;
+        }
+
         //Creating new thread for my service
         //Always write your long running tasks in a separate thread, to avoid ANR
         new Thread(new Runnable() {
@@ -297,6 +315,13 @@ public class UpdateContentService extends Service {
         if(!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }
+
+        // Initial determination of internet state
+        ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        this.isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
         // Do the work (in new thread)
         doWork();

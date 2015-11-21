@@ -166,8 +166,17 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/action_settings"
-            android:parentActivityName="de.fhbingen.mensa.MainActivitySlide" >
+            android:parentActivityName=".MainActivitySlide" >
         </activity>
+
+        <receiver
+            android:name=".NetworkStateReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"></action>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

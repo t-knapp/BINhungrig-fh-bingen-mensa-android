@@ -4,5 +4,6 @@
     <color name="fh_bingen_blue">#FF00599D</color>
     <color name="fh_play_store_green">#96AA39</color>
     <color name="fh_holo_light_green">#99cc00</color>
+    <color name="grey">#717171</color>
     
 </resources>

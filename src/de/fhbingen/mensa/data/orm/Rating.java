@@ -69,4 +69,5 @@ public class Rating extends Model {
         }
         return this;
     }
+
 }

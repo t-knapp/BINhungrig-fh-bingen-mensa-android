@@ -24,4 +24,7 @@
     <dimen name="ingredient_margin_bottom">3dp</dimen>
 
     <dimen name="about_picture_size">210dp</dimen>
+
+    <dimen name="no_padding">0dp</dimen>
+    <dimen name="dish_detail_padding">4dp</dimen>
 </resources>

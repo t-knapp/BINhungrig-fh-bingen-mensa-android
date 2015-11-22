@@ -165,6 +165,7 @@ public class Dish extends Model {
     public float getAvgRating(){
         final String sql = "SELECT AVG(`value`) AS `AVG` FROM `Ratings` WHERE `" + Rating.COL_FK_DISHID + "` = ?";
         final Cursor cursor = Cache.openDatabase().rawQuery(sql, new String[]{Integer.toString(dishId)});
+        cursor.moveToFirst();
         final float result = cursor.getFloat(cursor.getColumnIndexOrThrow("AVG"));
         cursor.close();
         return result;
@@ -182,11 +183,41 @@ public class Dish extends Model {
                         , date
                 }
         );
+        cursor.moveToFirst();
         final float result = cursor.getFloat(cursor.getColumnIndexOrThrow("AVG"));
         cursor.close();
         return result;
     }
 
+    public int[] getRatings() {
+        final String sql = String.format(
+                "SELECT value, COUNT(value) FROM `Ratings` WHERE %s = ? GROUP BY value"
+                , Rating.COL_FK_DISHID);
+        final Cursor cursor = Cache.openDatabase().rawQuery(sql,
+                new String[]{
+                        Integer.toString(dishId)
+                }
+        );
+        final int[] result = new int[7]; // Index 5 is maximum; Index 6 is number of votes
+        int numStars;
+        int numVotes;
+        int maxNumVotes = 0;
+        int sumVotes = 0;
+        while (cursor.moveToNext()){
+            numStars = cursor.getInt(0); // value 1...5 Stars
+            numVotes = cursor.getInt(1); // count of occurences
+            result[numStars - 1] = numVotes;
+            if(numVotes > maxNumVotes){
+                maxNumVotes = numVotes;
+            }
+            sumVotes += numVotes;
+        }
+        result[5] = maxNumVotes;
+        result[6] = sumVotes;
+
+        cursor.close();
+        return result;
+    }
 
     @Override
     public String toString() {

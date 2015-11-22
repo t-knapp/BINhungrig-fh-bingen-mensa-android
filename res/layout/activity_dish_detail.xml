@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="de.fhbingen.mensa.DishDetailActivity">
+    android:layout_height="match_parent"
+    tools:context="de.fhbingen.mensa.DishDetailActivity"
+    android:padding="@dimen/dish_detail_padding">
 
     <ScrollView
         android:id="@+id/scrollView1"
@@ -52,7 +50,8 @@
                 android:layout_marginTop="10dp"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="[Dummy: Dish Text Dish Text Dish Text]" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -114,8 +113,9 @@
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
                         android:text="@string/dummy_numberRatings"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:visibility="invisible" />
+                        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
+                        android:visibility="visible"
+                        android:textColor="@color/grey" />
 
                 </LinearLayout>
 

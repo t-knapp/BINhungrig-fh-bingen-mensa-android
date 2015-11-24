@@ -35,6 +35,7 @@ import de.fhbingen.mensa.data.orm.Building;
 import de.fhbingen.mensa.data.orm.Date;
 import de.fhbingen.mensa.data.orm.Delete;
 import de.fhbingen.mensa.data.orm.Dish;
+import de.fhbingen.mensa.data.orm.Ingredient;
 import de.fhbingen.mensa.data.orm.OfferedAt;
 import de.fhbingen.mensa.data.orm.Rating;
 import de.fhbingen.mensa.data.orm.Sequence;
@@ -166,6 +167,9 @@ public class UpdateContentService extends Service {
                 //Building
                 updateBuildings(changes.getBuildings());
 
+                //Ingredients
+                updateIngredients(changes.getIngredients());
+
                 //Dish
                 updateDishes(changes.getDishes());
 
@@ -193,6 +197,23 @@ public class UpdateContentService extends Service {
         } else {
             Log.v(TAG, "Nothing to update.");
             EventBus.getDefault().post(new ServiceEvent(ServiceEvent.EventType.ALLREADYUPTODATE, "Nothing to do here."));
+        }
+    }
+
+    private void updateIngredients(List<Ingredient> ingredients) {
+        Ingredient selectedIngredient;
+        for (final Ingredient i : ingredients) {
+            selectedIngredient = new Select()
+                    .from(i.getClass())
+                    .where(Ingredient.COL_KEY + " = ? ", i.getKey())
+                    .executeSingle();
+            if (selectedIngredient != null) {
+                Log.d(TAG, "Updating " + i.toString());
+                selectedIngredient.update(i).save();
+            } else {
+                Log.d(TAG, "Creating new " + i.toString());
+                i.save();
+            }
         }
     }
 
@@ -407,7 +428,7 @@ public class UpdateContentService extends Service {
 
         public String getChangesUrl(){
             final StringBuilder sb = new StringBuilder();
-            sb.append(BASE).append("/dev/changes?seq=").append(sequence);
+            sb.append(BASE).append("/changes?seq=").append(sequence);
 
             for(final Map.Entry<String, String> entry : mapOfBuildings.entrySet()){
                 sb.append("&" + entry.getKey() + "=" + entry.getValue());

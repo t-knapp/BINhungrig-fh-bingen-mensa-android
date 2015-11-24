@@ -5,8 +5,10 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -26,6 +28,7 @@ import java.util.Locale;
 
 import de.fhbingen.mensa.data.orm.Building;
 import de.fhbingen.mensa.data.orm.Dish;
+import de.fhbingen.mensa.data.orm.Ingredient;
 import de.fhbingen.mensa.data.orm.LocalRating;
 import de.fhbingen.mensa.data.orm.Rating;
 import de.fhbingen.mensa.service.UpdateContentService;
@@ -61,6 +64,7 @@ public class DishDetailActivity extends Activity {
         if(this.vh == null){
             this.vh = new ViewHolder();
             vh.dishText = (TextView) findViewById(R.id.dish_text);
+            vh.ingredients = (TextView) findViewById(R.id.textView_Ingredients);
             vh.dishPrice = (TextView) findViewById(R.id.dish_price);
             vh.avgRating = (TextView) findViewById(R.id.textView_avgRating);
             vh.numOfRatings = (TextView) findViewById(R.id.textView_numberRatings);
@@ -89,6 +93,14 @@ public class DishDetailActivity extends Activity {
                 PreferenceManager.getDefaultSharedPreferences(this)
                         .getString(SettingsFragment.REF_KEY_USERROLE, "0")
         );
+
+        //Ingredients
+        final String[] ingredients = Ingredient.loopUpIngredientKeys(dish.getIngredients());
+        if(ingredients.length > 0) {
+            vh.ingredients.setText("Enhält: " + TextUtils.join(", ", ingredients));
+        } else {
+            ((ViewGroup) vh.ingredients.getParent()).removeView(vh.ingredients);
+        }
 
         this.vh.dishPrice.setText(
                 String.format(
@@ -194,7 +206,7 @@ public class DishDetailActivity extends Activity {
     }
 
     private static class ViewHolder {
-        TextView dishText, dishPrice, avgRating, numOfRatings, headingRating;
+        TextView dishText, dishPrice, avgRating, numOfRatings, headingRating, ingredients;
 
         CustomBar[] customBars = new CustomBar[5];
 

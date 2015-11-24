@@ -4,7 +4,8 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="de.fhbingen.mensa.MainActivitySlide$PlaceholderFragment">
+    tools:context="de.fhbingen.mensa.MainActivitySlide$PlaceholderFragment"
+    android:padding="@dimen/dish_detail_padding" >
 
     <ListView
         android:layout_width="match_parent"

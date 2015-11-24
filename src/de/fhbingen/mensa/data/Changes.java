@@ -6,6 +6,7 @@ import de.fhbingen.mensa.data.orm.Building;
 import de.fhbingen.mensa.data.orm.Date;
 import de.fhbingen.mensa.data.orm.Delete;
 import de.fhbingen.mensa.data.orm.Dish;
+import de.fhbingen.mensa.data.orm.Ingredient;
 import de.fhbingen.mensa.data.orm.OfferedAt;
 import de.fhbingen.mensa.data.orm.Rating;
 import de.fhbingen.mensa.data.orm.Sequence;
@@ -16,6 +17,8 @@ import de.fhbingen.mensa.data.orm.Sequence;
 public class Changes {
 
     private List<Building> buildings;
+
+    private List<Ingredient> ingredients;
 
     private List<Dish> dishes;
 
@@ -65,5 +68,9 @@ public class Changes {
 
     public List<Rating> getRatings() {
         return ratings;
+    }
+
+    public List<Ingredient> getIngredients() {
+        return ingredients;
     }
 }

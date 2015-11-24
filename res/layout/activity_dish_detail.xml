@@ -53,6 +53,15 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="[Dummy: Dish Text Dish Text Dish Text]" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="[Dummy: Enthält Milch, Enthält Gluten]"
+                android:id="@+id/textView_Ingredients"
+                android:textColor="@color/grey"
+                android:gravity="center_horizontal" />
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"

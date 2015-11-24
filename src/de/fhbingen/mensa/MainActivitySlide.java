@@ -45,6 +45,7 @@ import java.util.Set;
 
 import de.fhbingen.mensa.data.orm.Building;
 import de.fhbingen.mensa.data.orm.Dish;
+import de.fhbingen.mensa.data.orm.Ingredient;
 import de.fhbingen.mensa.data.orm.LocalRating;
 import de.fhbingen.mensa.data.orm.OfferedAt;
 import de.fhbingen.mensa.data.orm.Rating;
@@ -208,6 +209,11 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
             List<Building> buildings = new Select().from(Building.class).execute();
             for (final Building b : buildings) {
                 Log.v(TAG, b.toString());
+            }
+
+            List<Ingredient> ingredients = new Select().from(Ingredient.class).execute();
+            for (final Ingredient i : ingredients) {
+                Log.v(TAG, i.toString());
             }
 
             List<Dish> dishes = new Select().from(Dish.class).execute();

@@ -12,13 +12,13 @@
         android:id="@+id/webView1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/button_complain"
+        android:layout_above="@+id/button_sendRating"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true" />
 
     <Button
-        android:id="@+id/button_complain"
+        android:id="@+id/button_sendRating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/webView1"

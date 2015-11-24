@@ -163,12 +163,13 @@ public class Dish extends Model {
     }
 
     public float getAvgRating(){
-        final String sql = "SELECT AVG(`value`) AS `AVG` FROM `Ratings` WHERE `" + Rating.COL_FK_DISHID + "` = ?";
+        /*final String sql = "SELECT AVG(`value`) AS `AVG` FROM `Ratings` WHERE `" + Rating.COL_FK_DISHID + "` = ?";
         final Cursor cursor = Cache.openDatabase().rawQuery(sql, new String[]{Integer.toString(dishId)});
         cursor.moveToFirst();
         final float result = cursor.getFloat(cursor.getColumnIndexOrThrow("AVG"));
         cursor.close();
-        return result;
+        return result;*/
+        return Rating.getAvgRating(dishId);
     }
 
     public float getAvgRatingForDate(final String date){

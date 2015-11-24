@@ -1,5 +1,7 @@
 package de.fhbingen.mensa.data.orm;
 
+import android.util.Log;
+
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -8,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -113,4 +116,16 @@ public class Building extends Model {
     public String getName() {
         return name;
     }
+
+    public static boolean isOpenNow(final long buildingId) {
+        final Building dbBuilding = Building.findByBuildingId(buildingId);
+        if(dbBuilding == null){
+            return false;
+        }
+        final Time nowTime = new Time(Calendar.getInstance().getTimeInMillis());
+        Log.v("Building", "nowTime: " + nowTime.toString());
+        return dbBuilding.timeOpenFrom.before(nowTime)
+                && dbBuilding.timeOpenTill.after(nowTime);
+    }
+
 }

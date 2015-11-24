@@ -45,10 +45,13 @@ import java.util.Set;
 
 import de.fhbingen.mensa.data.orm.Building;
 import de.fhbingen.mensa.data.orm.Dish;
+import de.fhbingen.mensa.data.orm.LocalRating;
 import de.fhbingen.mensa.data.orm.OfferedAt;
 import de.fhbingen.mensa.data.orm.Rating;
 import de.fhbingen.mensa.data.orm.Sequence;
 import de.fhbingen.mensa.service.UpdateContentService;
+
+// TODO: Refresh list onResume (for Ratings and Pictures etc.)
 
 public class MainActivitySlide extends Activity implements ActionBar.TabListener {
 
@@ -215,6 +218,11 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
             List<Rating> ratings = new Select().from(Rating.class).execute();
             for (final Rating r : ratings){
                 Log.v(TAG, r.toString());
+            }
+
+            List<LocalRating> localRatings = new Select().from(LocalRating.class).execute();
+            for (final LocalRating lR : localRatings){
+                Log.v(TAG, lR.toString());
             }
 
             List<de.fhbingen.mensa.data.orm.Date> dates = new Select().from(de.fhbingen.mensa.data.orm.Date.class).execute();

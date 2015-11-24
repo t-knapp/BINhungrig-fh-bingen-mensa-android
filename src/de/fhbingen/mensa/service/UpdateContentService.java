@@ -204,10 +204,10 @@ public class UpdateContentService extends Service {
                     .where(Rating.COL_RATINGID + " = ? ", r.getRatingId())
                     .executeSingle();
             if (selectedRating != null) {
-                Log.d(TAG, "Updating Rating [dish: " + r.getDishId() + ", date: " + r.getDate() + ", value: " + r.getValue() + "]");
+                Log.d(TAG, "Updating " + r.toString());
                 selectedRating.update(r).save();
             } else {
-                Log.d(TAG, "Creating new Rating [dish: " + r.getDishId() + ", date: " + r.getDate() + ", value: " + r.getValue() + "]");
+                Log.d(TAG, "Creating new " + r.toString());
                 r.save();
             }
         }
@@ -381,6 +381,8 @@ public class UpdateContentService extends Service {
     public class UrlBuilder {
         //public static final String BASE = "http://192.168.178.28:8080";
         public static final String BASE = "http://192.168.2.165:8080";
+
+        public static final String RATINGS = BASE + "/ratings";
 
         public UrlBuilder() {
             sequence = 0;

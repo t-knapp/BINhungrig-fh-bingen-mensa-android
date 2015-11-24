@@ -1,5 +1,8 @@
 package de.fhbingen.mensa.data.orm;
 
+import android.database.Cursor;
+
+import com.activeandroid.Cache;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -59,15 +62,37 @@ public class Rating extends Model {
         );
     }
 
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
+    public void setDishId(long dishId) {
+        this.dishId = dishId;
+    }
+
     public Rating update(final Rating newRating) {
         if(newRating.ratingId == this.ratingId){
             if(newRating.seq > this.seq){
                 this.date   = newRating.date;
                 this.value  = newRating.value;
                 this.dishId = newRating.dishId;
+                this.seq    = newRating.seq;
             }
         }
         return this;
+    }
+
+    public static float getAvgRating(final int dishId){
+        final String sql = "SELECT AVG(`value`) AS `AVG` FROM `Ratings` WHERE `" + COL_FK_DISHID + "` = ?";
+        final Cursor cursor = Cache.openDatabase().rawQuery(sql, new String[]{Integer.toString(dishId)});
+        cursor.moveToFirst();
+        final float result = cursor.getFloat(cursor.getColumnIndexOrThrow("AVG"));
+        cursor.close();
+        return result;
     }
 
 }

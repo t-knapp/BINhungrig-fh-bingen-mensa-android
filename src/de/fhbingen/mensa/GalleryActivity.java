@@ -27,7 +27,7 @@ public class GalleryActivity extends SherlockActivity {
 		setContentView(R.layout.activity_gallery);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        btn = (Button) findViewById(R.id.button_complain);
+        btn = (Button) findViewById(R.id.button_sendRating);
 		
 		 webView = (WebView) findViewById(R.id.webView1);
 				

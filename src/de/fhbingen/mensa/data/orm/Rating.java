@@ -95,4 +95,9 @@ public class Rating extends Model {
         return result;
     }
 
+    //
+    // Important for "dynamic" deletion
+    //
+    public final static String DELETEID = COL_RATINGID;
+
 }

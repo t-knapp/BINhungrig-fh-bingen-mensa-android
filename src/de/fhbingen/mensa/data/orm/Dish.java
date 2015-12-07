@@ -230,4 +230,9 @@ public class Dish extends Model {
     }
 
     public final static String ARG_DATE = "arg_date";
+
+    //
+    // Important for "dynamic" deletion
+    //
+    public final static String DELETEID = COL_DISHID;
 }

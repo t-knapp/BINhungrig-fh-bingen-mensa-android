@@ -72,4 +72,9 @@ public class Ingredient extends Model {
         }
         return this;
     }
+
+    //
+    // Important for "dynamic" deletion
+    //
+    public final static String DELETEID = COL_KEY;
 }

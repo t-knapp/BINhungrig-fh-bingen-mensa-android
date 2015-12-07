@@ -44,7 +44,10 @@ public class Building extends Model {
         this.subscribed   = 0;
     }
 
-    @Column(name = "buildingId", unique = true)
+
+
+    public final static String COL_BUILDINGID = "buildingId";
+    @Column(name = COL_BUILDINGID, unique = true)
     public int buildingId;
 
     @Column(name = "seq", unique = true)
@@ -65,6 +68,11 @@ public class Building extends Model {
     @Column(name = "subscribed")
     @JsonIgnore
     public int subscribed;
+
+    //
+    // Important for "dynamic" deletion
+    //
+    public final static String DELETEID = COL_BUILDINGID;
 
     public List<Dish> getDishes(){
         return getMany(Dish.class, "fk_buildingId");

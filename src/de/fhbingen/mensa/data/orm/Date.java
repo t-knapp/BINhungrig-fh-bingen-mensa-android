@@ -10,7 +10,8 @@ import com.activeandroid.annotation.Table;
 @Table(name = "Dates")
 public class Date extends Model {
 
-    @Column(name = "dateId", unique = true)
+    public static final String COL_DATEID = "dateId";
+    @Column(name = COL_DATEID, unique = true)
     private long dateId;
 
     @Column(name = "seq")
@@ -50,4 +51,9 @@ public class Date extends Model {
                 dateId, seq, date
         );
     }
+
+    //
+    // Important for "dynamic" deletion
+    //
+    public final static String DELETEID = COL_DATEID;
 }

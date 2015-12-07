@@ -130,7 +130,7 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
         );
 
         this.populateRatingView();
-        
+
         //Log.v(TAG, "isBuildingOpenNow : " + this.isBuildingOpenNow(dish.getBuildingId()));
         //Log.v(TAG, "isCurrentDay:       " + isCurrentDay);
 

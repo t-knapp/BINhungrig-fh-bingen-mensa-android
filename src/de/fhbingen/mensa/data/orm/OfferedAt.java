@@ -16,7 +16,8 @@ public class OfferedAt extends Model {
     @Column(name = "fk_dateId")
     private long dateId;
 
-    @Column(name = "seq")
+    private static final String COL_SEQ = "seq";
+    @Column(name = COL_SEQ)
     private long seq;
 
     public long getDishId() {
@@ -48,4 +49,9 @@ public class OfferedAt extends Model {
                 dishId, dateId, seq
         );
     }
+
+    //
+    // Important for "dynamic" deletion
+    //
+    public final static String DELETEID = COL_SEQ;
 }

@@ -11,7 +11,6 @@ import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.activeandroid.ActiveAndroid;
@@ -20,6 +19,7 @@ import com.activeandroid.query.Select;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,11 +74,11 @@ public class UpdateContentService extends Service {
         for (final Building b : buildings) {
             selectedBuilding = new Select().from(b.getClass()).where("buildingId = ?", b.getBuildingId()).executeSingle();
             if (selectedBuilding != null) {
-                Log.d(TAG, "Updating building " + selectedBuilding.getBuildingId());
+                Log.d(TAG, "Updating building " + selectedBuilding.toString());
                 selectedBuilding.update(b).save();
             } else {
                 //New building
-                Log.d(TAG, "Creating new Building " + b.getBuildingId());
+                Log.d(TAG, "Creating new Building " + b.toString());
                 b.save();
             }
         }
@@ -88,7 +88,10 @@ public class UpdateContentService extends Service {
     private void updateDishes(final List<Dish> dishes) {
         Dish selectedDish;
         for (final Dish d : dishes) {
-            selectedDish = new Select().from(d.getClass()).where("dishId = ?", d.getDishId()).executeSingle();
+            selectedDish = new Select()
+                    .from(d.getClass())
+                    .where(Dish.COL_DISHID + " = ?", d.getDishId())
+                    .executeSingle();
             if (selectedDish != null) {
                 //Update DishOld in DB
                 Log.d(TAG, "Updating Dish " + selectedDish.getDishId());
@@ -107,10 +110,10 @@ public class UpdateContentService extends Service {
         for (final Date d : dates) {
             selectedDate = new Select().from(d.getClass()).where("date = ?", d.getDate()).executeSingle();
             if (selectedDate != null) {
-                Log.d(TAG, "Updating Date " + d.getDateId());
+                Log.d(TAG, "Updating Date " + d.toString());
                 selectedDate.update(d).save();
             } else {
-                Log.d(TAG, "Creating new Date " + d.getDateId());
+                Log.d(TAG, "Creating new Date " + d.toString());
                 d.save();
             }
         }
@@ -150,9 +153,23 @@ public class UpdateContentService extends Service {
         for (final Delete d : deletes) {
             try {
                 cls = Class.forName(packagePrefix + d.getTableName());
-                Log.v(TAG, "Delete " + cls.getCanonicalName() + " seq = " + d.getDeleteSeqNumber());
-                new com.activeandroid.query.Delete().from(cls).where("seq = ?", d.getDeleteSeqNumber()).execute();
+
+                final Field deleteField = cls.getField("DELETEID");
+                deleteField.setAccessible(true);
+                final String deleteIdentifier = deleteField.get(null).toString();
+
+                Log.v(TAG, "Delete " + cls.getCanonicalName() + " WHERE " + deleteIdentifier + " = " + d.getDeleteId());
+
+                new com.activeandroid.query.Delete()
+                        .from(cls)
+                        .where(deleteIdentifier + " = ?", d.getDeleteId())
+                        .execute();
+
             } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }

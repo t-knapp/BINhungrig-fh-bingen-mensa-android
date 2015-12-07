@@ -11,3 +11,7 @@ IngredientsActivity
 
 VersionInfoActivity
 - Info about new version, added features, bugs
+
+MainActivitySlide
+- Update cursor if data (of current day) changed
+- Show Dish Types (Vegan, Veggie)

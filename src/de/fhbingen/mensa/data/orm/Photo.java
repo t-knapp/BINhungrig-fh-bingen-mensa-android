@@ -132,4 +132,9 @@ public class Photo extends Model {
                 .where(COL_PHOTOID + " = ?", photoId)
                 .executeSingle();
     }
+
+    //
+    // Important for "dynamic" deletion
+    //
+    public final static String DELETEID = COL_PHOTOID;
 }

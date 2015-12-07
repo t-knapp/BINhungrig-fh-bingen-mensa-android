@@ -150,6 +150,9 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
             startActivity(intent);
 
             return true;
+        } else if (id == R.id.action_ingredients) {
+
+
         } else if (id == R.id.action_change_building) {
 
             final Set<String> subscribedBuildingIds = PreferenceManager

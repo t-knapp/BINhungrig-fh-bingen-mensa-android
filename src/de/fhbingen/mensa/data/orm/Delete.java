@@ -9,7 +9,7 @@ public class Delete {
 
     public String tableName;
 
-    public long deleteSeqNumber;
+    public long deleteId;
 
     public long getSeq() {
         return seq;
@@ -19,7 +19,7 @@ public class Delete {
         return tableName;
     }
 
-    public long getDeleteSeqNumber() {
-        return deleteSeqNumber;
+    public long getDeleteId() {
+        return deleteId;
     }
 }

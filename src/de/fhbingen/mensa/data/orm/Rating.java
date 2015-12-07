@@ -7,8 +7,6 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
-import java.sql.Date;
-
 /**
  * Created by tknapp on 09.11.15.
  */

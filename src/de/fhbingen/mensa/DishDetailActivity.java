@@ -1,7 +1,6 @@
 package de.fhbingen.mensa;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
@@ -17,20 +16,14 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.activeandroid.query.Select;
-
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
-import asynctask.DownloadFullPhotoTask;
+import de.fhbingen.mensa.asynctask.DownloadFullPhotoTask;
 import de.fhbingen.mensa.data.orm.Building;
 import de.fhbingen.mensa.data.orm.Dish;
 import de.fhbingen.mensa.data.orm.Ingredient;

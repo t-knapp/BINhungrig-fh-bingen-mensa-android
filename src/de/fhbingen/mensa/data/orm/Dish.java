@@ -9,9 +9,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.From;
 import com.activeandroid.query.Select;
-import com.activeandroid.util.SQLiteUtils;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**

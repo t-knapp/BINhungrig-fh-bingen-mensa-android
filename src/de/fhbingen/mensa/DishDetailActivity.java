@@ -50,6 +50,11 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
     final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN);
     final String strDate = sdf.format(Calendar.getInstance().getTime());
 
+    // Given in Extra
+    private String dateOfTab;
+
+    private boolean isCurrentDay;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +63,10 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
         // Extract dishId
         final int dishId = getIntent().getExtras().getInt(Dish.COL_DISHID);
         this.dish = Dish.findByDishId(dishId);
+
+        // Extract date of tab
+        dateOfTab = getIntent().getExtras().getString(Dish.ARG_DATE);
+        isCurrentDay = dateOfTab.equals(strDate);
 
         // Init ViewHolder
         this.initViewHolder();
@@ -121,59 +130,73 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
         );
 
         this.populateRatingView();
+        
+        //Log.v(TAG, "isBuildingOpenNow : " + this.isBuildingOpenNow(dish.getBuildingId()));
+        //Log.v(TAG, "isCurrentDay:       " + isCurrentDay);
 
-        // User Rating Controls
-        //TODO: Enable in production
-        //this.enableRatingControls(this.isBuildingOpenNow(dish.getBuildingId()));
-        this.setOwnRatingBar();
-
-        // TODO: Only if possible
-        // Button onClickListener
-        this.vh.sendRatingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                final Rating newRating = new Rating();
-                newRating.setDishId(dish.getDishId());
-                newRating.setValue((int) vh.ratingBar.getRating());
-                newRating.setDate(strDate);
-
-                // Post rating on server in async task
-                new AsyncTask<Rating, Void, Rating>(){
-
-                    private final String TAG = "AsyncTaskRating";
-
+        // 1. Check if rating for date and dish exists
+        if(this.setOwnRatingBar()){
+            // Disable Voting Controls and set text
+            vh.headingRating.setText(R.string.own_rating);
+            vh.sendRatingButton.setVisibility(View.GONE);
+            vh.ratingBar.setEnabled(false);
+        } else {
+            // Check if Rating possible
+            if(isCurrentDay && this.isBuildingOpenNow(dish.getBuildingId())){
+                // Button onClickListener
+                this.vh.sendRatingButton.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    protected Rating doInBackground(Rating... params) {
-                        final RestTemplate restTemplate = new RestTemplate();
-                        restTemplate.getMessageConverters().add(
-                                new MappingJackson2HttpMessageConverter()
-                        );
-                        return restTemplate.postForObject(
-                                UpdateContentService.UrlBuilder.RATINGS, params[0], Rating.class
-                        );
+                    public void onClick(View v) {
+
+                        final Rating newRating = new Rating();
+                        newRating.setDishId(dish.getDishId());
+                        newRating.setValue((int) vh.ratingBar.getRating());
+                        newRating.setDate(dateOfTab);
+
+                        // Post rating on server in async task
+                        new AsyncTask<Rating, Void, Rating>(){
+
+                            private final String TAG = "AsyncTaskRating";
+
+                            @Override
+                            protected Rating doInBackground(Rating... params) {
+                                final RestTemplate restTemplate = new RestTemplate();
+                                restTemplate.getMessageConverters().add(
+                                        new MappingJackson2HttpMessageConverter()
+                                );
+                                return restTemplate.postForObject(
+                                        UpdateContentService.UrlBuilder.RATINGS, params[0], Rating.class
+                                );
+                            }
+
+                            @Override
+                            protected void onPostExecute(Rating rating) {
+                                super.onPostExecute(rating);
+                                Log.v(TAG, "postExecute: " + rating.toString());
+                                // Save rating to db
+                                rating.save();
+
+                                // Save rating to localRatings to prevent multiple requests
+                                LocalRating.fromRating(rating).save();
+
+                                // Disable controls and set values
+                                vh.headingRating.setText(R.string.own_rating);
+                                vh.sendRatingButton.setVisibility(View.GONE);
+                                vh.ratingBar.setEnabled(false);
+
+                                // Update whole ratings view
+                                populateRatingView();
+                            }
+                        }.execute(newRating);
                     }
-
-                    @Override
-                    protected void onPostExecute(Rating rating) {
-                        super.onPostExecute(rating);
-                        Log.v(TAG, "postExecute: " + rating.toString());
-                        // Save rating to db
-                        rating.save();
-
-                        // Save rating to localRatings to prevent multiple requests
-                        LocalRating.fromRating(rating).save();
-
-                        // Disable controls and set values
-                        setOwnRatingBar();
-                        enableRatingControls(false);
-                        vh.headingRating.setText(R.string.own_rating);
-                        populateRatingView();
-                    }
-
-                }.execute(newRating);
+                });
+            } else {
+                // Rating not possible
+                vh.headingRating.setText(R.string.no_rating_possible);
+                vh.sendRatingButton.setEnabled(false);
+                vh.ratingBar.setEnabled(false);
             }
-        });
+        }
 
         // Photo stuff;
         final DownloadFullPhotoTask.IDownloadComplete callback = this;
@@ -203,8 +226,6 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
     }
 
     // "Callback" for onDownloadComplete event
-
-
     @Override
     public void onDownloadComplete(byte[] bytes) {
         vh.pbDownload.setVisibility(View.GONE);
@@ -224,16 +245,20 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
         );
     }
 
-    private void setOwnRatingBar(){
-
-        final LocalRating dbRating = LocalRating.findByDishIdAndDate(dish.getDishId(), strDate);
+    /**
+     * If user has rated this dish today, print this rating.
+     * @return true if user has rated dish today, otherwise false
+     */
+    private boolean setOwnRatingBar(){
+        final LocalRating dbRating = LocalRating.findByDishIdAndDate(dish.getDishId(), dateOfTab);
         if(dbRating != null){
             // User rating exists for this dish and date
             vh.headingRating.setText(R.string.own_rating);
             vh.ratingBar.setRating(dbRating.getValue());
 
-            this.enableRatingControls(false);
+            return true;
         }
+        return false;
     }
 
     private void populateRatingView(){
@@ -242,7 +267,7 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
         );
 
         final int[] ratings = dish.getRatings();
-        Log.v(TAG, "dish.getRatings(): " + Arrays.toString(ratings));
+        //Log.v(TAG, "dish.getRatings(): " + Arrays.toString(ratings));
         this.setRatingBars(ratings);
 
         this.vh.numOfRatings.setText(String.format("%d Bewertungen", ratings[6]));

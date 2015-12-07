@@ -228,4 +228,6 @@ public class Dish extends Model {
                 dishId, seq, title, priceStd, priceNonStd, buildingId
         );
     }
+
+    public final static String ARG_DATE = "arg_date";
 }

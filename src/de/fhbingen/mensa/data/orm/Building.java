@@ -122,10 +122,24 @@ public class Building extends Model {
         if(dbBuilding == null){
             return false;
         }
+        /*
         final Time nowTime = new Time(Calendar.getInstance().getTimeInMillis());
         Log.v("Building", "nowTime: " + nowTime.toString());
         return dbBuilding.timeOpenFrom.before(nowTime)
                 && dbBuilding.timeOpenTill.after(nowTime);
+        */
+        // create a java calendar instance
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(1970, 0, 1);
+
+        // get a java date (java.util.Date) from the Calendar instance.
+        // this java date will represent the current date, or "now".
+        java.util.Date currentDate = calendar.getTime();
+
+        // now, create a java.sql.Date from the java.util.Date
+        java.sql.Date nowDate = new java.sql.Date(currentDate.getTime());
+        return dbBuilding.timeOpenFrom.before(nowDate)
+                && dbBuilding.timeOpenTill.after(nowDate);
     }
 
 }

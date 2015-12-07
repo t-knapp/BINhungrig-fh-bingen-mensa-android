@@ -329,7 +329,7 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         // Date argument in yyyy-MM-yy format
-        private static final String ARG_DATE = "arg_date";
+        public static final String ARG_DATE = "arg_date";
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -391,6 +391,8 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
                     final Intent detail = new Intent(view.getContext(), DishDetailActivity.class);
                     final SQLiteCursor cursor = (SQLiteCursor) parent.getAdapter().getItem(position);
                     detail.putExtra(Dish.COL_DISHID, cursor.getInt(cursor.getColumnIndex(Dish.COL_DISHID)));
+                    //Put date of tab to further comparison if user is allowed to vote
+                    detail.putExtra(Dish.ARG_DATE, date.toString());
                     startActivity(detail);
                 }
             });

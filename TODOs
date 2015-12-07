@@ -1,0 +1,13 @@
+Gallery Activity OR swipe gallery in DishDetailActivity
+- Send Complains
+
+DishDetailAcivity
+- Download Full Photo onCreate if Option is enabled
+- Take and Upload Photo
+
+AboutActivity
+
+IngredientsActivity
+
+VersionInfoActivity
+- Info about new version, added features, bugs

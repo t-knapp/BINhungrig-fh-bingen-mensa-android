@@ -2,6 +2,8 @@ package de.fhbingen.mensa;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -10,6 +12,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -26,14 +30,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import asynctask.DownloadFullPhotoTask;
 import de.fhbingen.mensa.data.orm.Building;
 import de.fhbingen.mensa.data.orm.Dish;
 import de.fhbingen.mensa.data.orm.Ingredient;
 import de.fhbingen.mensa.data.orm.LocalRating;
+import de.fhbingen.mensa.data.orm.Photo;
 import de.fhbingen.mensa.data.orm.Rating;
 import de.fhbingen.mensa.service.UpdateContentService;
 
-public class DishDetailActivity extends Activity {
+public class DishDetailActivity extends Activity implements DownloadFullPhotoTask.IDownloadComplete {
 
     private static final String TAG = DishDetailActivity.class.getSimpleName();
 
@@ -50,7 +56,7 @@ public class DishDetailActivity extends Activity {
         setContentView(R.layout.activity_dish_detail);
 
         // Extract dishId
-        final int dishId = getIntent().getExtras().getInt("dishId");
+        final int dishId = getIntent().getExtras().getInt(Dish.COL_DISHID);
         this.dish = Dish.findByDishId(dishId);
 
         // Init ViewHolder
@@ -80,6 +86,11 @@ public class DishDetailActivity extends Activity {
             vh.ratingBar = (RatingBar) findViewById(R.id.ratingBarDish);
             vh.headingRating = (TextView) findViewById(R.id.textView_headingDoRating);
             vh.sendRatingButton = (Button) findViewById(R.id.button_sendRating);
+
+            //Photo
+            vh.ivDish = (ImageView) findViewById(R.id.dish_picture);
+            vh.ivDownloadPhoto = (ImageView) findViewById(R.id.iv_download_photo);
+            vh.pbDownload = (ProgressBar) findViewById(R.id.progressBar1);
         }
     }
 
@@ -163,6 +174,54 @@ public class DishDetailActivity extends Activity {
                 }.execute(newRating);
             }
         });
+
+        // Photo stuff;
+        final DownloadFullPhotoTask.IDownloadComplete callback = this;
+        final Photo dbRandomPhoto = Photo.selectRandomByDishId(dish.getDishId());
+        if(dbRandomPhoto != null) {
+            if (dbRandomPhoto.hasFull()) {
+                setDishPhoto(dbRandomPhoto.getFull());
+            } else if (dbRandomPhoto.hasThumb()) {
+                setDishPhoto(dbRandomPhoto.getThumb());
+
+                // Show download ui element
+                vh.ivDownloadPhoto.setVisibility(View.VISIBLE);
+
+                //Setup onClick
+                vh.ivDownloadPhoto.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        vh.ivDownloadPhoto.setVisibility(View.GONE);
+                        vh.pbDownload.setVisibility(View.VISIBLE);
+
+                        //Download Full Photo Async
+                        new DownloadFullPhotoTask(callback).execute(dbRandomPhoto);
+                    }
+                });
+            }
+        }
+    }
+
+    // "Callback" for onDownloadComplete event
+
+
+    @Override
+    public void onDownloadComplete(byte[] bytes) {
+        vh.pbDownload.setVisibility(View.GONE);
+
+        setDishPhoto(bytes);
+    }
+
+    private void setDishPhoto(final byte[] data){
+        vh.ivDish.setImageDrawable(
+                new BitmapDrawable(
+                        BitmapFactory.decodeByteArray(
+                                data
+                                , 0
+                                , data.length
+                        )
+                )
+        );
     }
 
     private void setOwnRatingBar(){
@@ -213,6 +272,10 @@ public class DishDetailActivity extends Activity {
         RatingBar ratingBar;
 
         Button sendRatingButton;
+
+        ImageView ivDish, ivDownloadPhoto;
+
+        ProgressBar pbDownload;
     }
 
 }

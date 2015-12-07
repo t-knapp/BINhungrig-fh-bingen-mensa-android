@@ -39,7 +39,8 @@ public class Dish extends Model {
         this(o.dishId, o.seq, o.title, o.priceStd, o.priceNonStd, o.buildingId);
     }
 
-    @Column(name = "dishId", unique = true)
+    public final static String COL_DISHID = "dishId";
+    @Column(name = COL_DISHID, unique = true)
     public int dishId;
 
     @Column(name = "seq")

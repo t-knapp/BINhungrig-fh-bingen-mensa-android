@@ -30,105 +30,12 @@ public class Mensa extends Application {
 
 	public Mensa() {
         MENSA = this;
-        dayMap = new HashMap<String, List<DishOld>>();
 	}
 
-    /**
-     *
-     * @param result JSON-formatted dish-array
-     * @param append if true, the result String data will be appended
-     */
-	public void loadWeek(String result, boolean append) {
-		
-		if(!dayMap.isEmpty() && !append){
-			return;
-		}
-		try {
-			// Filling the data in an array
-			final JSONArray jsonArray = new JSONArray(result);
 
-			for (int i = 0; i < jsonArray.length(); i++) {
-				JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-				String objDate = jsonObject.getString("date");
 
-				// Log.d(TAG, "Date " + objDate);
 
-				if (!dayMap.containsKey(objDate)) {
-					dayMap.put(objDate, new LinkedList<DishOld>());
-				}
-
-				dayMap.get(objDate).add(
-					new DishOld(
-						jsonObject.getInt("id_dishes"),
-						objDate,
-						jsonObject.getString("text"),
-						jsonObject.getDouble("priceStudent"),
-						jsonObject.getDouble("priceOfficial"),
-						jsonObject.getDouble("ravg"),
-						jsonObject.getInt("pid"),
-						jsonObject.getString("thumb")
-					)
-				);
-
-			}
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void setDishPicture(String dateQuery, int id_dishes, byte[] decodedData, int id_pictures){
-		
-		if(dateQuery == null) return;
-		if(dateQuery.isEmpty()) return;
-		if(decodedData == null) return;
-		if(decodedData.length == 0) return;
-		
-		List<DishOld> dayList = dayMap.get(dateQuery);
-		
-		for (DishOld dish : dayList) {
-			if(dish.getId_dishes() == id_dishes){
-				dish.setPicture(decodedData, id_pictures);
-			}
-		}
-		
-	}
-
-    public void setDishPicture(String dateQuery, int id_dishes, byte[] decodedData){
-
-        if(dateQuery == null) return;
-        if(dateQuery.isEmpty()) return;
-        if(decodedData == null) return;
-        if(decodedData.length == 0) return;
-
-        List<DishOld> dayList = dayMap.get(dateQuery);
-
-        for (DishOld dish : dayList) {
-            if(dish.getId_dishes() == id_dishes){
-                dish.setPicture(decodedData);
-            }
-        }
-
-    }
-	
-	public void setAvgRating(String dateQuery, int id_dishes, double avg){
-		if(dateQuery == null) return;
-		if(dateQuery.isEmpty()) return;
-		
-		List<DishOld> dayList = dayMap.get(dateQuery);
-		
-		for (DishOld dish : dayList) {
-			if(dish.getId_dishes() == id_dishes){
-				dish.setAvgRating(avg);
-			}
-		}
-	}
-
-	
-	public List<DishOld> getDay(String cal) {
-		return dayMap.get(cal);
-	}
 
 	@Override
 	public String toString() {
@@ -193,7 +100,6 @@ public class Mensa extends Application {
     }
 
 	// private Database db;
-	private HashMap<String, List<DishOld>> dayMap;
 	private boolean nextWeekLoaded = false;
 	/*
 	 _   _ _   _ _     

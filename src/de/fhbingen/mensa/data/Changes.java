@@ -8,6 +8,7 @@ import de.fhbingen.mensa.data.orm.Delete;
 import de.fhbingen.mensa.data.orm.Dish;
 import de.fhbingen.mensa.data.orm.Ingredient;
 import de.fhbingen.mensa.data.orm.OfferedAt;
+import de.fhbingen.mensa.data.orm.Photo;
 import de.fhbingen.mensa.data.orm.Rating;
 import de.fhbingen.mensa.data.orm.Sequence;
 
@@ -21,6 +22,8 @@ public class Changes {
     private List<Ingredient> ingredients;
 
     private List<Dish> dishes;
+
+    private List<Photo> photos;
 
     private Sequence sequence;
 
@@ -72,5 +75,13 @@ public class Changes {
 
     public List<Ingredient> getIngredients() {
         return ingredients;
+    }
+
+    public List<Photo> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(List<Photo> photos) {
+        this.photos = photos;
     }
 }

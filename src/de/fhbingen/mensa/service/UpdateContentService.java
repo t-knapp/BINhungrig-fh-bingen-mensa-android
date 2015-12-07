@@ -37,6 +37,7 @@ import de.fhbingen.mensa.data.orm.Delete;
 import de.fhbingen.mensa.data.orm.Dish;
 import de.fhbingen.mensa.data.orm.Ingredient;
 import de.fhbingen.mensa.data.orm.OfferedAt;
+import de.fhbingen.mensa.data.orm.Photo;
 import de.fhbingen.mensa.data.orm.Rating;
 import de.fhbingen.mensa.data.orm.Sequence;
 import de.greenrobot.event.EventBus;
@@ -176,6 +177,9 @@ public class UpdateContentService extends Service {
                 //Ratings
                 updateRatings(changes.getRatings());
 
+                //Photos
+                updatePhotos(changes.getPhotos());
+
                 //Date
                 updateDates(changes.getDates());
 
@@ -197,6 +201,23 @@ public class UpdateContentService extends Service {
         } else {
             Log.v(TAG, "Nothing to update.");
             EventBus.getDefault().post(new ServiceEvent(ServiceEvent.EventType.ALLREADYUPTODATE, "Nothing to do here."));
+        }
+    }
+
+    private void updatePhotos(List<Photo> photos) {
+        Photo selectedPhoto;
+        for (final Photo p : photos) {
+            selectedPhoto = new Select()
+                    .from(p.getClass())
+                    .where(Photo.COL_PHOTOID + " = ? ", p.getPhotoId())
+                    .executeSingle();
+            if (selectedPhoto != null) {
+                Log.d(TAG, "Updating " + p.toString());
+                selectedPhoto.update(p).save();
+            } else {
+                Log.d(TAG, "Creating new " + p.toString());
+                p.save();
+            }
         }
     }
 
@@ -321,6 +342,7 @@ public class UpdateContentService extends Service {
                     Log.d("myThread", "#deletes:   " + result.getDeletes().size());
                     Log.d("myThread", "#ratings:   " + result.getRatings().size());
                     Log.d("myThread", "#date:      " + result.getDates().size());
+                    Log.d("myThread", "#photos:    " + result.getPhotos().size());
                     Log.d("myThread", "#offeredAt: " + result.getOfferedAt().size());
                 }
                 Log.d("myThread", "sequence:   " + result.getSequence().getLastSequence());
@@ -399,11 +421,12 @@ public class UpdateContentService extends Service {
         }
     }
 
-    public class UrlBuilder {
+    public static class UrlBuilder {
         //public static final String BASE = "http://192.168.178.28:8080";
-        public static final String BASE = "http://192.168.2.165:8080";
+        public static final String BASE = "http://192.168.2.103:8080";
 
         public static final String RATINGS = BASE + "/ratings";
+        public static final String PHOTOS  = BASE + "/photos";
 
         public UrlBuilder() {
             sequence = 0;
@@ -435,6 +458,10 @@ public class UpdateContentService extends Service {
             }
 
             return sb.toString();
+        }
+
+        public static String getPhotoURL(final long photoId){
+            return PHOTOS + "/" + photoId;
         }
 
     }

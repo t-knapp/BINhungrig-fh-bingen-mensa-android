@@ -48,6 +48,7 @@ import de.fhbingen.mensa.data.orm.Dish;
 import de.fhbingen.mensa.data.orm.Ingredient;
 import de.fhbingen.mensa.data.orm.LocalRating;
 import de.fhbingen.mensa.data.orm.OfferedAt;
+import de.fhbingen.mensa.data.orm.Photo;
 import de.fhbingen.mensa.data.orm.Rating;
 import de.fhbingen.mensa.data.orm.Sequence;
 import de.fhbingen.mensa.service.UpdateContentService;
@@ -56,7 +57,7 @@ import de.fhbingen.mensa.service.UpdateContentService;
 
 public class MainActivitySlide extends Activity implements ActionBar.TabListener {
 
-    private final String TAG = MainActivity.class.getSimpleName();
+    private final String TAG = MainActivitySlide.class.getSimpleName();
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -226,6 +227,11 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
                 Log.v(TAG, r.toString());
             }
 
+            List<Photo> photos = new Select().from(Photo.class).execute();
+            for(final Photo p : photos){
+                Log.v(TAG, p.toString());
+            }
+
             List<LocalRating> localRatings = new Select().from(LocalRating.class).execute();
             for (final LocalRating lR : localRatings){
                 Log.v(TAG, lR.toString());
@@ -384,7 +390,7 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     final Intent detail = new Intent(view.getContext(), DishDetailActivity.class);
                     final SQLiteCursor cursor = (SQLiteCursor) parent.getAdapter().getItem(position);
-                    detail.putExtra("dishId", cursor.getInt(cursor.getColumnIndex("dishId")));
+                    detail.putExtra(Dish.COL_DISHID, cursor.getInt(cursor.getColumnIndex(Dish.COL_DISHID)));
                     startActivity(detail);
                 }
             });

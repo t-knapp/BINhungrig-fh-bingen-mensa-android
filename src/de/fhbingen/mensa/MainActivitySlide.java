@@ -407,6 +407,8 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
     @Override
     protected void onResume() {
         super.onResume();
+        //TODO: Check if data of current tab changed (User has uploaded photo)
+
         Intent intent= new Intent(this, UpdateContentService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }

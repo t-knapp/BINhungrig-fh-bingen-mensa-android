@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/action_show_gallery"
+        android:title="@string/action_show_gallery"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:icon="@mipmap/ic_action_gallery" />
+
+    <item android:id="@+id/action_take_photo"
+        android:title="@string/action_take_photo"
+        android:orderInCategory="50"
+        android:showAsAction="always"
+        android:icon="@mipmap/ic_action_add_photo" />
+
+</menu>

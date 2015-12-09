@@ -355,6 +355,7 @@ public class UpdateContentService extends Service {
                 Log.d("myThread", "/GET");
                 if (result.needToUpdate) {
                     Log.d("myThread", "#buildings: " + result.getBuildings().size());
+                    Log.d("myThread", "#ingredien: " + result.getIngredients().size());
                     Log.d("myThread", "#dishes:    " + result.getDishes().size());
                     Log.d("myThread", "#deletes:   " + result.getDeletes().size());
                     Log.d("myThread", "#ratings:   " + result.getRatings().size());
@@ -367,6 +368,8 @@ public class UpdateContentService extends Service {
                 if(firstRun){
                     //Just update Buildings, skipping all other data and sequence
                     updateBuildings(result.getBuildings());
+
+                    updateIngredients(result.getIngredients());
                 } else {
                     //Update all data for subscribed buidlings
                     updateDatabase(result);

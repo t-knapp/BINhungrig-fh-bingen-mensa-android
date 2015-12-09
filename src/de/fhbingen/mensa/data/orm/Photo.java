@@ -102,7 +102,14 @@ public class Photo extends Model {
                 seq     = other.seq;
                 dishId  = other.dishId;
                 thumb   = other.thumb;
-                full    = other.full;
+                // UseCase: User took and uploaded photo. Full is saved local but seq must not be
+                //          updated because other content may have changed. Local seq stays 0
+                //          Photo entity is loaded with next changes-Request but with full null
+                //          this will overwrite local bytes with null and forces user to reload
+                //          full (tl:dr; Skip if server.full is null)
+                if(other.full != null) {
+                    full = other.full;
+                }
                 date    = other.date;
             }
         }

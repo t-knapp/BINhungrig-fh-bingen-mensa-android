@@ -1,13 +1,21 @@
 package de.fhbingen.mensa;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -15,14 +23,20 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import de.fhbingen.mensa.Exceptions.PictureFileEmptyException;
 import de.fhbingen.mensa.asynctask.DownloadFullPhotoTask;
 import de.fhbingen.mensa.data.orm.Building;
 import de.fhbingen.mensa.data.orm.Dish;
@@ -35,6 +49,9 @@ import de.fhbingen.mensa.service.UpdateContentService;
 public class DishDetailActivity extends Activity implements DownloadFullPhotoTask.IDownloadComplete {
 
     private static final String TAG = DishDetailActivity.class.getSimpleName();
+
+    public static final int DISABLED_ALPHA = 50;
+    public static final int ENABLED_ALPHA = 255;
 
     private Dish dish;
     private ViewHolder vh;
@@ -66,6 +83,67 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
 
         // Populate View
         this.populateView();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_dish_detail, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        final MenuItem actionTakePhoto = menu.findItem(R.id.action_take_photo);
+        final Drawable actionTakePhotoIcon = actionTakePhoto.getIcon();
+        if(isCurrentDay && this.isBuildingOpenNow(dish.getBuildingId())) {
+            actionTakePhoto.setEnabled(true);
+            actionTakePhoto.getIcon().setAlpha(ENABLED_ALPHA);
+        } else {
+            actionTakePhoto.setEnabled(false);
+            actionTakePhoto.getIcon().setAlpha(DISABLED_ALPHA);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_show_gallery:
+                return true;
+            case R.id.action_take_photo:
+                takeDishPicture();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != RESULT_OK) return;
+
+        switch (requestCode) {
+            case PICK_FROM_CAMERA:
+
+                try {
+                    Log.d(TAG, "uploadedBytes [1] " + uploadedBytes);
+
+                    //Log.d(TAG, "uploadedBytes [2] " + uploadedBytes.length);
+
+                    uploadPicture(cropCenterOfImage());
+
+                    final File f = new File(mImageCaptureUri.getPath());
+                    if (f.exists()) {
+                        f.delete();
+                    }
+                } catch (PictureFileEmptyException e) {
+                    Toast.makeText(this, R.string.toast_takephoto_failed, Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
     }
 
     private void initViewHolder(){
@@ -110,7 +188,7 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
         //Ingredients
         final String[] ingredients = Ingredient.loopUpIngredientKeys(dish.getIngredients());
         if(ingredients.length > 0) {
-            vh.ingredients.setText("Enhält: " + TextUtils.join(", ", ingredients));
+            vh.ingredients.setText("Enthält: " + TextUtils.join(", ", ingredients));
         } else {
             ((ViewGroup) vh.ingredients.getParent()).removeView(vh.ingredients);
         }
@@ -134,7 +212,7 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
             vh.sendRatingButton.setVisibility(View.GONE);
             vh.ratingBar.setEnabled(false);
         } else {
-            // Check if Rating possible
+            // Check if Rating/Photo possible
             if(isCurrentDay && this.isBuildingOpenNow(dish.getBuildingId())){
                 // Button onClickListener
                 this.vh.sendRatingButton.setOnClickListener(new View.OnClickListener() {
@@ -184,7 +262,7 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
                     }
                 });
             } else {
-                // Rating not possible
+                // Rating/Phtot not possible
                 vh.headingRating.setText(R.string.no_rating_possible);
                 vh.sendRatingButton.setEnabled(false);
                 vh.ratingBar.setEnabled(false);
@@ -192,13 +270,17 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
         }
 
         // Photo stuff;
-        final DownloadFullPhotoTask.IDownloadComplete callback = this;
         final Photo dbRandomPhoto = Photo.selectRandomByDishId(dish.getDishId());
-        if(dbRandomPhoto != null) {
-            if (dbRandomPhoto.hasFull()) {
-                setDishPhoto(dbRandomPhoto.getFull());
-            } else if (dbRandomPhoto.hasThumb()) {
-                setDishPhoto(dbRandomPhoto.getThumb());
+        setPhotoView(dbRandomPhoto);
+    }
+
+    private void setPhotoView(final Photo dbPhoto){
+        final DownloadFullPhotoTask.IDownloadComplete callback = this;
+        if(dbPhoto != null) {
+            if (dbPhoto.hasFull()) {
+                setDishPhoto(dbPhoto.getFull());
+            } else if (dbPhoto.hasThumb()) {
+                setDishPhoto(dbPhoto.getThumb());
 
                 // Show download ui element
                 vh.ivDownloadPhoto.setVisibility(View.VISIBLE);
@@ -211,7 +293,7 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
                         vh.pbDownload.setVisibility(View.VISIBLE);
 
                         //Download Full Photo Async
-                        new DownloadFullPhotoTask(callback).execute(dbRandomPhoto);
+                        new DownloadFullPhotoTask(callback).execute(dbPhoto);
                     }
                 });
             }
@@ -294,6 +376,103 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
         ImageView ivDish, ivDownloadPhoto;
 
         ProgressBar pbDownload;
+    }
+
+    /*
+     Photo Stuff
+     */
+    private Uri mImageCaptureUri;
+
+    private static final int PICK_FROM_CAMERA = 1;
+
+    private byte[] uploadedBytes;
+
+    /**
+     * Method used to tell this activity to call a camera intent.
+     * @return true
+     */
+    private boolean takeDishPicture() {
+        final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        mImageCaptureUri = Uri.fromFile(
+                new File(getApplicationContext().getExternalCacheDir(), "mensa_dish.jpg")
+        );
+
+        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+
+        try {
+            intent.putExtra("return-data", true);
+            startActivityForResult(intent, PICK_FROM_CAMERA);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    private File cropCenterOfImage() throws PictureFileEmptyException {
+        if(mImageCaptureUri != null){
+            Log.v(TAG, "Cropping image...");
+            final String path = mImageCaptureUri.getPath();
+            final Bitmap sourceBitmap   =  BitmapFactory.decodeFile(path);
+
+            final int sourceHeight = sourceBitmap.getHeight();
+            final int sourceWidth  = sourceBitmap.getWidth();
+            final int sourceMin = Math.min(sourceHeight, sourceWidth);
+
+            int x,y;
+
+            if(sourceMin == sourceHeight){
+                x = sourceWidth/2 - sourceMin/2;
+                y = 0;
+            } else {
+                x = 0;
+                y = sourceHeight/2 - sourceMin/2;
+            }
+
+            final Bitmap centerArea = Bitmap.createBitmap(sourceBitmap, x, y, sourceMin, sourceMin);
+            final Bitmap resized    = Bitmap.createScaledBitmap(centerArea, 800, 800, false);
+
+            try {
+                final File tmpFile = File.createTempFile("BINhungrig", "_cropped");
+
+                final FileOutputStream fos = new FileOutputStream(tmpFile);
+                //final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                resized.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+
+                fos.flush();
+                fos.close();
+
+                return tmpFile;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            throw new PictureFileEmptyException();
+        }
+        return null;
+    }
+
+    private void uploadPicture(final File tmpFile){
+        new UploadPictureTask()
+                .setDishId(dish.getDishId())
+                .execute(tmpFile);
+    }
+
+    private class UploadPictureTask extends UploadBinaryTask {
+
+        @Override
+        protected void onPostExecute(Photo uploadedPhoto) {
+            if(uploadedPhoto != null) {
+                Toast.makeText(DishDetailActivity.this, R.string.toast_upload_successful, Toast.LENGTH_LONG).show();
+
+                // Update photo view
+                setPhotoView(uploadedPhoto);
+            } else {
+                Toast.makeText(DishDetailActivity.this, R.string.toast_upload_failed, Toast.LENGTH_LONG).show();
+            }
+        }
+
     }
 
 }

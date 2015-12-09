@@ -149,8 +149,10 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
 
             return true;
         } else if (id == R.id.action_ingredients) {
+            Intent intent = new Intent(this, de.fhbingen.mensa.IngredientsActivity.class);
+            startActivity(intent);
 
-
+            return true;
         } else if (id == R.id.action_change_building) {
 
             final Set<String> subscribedBuildingIds = PreferenceManager

@@ -73,6 +73,13 @@ public class Ingredient extends Model {
         return this;
     }
 
+    public static List<Ingredient> findAllOrderedByKey(){
+        return new Select()
+                .from(Ingredient.class)
+                .orderBy(Ingredient.COL_KEY)
+                .execute();
+    }
+
     //
     // Important for "dynamic" deletion
     //

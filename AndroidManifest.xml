@@ -178,8 +178,17 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".DishDetailActivity" >
+        <activity android:name=".DishDetailActivity"
+            android:label="@string/title_activity_dish_detail"
+            android:parentActivityName=".MainActivitySlide" >
         </activity>
+
+        <activity
+            android:name=".IngredientsActivity"
+            android:parentActivityName=".MainActivitySlide"
+            android:label="@string/settings_ingredients" >
+        </activity>
+
     </application>
 
 </manifest>

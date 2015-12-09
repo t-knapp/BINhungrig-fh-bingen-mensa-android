@@ -89,7 +89,7 @@
     <string name="user_agent_prefix">BINhungrig/android/</string>
 
     <!-- Ingredients Activity -->
-    <string name="ingredients_info">Das Studierendenwerk muss nach geltendem Lebensmittelrecht zugelassene Zusatzstoffe kennzeichnen.\n\nIm Speiseplan sind die Zusatzstoffe durch Nummern entsprechend kenntlich gemacht.</string>
+    <string name="ingredients_info">Das Studierendenwerk muss nach geltendem Lebensmittelrecht zugelassene Zusatzstoffe kennzeichnen. Diese Kennzeichnungen werden in der Detailansicht angezeigt.</string>
     <string name="ingredients">
         1 mit Farbstoff\n
         2 mit Konservierungsstoff\n

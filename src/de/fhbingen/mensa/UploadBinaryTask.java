@@ -85,14 +85,14 @@ import de.fhbingen.mensa.service.UpdateContentService;
                     //Save to db
                     photo.setFull(getBytesFullFromFile(args[0]));
                     photo.save();
-
-                    if(args[0].exists()) {
-                        args[0].delete();
-                    }
                 }
             }
             if (resEntity != null) {
                 resEntity.consumeContent();
+            }
+            //Delete file
+            if(args[0].exists()) {
+                args[0].delete();
             }
         } catch (IOException e) {
             e.printStackTrace();

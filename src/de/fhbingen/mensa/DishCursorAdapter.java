@@ -54,7 +54,7 @@ public class DishCursorAdapter extends CursorAdapter {
         );
 
         vh.tvTitle.setText(title);
-        vh.tvPrice.setText(String.format("%.2f", price));
+        vh.tvPrice.setText(String.format(Locale.GERMAN, "%.2f €", price));
 
         // Ratings
         vh.tvRating.setText(

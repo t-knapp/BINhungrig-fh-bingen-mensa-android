@@ -129,10 +129,6 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
             case PICK_FROM_CAMERA:
 
                 try {
-                    Log.d(TAG, "uploadedBytes [1] " + uploadedBytes);
-
-                    //Log.d(TAG, "uploadedBytes [2] " + uploadedBytes.length);
-
                     uploadPicture(cropCenterOfImage());
 
                     final File f = new File(mImageCaptureUri.getPath());
@@ -412,10 +408,13 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
 
     private File cropCenterOfImage() throws PictureFileEmptyException {
         if(mImageCaptureUri != null){
-            Log.v(TAG, "Cropping image...");
             final String path = mImageCaptureUri.getPath();
             final Bitmap sourceBitmap   =  BitmapFactory.decodeFile(path);
 
+            /*
+             * Crop to square-formatted center of image.
+             * Determine orientation of image and crop to square of size 800x800
+             */
             final int sourceHeight = sourceBitmap.getHeight();
             final int sourceWidth  = sourceBitmap.getWidth();
             final int sourceMin = Math.min(sourceHeight, sourceWidth);

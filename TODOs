@@ -3,11 +3,10 @@ Gallery Activity OR swipe gallery in DishDetailActivity
 
 DishDetailAcivity
 - Download Full Photo onCreate if Option is enabled
-- Take and Upload Photo
+- Dish Type
+- Update if current Dish changed (New data pulled)
 
 AboutActivity
-
-IngredientsActivity
 
 VersionInfoActivity
 - Info about new version, added features, bugs

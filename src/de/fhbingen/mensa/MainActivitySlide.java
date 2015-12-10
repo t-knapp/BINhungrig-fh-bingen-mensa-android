@@ -392,8 +392,12 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     final Intent detail = new Intent(view.getContext(), DishDetailActivity.class);
+
                     final SQLiteCursor cursor = (SQLiteCursor) parent.getAdapter().getItem(position);
                     detail.putExtra(Dish.COL_DISHID, cursor.getInt(cursor.getColumnIndex(Dish.COL_DISHID)));
+                    //Workaround: Ugly... Use view.id to store photoId of random thumb and pass it to detail
+                    detail.putExtra(Photo.COL_PHOTOID, view.getId());
+
                     //Put date of tab to further comparison if user is allowed to vote
                     detail.putExtra(Dish.ARG_DATE, date.toString());
                     startActivity(detail);

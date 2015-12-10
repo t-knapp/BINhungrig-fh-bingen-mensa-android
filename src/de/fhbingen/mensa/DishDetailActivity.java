@@ -62,6 +62,7 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
 
     // Given in Extra
     private String dateOfTab;
+    private int photoIdFromList;
 
     private boolean isCurrentDay;
 
@@ -80,6 +81,9 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
         // Extract date of tab
         dateOfTab = getIntent().getExtras().getString(Dish.ARG_DATE);
         isCurrentDay = dateOfTab.equals(strDate);
+
+        //Extract photoId of random picture in listView of MainActivity
+        photoIdFromList = getIntent().getExtras().getInt(Photo.COL_PHOTOID);
 
         // Init ViewHolder
         this.initViewHolder();
@@ -269,7 +273,8 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
         }
 
         // Photo stuff;
-        final Photo dbRandomPhoto = Photo.selectRandomByDishId(dish.getDishId());
+        //final Photo dbRandomPhoto = Photo.selectRandomByDishId(dish.getDishId());
+        final Photo dbRandomPhoto = Photo.findByPhotoId(photoIdFromList);
         setPhotoView(dbRandomPhoto);
     }
 

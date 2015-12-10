@@ -72,6 +72,7 @@ public class DishCursorAdapter extends CursorAdapter {
                         cursor.getColumnIndex(Dish.COL_DISHID)
                 )
         );
+
         if(dbRandomPhoto != null) {
             if (dbRandomPhoto.hasThumb()) {
                 vh.ivDishThumb.setImageDrawable(
@@ -83,6 +84,9 @@ public class DishCursorAdapter extends CursorAdapter {
                                 )
                         )
                 );
+
+                //This is ugly! But it works :-)
+                view.setId((int)dbRandomPhoto.getPhotoId());
             }
         }
 

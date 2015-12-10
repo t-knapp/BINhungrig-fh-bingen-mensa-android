@@ -38,7 +38,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="@dimen/dish_list_item_price_star_layout_margin_right"
         android:layout_marginLeft="5dp"
-        >
+        android:id="@+id/relativeLayout">
         <TextView
             android:id="@+id/textView_price"
             android:layout_width="wrap_content"
@@ -60,5 +60,12 @@
             android:textSize="@dimen/dish_list_item_rating_font_size"
             />
     </RelativeLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/iv_list_dish_type"
+        android:layout_alignBottom="@+id/imageView_dish"
+        android:layout_toStartOf="@+id/relativeLayout" />
 
 </RelativeLayout>

@@ -50,8 +50,9 @@ public class Dish extends Model {
     @Column(name = "ingredients")
     public String ingredients;
 
-    @Column(name = "type")
-    public byte type;
+    public static final String COL_TYPE = "type";
+    @Column(name = COL_TYPE)
+    public int type;
 
     public static final String COL_PRICE_STD = "priceStd";
     @Column(name = COL_PRICE_STD)
@@ -85,7 +86,7 @@ public class Dish extends Model {
         return seq;
     }
 
-    public byte getType() {
+    public int getType() {
         return type;
     }
 
@@ -238,4 +239,5 @@ public class Dish extends Model {
     // Important for "dynamic" deletion
     //
     public final static String DELETEID = COL_DISHID;
+
 }

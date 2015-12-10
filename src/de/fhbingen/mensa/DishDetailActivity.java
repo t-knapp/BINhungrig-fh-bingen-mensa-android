@@ -156,6 +156,7 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
             vh.dishPrice = (TextView) findViewById(R.id.dish_price);
             vh.avgRating = (TextView) findViewById(R.id.textView_avgRating);
             vh.numOfRatings = (TextView) findViewById(R.id.textView_numberRatings);
+            vh.ivDishType = (ImageView) findViewById(R.id.iv_detail_dish_type);
 
             //Bars
             vh.customBars[0] = (CustomBar) findViewById(R.id.customBar1);
@@ -182,6 +183,17 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
 
     private void populateView(){
         this.vh.dishText.setText(this.dish.getTitle());
+
+        int type = dish.getType();
+        Log.v(TAG, "type: " + type);
+        if(type == 1) {
+            // Vegetarian
+            vh.ivDishType.setImageResource(R.drawable.veggi);
+        } else if(type == 2){
+            // Vegan
+            vh.ivDishType.setImageResource(R.drawable.vegan);
+        }
+
         //TODO: Fix data type chaos in SettingFragment
         final int userRole = Integer.parseInt(
                 PreferenceManager.getDefaultSharedPreferences(this)
@@ -400,7 +412,7 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
 
         Button sendRatingButton;
 
-        ImageView ivDish, ivDownloadPhoto;
+        ImageView ivDish, ivDownloadPhoto,ivDishType;
 
         ProgressBar pbDownload;
     }

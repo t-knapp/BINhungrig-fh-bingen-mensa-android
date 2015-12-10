@@ -3,7 +3,6 @@ Gallery Activity OR swipe gallery in DishDetailActivity
 
 DishDetailAcivity
 - Download Full Photo onCreate if Option is enabled
-- Dish Type
 - Update if current Dish changed (New data pulled)
 
 AboutActivity
@@ -13,4 +12,3 @@ VersionInfoActivity
 
 MainActivitySlide
 - Update cursor if data (of current day) changed
-- Show Dish Types (Vegan, Veggie)

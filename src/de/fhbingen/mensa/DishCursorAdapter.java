@@ -45,6 +45,7 @@ public class DishCursorAdapter extends CursorAdapter {
         vh.tvPrice = (TextView) view.findViewById(R.id.textView_price);
         vh.tvRating = (TextView) view.findViewById(R.id.textView_rating);
         vh.ivDishThumb = (ImageView) view.findViewById(R.id.imageView_dish);
+        vh.ivDishType  = (ImageView) view.findViewById(R.id.iv_list_dish_type);
 
         final String title = cursor.getString(cursor.getColumnIndexOrThrow("title"));
         final float price = cursor.getFloat(
@@ -86,8 +87,18 @@ public class DishCursorAdapter extends CursorAdapter {
                 );
 
                 //This is ugly! But it works :-)
-                view.setId((int)dbRandomPhoto.getPhotoId());
+                view.setId((int) dbRandomPhoto.getPhotoId());
             }
+        }
+
+        // Dish Type
+        int type = cursor.getInt(cursor.getColumnIndex(Dish.COL_TYPE));
+        if(type == 1) {
+            // Vegetarian
+            vh.ivDishType.setImageResource(R.drawable.veggi);
+        } else if(type == 2){
+            // Vegan
+            vh.ivDishType.setImageResource(R.drawable.vegan);
         }
 
     }
@@ -96,6 +107,6 @@ public class DishCursorAdapter extends CursorAdapter {
         TextView tvTitle;
         TextView tvPrice, tvRating;
 
-        ImageView ivDishThumb;
+        ImageView ivDishThumb, ivDishType;
     }
 }

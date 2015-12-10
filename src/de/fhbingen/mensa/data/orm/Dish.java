@@ -161,14 +161,14 @@ public class Dish extends Model {
         return new Select().from(Dish.class).where("dishId = ?", dishId).executeSingle();
     }
 
-    public float getAvgRating(){
+    public float getAvgRating(final boolean all, final String strDate){
         /*final String sql = "SELECT AVG(`value`) AS `AVG` FROM `Ratings` WHERE `" + Rating.COL_FK_DISHID + "` = ?";
         final Cursor cursor = Cache.openDatabase().rawQuery(sql, new String[]{Integer.toString(dishId)});
         cursor.moveToFirst();
         final float result = cursor.getFloat(cursor.getColumnIndexOrThrow("AVG"));
         cursor.close();
         return result;*/
-        return Rating.getAvgRating(dishId);
+        return Rating.getAvgRating(dishId, all, strDate);
     }
 
     public float getAvgRatingForDate(final String date){
@@ -189,15 +189,20 @@ public class Dish extends Model {
         return result;
     }
 
-    public int[] getRatings() {
-        final String sql = String.format(
-                "SELECT value, COUNT(value) FROM `Ratings` WHERE %s = ? GROUP BY value"
-                , Rating.COL_FK_DISHID);
-        final Cursor cursor = Cache.openDatabase().rawQuery(sql,
-                new String[]{
-                        Integer.toString(dishId)
-                }
-        );
+    public int[] getRatings(boolean all, final String strDate) {
+        final String sql = (all)
+                ? (String.format(
+                  "SELECT value, COUNT(value) FROM `Ratings` WHERE %s = ? GROUP BY value"
+                  , Rating.COL_FK_DISHID))
+                : (String.format(
+                  "SELECT value, COUNT(value) FROM `Ratings` WHERE %s = ? AND %s = ? GROUP BY value"
+                  , Rating.COL_FK_DISHID
+                  , Rating.COL_DATE));
+
+        final Cursor cursor = (all)
+                ? Cache.openDatabase().rawQuery(sql, new String[]{Integer.toString(dishId)})
+                : Cache.openDatabase().rawQuery(sql, new String[]{Integer.toString(dishId), strDate});
+
         final int[] result = new int[7]; // Index 5 is maximum; Index 6 is number of votes
         int numStars;
         int numVotes;

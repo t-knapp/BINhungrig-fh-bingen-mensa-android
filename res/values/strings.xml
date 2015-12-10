@@ -49,6 +49,9 @@
     <string name="toast_upload_successful">Upload erfolgreich</string>
     <string name="toast_upload_failed">Fehler beim Hochladen des Photos</string>
     <string name="toast_takephoto_failed">Fehler beim Aufnehmen des Photos</string>
+    <string name="current_shown_rating">Gezeigte Bewertungen: %s</string>
+    <string name="all">Alle</string>
+    <string name="only_today">Nur heutige</string>
 
     <!-- MainActivity -->
     <string name="settings_ingredients">Inhaltsstoffe</string>

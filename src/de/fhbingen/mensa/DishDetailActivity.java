@@ -65,6 +65,9 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
 
     private boolean isCurrentDay;
 
+    // Current Shown Ratings
+    private boolean currentRatingsAll = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,7 +98,6 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         final MenuItem actionTakePhoto = menu.findItem(R.id.action_take_photo);
-        final Drawable actionTakePhotoIcon = actionTakePhoto.getIcon();
         if(isCurrentDay && this.isBuildingOpenNow(dish.getBuildingId())) {
             actionTakePhoto.setEnabled(true);
             actionTakePhoto.getIcon().setAlpha(ENABLED_ALPHA);
@@ -162,6 +164,7 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
             vh.ratingBar = (RatingBar) findViewById(R.id.ratingBarDish);
             vh.headingRating = (TextView) findViewById(R.id.textView_headingDoRating);
             vh.sendRatingButton = (Button) findViewById(R.id.button_sendRating);
+            vh.currentShownRatings = (TextView) findViewById(R.id.tv_current_shown_ratings);
 
             //Photo
             vh.ivDish = (ImageView) findViewById(R.id.dish_picture);
@@ -270,6 +273,12 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
         setPhotoView(dbRandomPhoto);
     }
 
+    // onClick Event on RelativLayouts of RatingBars, changes shown ratings
+    public void swapCurrentRatings(View view){
+        currentRatingsAll = !currentRatingsAll;
+        populateRatingView();
+    }
+
     private void setPhotoView(final Photo dbPhoto){
         final DownloadFullPhotoTask.IDownloadComplete callback = this;
         if(dbPhoto != null) {
@@ -333,12 +342,29 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
     }
 
     private void populateRatingView(){
+
+        if(currentRatingsAll) {
+            vh.currentShownRatings.setText(
+                    String.format(
+                            getResources().getString(R.string.current_shown_rating),
+                            getResources().getString(R.string.all)
+                    )
+            );
+        } else {
+            vh.currentShownRatings.setText(
+                    String.format(
+                            getResources().getString(R.string.current_shown_rating),
+                            getResources().getString(R.string.only_today)
+                    )
+            );
+        }
+
         this.vh.avgRating.setText(
-                String.format(Locale.GERMAN, "%.1f", dish.getAvgRating())
+                String.format(Locale.GERMAN, "%.1f", dish.getAvgRating(currentRatingsAll, strDate))
         );
 
-        final int[] ratings = dish.getRatings();
-        //Log.v(TAG, "dish.getRatings(): " + Arrays.toString(ratings));
+        final int[] ratings = dish.getRatings(currentRatingsAll, dateOfTab);
+
         this.setRatingBars(ratings);
 
         this.vh.numOfRatings.setText(String.format("%d Bewertungen", ratings[6]));
@@ -361,7 +387,7 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
     }
 
     private static class ViewHolder {
-        TextView dishText, dishPrice, avgRating, numOfRatings, headingRating, ingredients;
+        TextView dishText, dishPrice, avgRating, numOfRatings, headingRating, ingredients, currentShownRatings;
 
         CustomBar[] customBars = new CustomBar[5];
 

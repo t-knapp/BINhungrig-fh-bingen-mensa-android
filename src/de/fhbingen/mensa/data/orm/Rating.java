@@ -84,9 +84,14 @@ public class Rating extends Model {
         return this;
     }
 
-    public static float getAvgRating(final int dishId){
-        final String sql = "SELECT AVG(`value`) AS `AVG` FROM `Ratings` WHERE `" + COL_FK_DISHID + "` = ?";
-        final Cursor cursor = Cache.openDatabase().rawQuery(sql, new String[]{Integer.toString(dishId)});
+    public static float getAvgRating(final int dishId, final boolean all, final String strDate){
+        final String sql = (all)
+                ? "SELECT AVG(`value`) AS `AVG` FROM `Ratings` WHERE `" + COL_FK_DISHID + "` = ?"
+                : "SELECT AVG(`value`) AS `AVG` FROM `Ratings` WHERE `" + COL_FK_DISHID + "` = ? AND `" + COL_DATE + "` = ?";
+        final Cursor cursor = (all)
+                ? Cache.openDatabase().rawQuery(sql, new String[]{Integer.toString(dishId)})
+                : Cache.openDatabase().rawQuery(sql, new String[]{Integer.toString(dishId), strDate});
+
         cursor.moveToFirst();
         final float result = cursor.getFloat(cursor.getColumnIndexOrThrow("AVG"));
         cursor.close();

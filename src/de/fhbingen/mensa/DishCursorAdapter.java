@@ -61,7 +61,8 @@ public class DishCursorAdapter extends CursorAdapter {
                 String.format(
                         Locale.GERMAN, "★ %.1f"
                         , Rating.getAvgRating(
-                                cursor.getInt(cursor.getColumnIndexOrThrow("dishId")))
+                                cursor.getInt(cursor.getColumnIndexOrThrow("dishId")), true, ""
+                        )
                 )
         );
 

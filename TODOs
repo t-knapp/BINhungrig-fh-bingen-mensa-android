@@ -12,3 +12,4 @@ VersionInfoActivity
 
 MainActivitySlide
 - Update cursor if data (of current day) changed
+- Bug: Dish without thumb gets thumb in list if scroll hides and shows list item

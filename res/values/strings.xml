@@ -166,4 +166,13 @@
     <string name="toast_no_building_subscribed">Bitte zuerst eine Mensa abonieren.</string>
     <string name="dialog_title_select_building">Mensa auswählen</string>
 
+    <!-- GalleryOverview -->
+    <string name="title_gallery">Galerie</string>
+
+    <!-- PhotoDetail -->
+    <string name="complain_saved">Beschwerde gespeichert.</string>
+    <string name="title_photo_detail">Photo Detailansicht</string>
+    <string name="already_complained">Du hast dieses Bild bereits gemeldet.</string>
+    <string name="complain_photo">Bild als unangemessen melden.</string>
+
 </resources>

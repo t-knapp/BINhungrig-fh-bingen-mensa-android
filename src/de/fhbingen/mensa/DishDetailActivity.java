@@ -76,7 +76,7 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
 
         // Extract dishId
         final int dishId = getIntent().getExtras().getInt(Dish.COL_DISHID);
-        this.dish = Dish.findByDishId(dishId);
+        dish = Dish.findByDishId(dishId);
 
         // Extract date of tab
         dateOfTab = getIntent().getExtras().getString(Dish.ARG_DATE);
@@ -118,6 +118,10 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
 
         switch (id) {
             case R.id.action_show_gallery:
+                final Intent galleryIntent = new Intent(this, GalleryOverview.class);
+                // Tell dishId to Gallery
+                galleryIntent.putExtra(Dish.COL_DISHID, dish.getDishId());
+                startActivity(galleryIntent);
                 return true;
             case R.id.action_take_photo:
                 takeDishPicture();

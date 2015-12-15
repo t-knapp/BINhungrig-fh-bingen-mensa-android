@@ -20,7 +20,7 @@ import de.fhbingen.mensa.service.UpdateContentService;
 public class DownloadFullPhotoTask extends AsyncTask<Photo, Void, Photo> {
 
     public interface IDownloadComplete {
-        public void onDownloadComplete(final byte[] bytes);
+        void onDownloadComplete(final byte[] bytes);
     }
 
     public DownloadFullPhotoTask(IDownloadComplete callback){

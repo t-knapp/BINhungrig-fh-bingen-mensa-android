@@ -76,19 +76,20 @@ public class DishCursorAdapter extends CursorAdapter {
 
         if(dbRandomPhoto != null) {
             if (dbRandomPhoto.hasThumb()) {
-                vh.ivDishThumb.setImageDrawable(
-                        new BitmapDrawable(
+                vh.ivDishThumb.setImageBitmap(
                                 BitmapFactory.decodeByteArray(
                                         dbRandomPhoto.getThumb()
                                         , 0
                                         , dbRandomPhoto.getThumb().length
                                 )
-                        )
                 );
 
                 //This is ugly! But it works :-)
                 view.setId((int) dbRandomPhoto.getPhotoId());
             }
+        } else {
+            //This is ugly! But it works :-)
+            view.setId(-1);
         }
 
         // Dish Type

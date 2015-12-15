@@ -447,6 +447,7 @@ public class UpdateContentService extends Service {
 
         public static final String RATINGS = BASE + "/ratings";
         public static final String PHOTOS  = BASE + "/photos";
+        public static final String COMPLAIN = PHOTOS + "/%d/complain";
 
         public UrlBuilder() {
             sequence = 0;
@@ -482,6 +483,10 @@ public class UpdateContentService extends Service {
 
         public static String getPhotoURL(final long photoId){
             return PHOTOS + "/" + photoId;
+        }
+
+        public static String getComplainURL(final long photoId) {
+            return String.format(COMPLAIN, photoId);
         }
 
     }

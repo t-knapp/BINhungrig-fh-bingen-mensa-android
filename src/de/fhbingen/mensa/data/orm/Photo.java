@@ -1,5 +1,8 @@
 package de.fhbingen.mensa.data.orm;
 
+import android.database.Cursor;
+
+import com.activeandroid.Cache;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -27,7 +30,8 @@ public class Photo extends Model {
     @Column(name = "date")
     private String date;
 
-    @Column(name = "thumb")
+    public final static String COL_THUMB = "thumb";
+    @Column(name = COL_THUMB)
     private byte[] thumb;
 
     @JsonIgnore
@@ -138,6 +142,14 @@ public class Photo extends Model {
                 .from(Photo.class)
                 .where(COL_PHOTOID + " = ?", photoId)
                 .executeSingle();
+    }
+
+    public static Cursor getCursorForDishId(final long dishId){
+        final String sql = new Select(Photo.COL_DISHID + " AS _id, " + Photo.COL_PHOTOID + ", " + Photo.COL_THUMB)
+                .from(Photo.class)
+                .where(Photo.COL_DISHID + " = ?")
+                .toSql();
+        return Cache.openDatabase().rawQuery(sql, new String[]{ Long.toString(dishId) });
     }
 
     //

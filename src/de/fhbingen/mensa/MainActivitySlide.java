@@ -44,6 +44,7 @@ import java.util.Set;
 import de.fhbingen.mensa.data.orm.Building;
 import de.fhbingen.mensa.data.orm.Dish;
 import de.fhbingen.mensa.data.orm.Ingredient;
+import de.fhbingen.mensa.data.orm.LocalComplains;
 import de.fhbingen.mensa.data.orm.LocalRating;
 import de.fhbingen.mensa.data.orm.OfferedAt;
 import de.fhbingen.mensa.data.orm.Photo;
@@ -239,6 +240,12 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
             for (final LocalRating lR : localRatings){
                 Log.v(TAG, lR.toString());
             }
+
+            List<LocalComplains> localComplains = new Select().from(LocalComplains.class).execute();
+            for (final LocalComplains lC : localComplains){
+                Log.v(TAG, lC.toString());
+            }
+
 
             List<de.fhbingen.mensa.data.orm.Date> dates = new Select().from(de.fhbingen.mensa.data.orm.Date.class).execute();
             for (final de.fhbingen.mensa.data.orm.Date d : dates) {

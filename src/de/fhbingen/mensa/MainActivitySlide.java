@@ -149,6 +149,11 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
             startActivity(intent);
 
             return true;
+        } else if (id == R.id.action_about) {
+            final Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
+
+            return true;
         } else if (id == R.id.action_ingredients) {
             Intent intent = new Intent(this, de.fhbingen.mensa.IngredientsActivity.class);
             startActivity(intent);

@@ -165,6 +165,7 @@
     <!-- MainActivitySlide -->
     <string name="toast_no_building_subscribed">Bitte zuerst eine Mensa abonieren.</string>
     <string name="dialog_title_select_building">Mensa auswählen</string>
+    <string name="menu_ingredients">Inhaltsstoffe</string>
 
     <!-- GalleryOverview -->
     <string name="title_gallery">Galerie</string>

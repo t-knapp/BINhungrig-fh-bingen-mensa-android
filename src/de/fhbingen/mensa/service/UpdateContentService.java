@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.fhbingen.mensa.Mensa;
 import de.fhbingen.mensa.SettingsFragment;
 import de.fhbingen.mensa.data.Changes;
 import de.fhbingen.mensa.data.event.NetworkStatusEvent;
@@ -276,8 +277,6 @@ public class UpdateContentService extends Service {
     public void onEvent(SettingsChangeEvent event) {
         Log.d(TAG, "onEvent: SettingsChangeEvent: " + event.getChangePreference());
 
-        //TODO: Server uses Map of BuildingId:BuildingSequence
-
         // Run update if subscribed Buildings changed
         if(event.getChangePreference().equals(SettingsFragment.REF_KEY_BUILDINGS)) {
             doWork();
@@ -401,11 +400,14 @@ public class UpdateContentService extends Service {
         }
 
         // Initial determination of internet state
-        ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
+        /*ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         this.isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        */
+        this.isConnected = ((Mensa)getApplication()).isConnected();
+
 
         // Do the work (in new thread)
         doWork();
@@ -442,8 +444,8 @@ public class UpdateContentService extends Service {
     }
 
     public static class UrlBuilder {
-        //public static final String BASE = "http://192.168.178.28:8080";
-        public static final String BASE = "http://192.168.2.103:8080";
+        public static final String BASE = "http://192.168.178.28:8080";
+        //public static final String BASE = "http://192.168.2.103:8080";
 
         public static final String RATINGS = BASE + "/ratings";
         public static final String PHOTOS  = BASE + "/photos";

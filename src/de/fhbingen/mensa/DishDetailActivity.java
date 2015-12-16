@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,7 +27,6 @@ import android.widget.Toast;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,6 +36,7 @@ import java.util.Locale;
 
 import de.fhbingen.mensa.Exceptions.PictureFileEmptyException;
 import de.fhbingen.mensa.asynctask.DownloadFullPhotoTask;
+import de.fhbingen.mensa.data.event.NetworkStatusEvent;
 import de.fhbingen.mensa.data.orm.Building;
 import de.fhbingen.mensa.data.orm.Dish;
 import de.fhbingen.mensa.data.orm.Ingredient;
@@ -45,6 +44,7 @@ import de.fhbingen.mensa.data.orm.LocalRating;
 import de.fhbingen.mensa.data.orm.Photo;
 import de.fhbingen.mensa.data.orm.Rating;
 import de.fhbingen.mensa.service.UpdateContentService;
+import de.greenrobot.event.EventBus;
 
 public class DishDetailActivity extends Activity implements DownloadFullPhotoTask.IDownloadComplete {
 
@@ -63,8 +63,10 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
     // Given in Extra
     private String dateOfTab;
     private int photoIdFromList;
+    private Photo dbPhotoFromList;
 
     private boolean isCurrentDay;
+    private boolean isOnline;
 
     // Current Shown Ratings
     private boolean currentRatingsAll = true;
@@ -85,11 +87,53 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
         //Extract photoId of random picture in listView of MainActivity
         photoIdFromList = getIntent().getExtras().getInt(Photo.COL_PHOTOID);
 
+        // Connectivity
+        this.isOnline = ((Mensa)getApplication()).isConnected();
+        Log.v(TAG, "isOnline: " + isOnline);
+
         // Init ViewHolder
         this.initViewHolder();
 
         // Populate View
         this.populateView();
+    }
+
+    //TODO: onResume check if photo full available now (could change in gallery detail)
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Register EventBus
+        if(!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Unregister EventBus
+        EventBus.getDefault().unregister(this);
+    }
+
+    public void onEvent(NetworkStatusEvent event){
+        isOnline = event.isConnected();
+
+        // Enable/Disable TakePhoto Menu Action
+        if(isOnline){
+            //Enable TakePhoto
+            vh.actionTakePhoto.setEnabled(true);
+            vh.actionTakePhoto.getIcon().setAlpha(ENABLED_ALPHA);
+        } else {
+            //Disable TakePhoto
+            vh.actionTakePhoto.setEnabled(false);
+            vh.actionTakePhoto.getIcon().setAlpha(DISABLED_ALPHA);
+        }
+
+        // Enable/Disable Rating Controls
+        populateRatingControls();
+
+        // Enable/Disable Photo Controls
+        setPhotoView(dbPhotoFromList);
     }
 
     @Override
@@ -101,13 +145,13 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        final MenuItem actionTakePhoto = menu.findItem(R.id.action_take_photo);
-        if(isCurrentDay && this.isBuildingOpenNow(dish.getBuildingId())) {
-            actionTakePhoto.setEnabled(true);
-            actionTakePhoto.getIcon().setAlpha(ENABLED_ALPHA);
+        vh.actionTakePhoto = menu.findItem(R.id.action_take_photo);
+        if(isCurrentDay && this.isBuildingOpenNow(dish.getBuildingId()) && isOnline) {
+            vh.actionTakePhoto.setEnabled(true);
+            vh.actionTakePhoto.getIcon().setAlpha(ENABLED_ALPHA);
         } else {
-            actionTakePhoto.setEnabled(false);
-            actionTakePhoto.getIcon().setAlpha(DISABLED_ALPHA);
+            vh.actionTakePhoto.setEnabled(false);
+            vh.actionTakePhoto.getIcon().setAlpha(DISABLED_ALPHA);
         }
         return true;
     }
@@ -179,11 +223,9 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
             vh.ivDish = (ImageView) findViewById(R.id.dish_picture);
             vh.ivDownloadPhoto = (ImageView) findViewById(R.id.iv_download_photo);
             vh.pbDownload = (ProgressBar) findViewById(R.id.progressBar1);
+
         }
     }
-
-    //TODO: Register to EventBus onResume
-    //TODO: Unregister from Eventbus onPause
 
     private void populateView(){
         this.vh.dishText.setText(this.dish.getTitle());
@@ -219,11 +261,18 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
                 )
         );
 
+        // Ratings
         this.populateRatingView();
 
-        //Log.v(TAG, "isBuildingOpenNow : " + this.isBuildingOpenNow(dish.getBuildingId()));
-        //Log.v(TAG, "isCurrentDay:       " + isCurrentDay);
+        // RatingControls
+        this.populateRatingControls();
 
+        // Photo stuff;
+        dbPhotoFromList = Photo.findByPhotoId(photoIdFromList);
+        setPhotoView(dbPhotoFromList);
+    }
+
+    private void populateRatingControls() {
         // 1. Check if rating for date and dish exists
         if(this.setOwnRatingBar()){
             // Disable Voting Controls and set text
@@ -232,7 +281,13 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
             vh.ratingBar.setEnabled(false);
         } else {
             // Check if Rating/Photo possible
-            if(isCurrentDay && this.isBuildingOpenNow(dish.getBuildingId())){
+            if(isCurrentDay && this.isBuildingOpenNow(dish.getBuildingId()) && isOnline){
+
+                //Enable Controls
+                vh.headingRating.setText(R.string.heading_rating);
+                vh.sendRatingButton.setEnabled(true);
+                vh.ratingBar.setEnabled(true);
+
                 // Button onClickListener
                 this.vh.sendRatingButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -285,13 +340,9 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
                 vh.headingRating.setText(R.string.no_rating_possible);
                 vh.sendRatingButton.setEnabled(false);
                 vh.ratingBar.setEnabled(false);
+                vh.sendRatingButton.setOnClickListener(null);
             }
         }
-
-        // Photo stuff;
-        //final Photo dbRandomPhoto = Photo.selectRandomByDishId(dish.getDishId());
-        final Photo dbRandomPhoto = Photo.findByPhotoId(photoIdFromList);
-        setPhotoView(dbRandomPhoto);
     }
 
     // onClick Event on RelativLayouts of RatingBars, changes shown ratings
@@ -308,20 +359,27 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
             } else if (dbPhoto.hasThumb()) {
                 setDishPhoto(dbPhoto.getThumb());
 
-                // Show download ui element
-                vh.ivDownloadPhoto.setVisibility(View.VISIBLE);
+                if(isOnline) {
+                    // Show download ui element
+                    vh.ivDownloadPhoto.setVisibility(View.VISIBLE);
 
-                //Setup onClick
-                vh.ivDownloadPhoto.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        vh.ivDownloadPhoto.setVisibility(View.GONE);
-                        vh.pbDownload.setVisibility(View.VISIBLE);
+                    //Setup onClick
+                    vh.ivDownloadPhoto.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            vh.ivDownloadPhoto.setVisibility(View.GONE);
+                            vh.pbDownload.setVisibility(View.VISIBLE);
 
-                        //Download Full Photo Async
-                        new DownloadFullPhotoTask(callback).execute(dbPhoto);
-                    }
-                });
+                            //Download Full Photo Async
+                            new DownloadFullPhotoTask(callback).execute(dbPhoto);
+                        }
+                    });
+                } else {
+                    // Hide download ui element
+                    vh.ivDownloadPhoto.setClickable(false);
+                    vh.ivDownloadPhoto.setVisibility(View.INVISIBLE);
+                    vh.ivDownloadPhoto.setOnClickListener(null);
+                }
             }
         }
     }
@@ -419,6 +477,8 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
         ImageView ivDish, ivDownloadPhoto,ivDishType;
 
         ProgressBar pbDownload;
+
+        MenuItem actionTakePhoto;
     }
 
     /*

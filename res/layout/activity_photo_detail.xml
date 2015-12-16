@@ -5,56 +5,67 @@
     tools:context="de.fhbingen.mensa.PhotoDetailActivity"
     android:padding="2dp">
 
-    <ImageView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/iv_photo_detail"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_no_dish_icon"
-        android:layout_alignParentEnd="true" />
-
-    <TextView
+    <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="@string/already_complained"
-        android:id="@+id/tv_complain_label"
-        android:layout_below="@+id/iv_photo_detail"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:gravity="center"
-        android:visibility="invisible" />
+        android:id="@+id/scrollView2" >
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/complain_photo"
-        android:id="@+id/btn_complain"
-        android:layout_below="@+id/tv_complain_label"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/iv_photo_download_full"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="170dp"
-        android:src="@mipmap/ic_file_download_white"
-        android:layout_centerInParent="true" />
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/iv_photo_detail"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_no_dish_icon"
+                android:layout_alignParentEnd="true" />
 
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/pB_download_full"
-        android:indeterminate="true"
-        android:visibility="invisible"
-        android:layout_centerInParent="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="170dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/already_complained"
+                android:id="@+id/tv_complain_label"
+                android:layout_below="@+id/iv_photo_detail"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:gravity="center"
+                android:visibility="invisible" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/complain_photo"
+                android:id="@+id/btn_complain"
+                android:layout_below="@+id/tv_complain_label"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/iv_photo_download_full"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="170dp"
+                android:src="@mipmap/ic_file_download_white"
+                android:layout_centerInParent="true" />
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/pB_download_full"
+                android:indeterminate="true"
+                android:visibility="invisible"
+                android:layout_centerInParent="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="170dp" />
+        </RelativeLayout>
+    </ScrollView>
 </RelativeLayout>

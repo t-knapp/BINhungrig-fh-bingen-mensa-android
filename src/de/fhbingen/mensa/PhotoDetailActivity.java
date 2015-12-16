@@ -23,14 +23,17 @@ import java.util.List;
 import java.util.Locale;
 
 import de.fhbingen.mensa.asynctask.DownloadFullPhotoTask;
+import de.fhbingen.mensa.data.event.NetworkStatusEvent;
 import de.fhbingen.mensa.data.orm.LocalComplains;
 import de.fhbingen.mensa.data.orm.Photo;
 import de.fhbingen.mensa.service.UpdateContentService;
+import de.greenrobot.event.EventBus;
 
 public class PhotoDetailActivity extends Activity implements DownloadFullPhotoTask.IDownloadComplete {
 
     private ViewHolder vh;
     private Photo dbPhoto;
+    private boolean isConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +43,31 @@ public class PhotoDetailActivity extends Activity implements DownloadFullPhotoTa
         final long photoId = getIntent().getExtras().getLong(Photo.COL_PHOTOID);
         dbPhoto = Photo.findByPhotoId(photoId);
 
+        isConnected = ((Mensa)getApplication()).isConnected();
+
         initViewHolder();
+
+        populateView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Register EventBus
+        if(!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Unregister EventBus
+        EventBus.getDefault().unregister(this);
+    }
+
+    public void onEvent(NetworkStatusEvent event){
+        isConnected = event.isConnected();
 
         populateView();
     }
@@ -68,19 +95,30 @@ public class PhotoDetailActivity extends Activity implements DownloadFullPhotoTa
             } else {
                 bytes = dbPhoto.getThumb();
 
-                final DownloadFullPhotoTask.IDownloadComplete callback = this;
-                vh.ivDownloadFull.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        vh.ivDownloadFull.setEnabled(false);
-                        vh.ivDownloadFull.setClickable(false);
-                        vh.ivDownloadFull.setVisibility(View.GONE);
+                if(isConnected) {
+                    vh.ivDownloadFull.setEnabled(true);
+                    vh.ivDownloadFull.setClickable(true);
+                    vh.ivDownloadFull.setVisibility(View.VISIBLE);
 
-                        vh.pbDownload.setVisibility(View.VISIBLE);
+                    final DownloadFullPhotoTask.IDownloadComplete callback = this;
+                    vh.ivDownloadFull.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            vh.ivDownloadFull.setEnabled(false);
+                            vh.ivDownloadFull.setClickable(false);
+                            vh.ivDownloadFull.setVisibility(View.GONE);
 
-                        new DownloadFullPhotoTask(callback).execute(dbPhoto);
-                    }
-                });
+                            vh.pbDownload.setVisibility(View.VISIBLE);
+
+                            new DownloadFullPhotoTask(callback).execute(dbPhoto);
+                        }
+                    });
+                } else {
+                    vh.ivDownloadFull.setEnabled(false);
+                    vh.ivDownloadFull.setClickable(false);
+                    vh.ivDownloadFull.setVisibility(View.GONE);
+                    vh.ivDownloadFull.setOnClickListener(null);
+                }
             }
 
             setPhotoView(bytes);
@@ -95,46 +133,57 @@ public class PhotoDetailActivity extends Activity implements DownloadFullPhotoTa
             vh.btnComplain.setClickable(false);
             vh.btnComplain.setEnabled(false);
         } else {
-            //Complains possible
-            vh.btnComplain.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new AsyncTask<Long, Void, Void>(){
+            if(isConnected) {
+                vh.btnComplain.setClickable(true);
+                vh.btnComplain.setEnabled(true);
+                vh.btnComplain.setClickable(true);
 
-                        @Override
-                        protected Void doInBackground(Long... params) {
-                            final RestTemplate restTemplate = new RestTemplate();
-                            restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
-                            restTemplate.postForObject(
-                                    UpdateContentService.UrlBuilder.getComplainURL(params[0])
-                                    , null
-                                    , String.class
-                            );
-                            return null;
-                        }
+                //Complains possible
+                vh.btnComplain.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new AsyncTask<Long, Void, Void>() {
 
-                        @Override
-                        protected void onPostExecute(Void aVoid) {
-                            final LocalComplains dbComplain = new LocalComplains();
-                            dbComplain.setPhotoId(dbPhoto.getPhotoId());
+                            @Override
+                            protected Void doInBackground(Long... params) {
+                                final RestTemplate restTemplate = new RestTemplate();
+                                restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
+                                restTemplate.postForObject(
+                                        UpdateContentService.UrlBuilder.getComplainURL(params[0])
+                                        , null
+                                        , String.class
+                                );
+                                return null;
+                            }
 
-                            final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN);
-                            final String strDate = sdf.format(Calendar.getInstance().getTime());
-                            dbComplain.setDate(strDate);
+                            @Override
+                            protected void onPostExecute(Void aVoid) {
+                                final LocalComplains dbComplain = new LocalComplains();
+                                dbComplain.setPhotoId(dbPhoto.getPhotoId());
 
-                            dbComplain.save();
+                                final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN);
+                                final String strDate = sdf.format(Calendar.getInstance().getTime());
+                                dbComplain.setDate(strDate);
 
-                            Toast.makeText(PhotoDetailActivity.this, R.string.complain_saved, Toast.LENGTH_SHORT).show();
+                                dbComplain.save();
 
-                            vh.btnComplain.setVisibility(View.GONE);
-                            vh.btnComplain.setClickable(false);
-                            vh.btnComplain.setEnabled(false);
-                            vh.tvComplainLabel.setVisibility(View.VISIBLE);
-                        }
+                                Toast.makeText(PhotoDetailActivity.this, R.string.complain_saved, Toast.LENGTH_SHORT).show();
 
-                    }.execute(dbPhoto.getPhotoId());
-                }
-            });
+                                vh.btnComplain.setVisibility(View.GONE);
+                                vh.btnComplain.setClickable(false);
+                                vh.btnComplain.setEnabled(false);
+                                vh.tvComplainLabel.setVisibility(View.VISIBLE);
+                            }
+
+                        }.execute(dbPhoto.getPhotoId());
+                    }
+                });
+            } else {
+                // Disable controls if not connected
+                vh.btnComplain.setClickable(false);
+                vh.btnComplain.setEnabled(false);
+                vh.btnComplain.setOnClickListener(null);
+            }
         }
     }
 

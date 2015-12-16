@@ -37,16 +37,16 @@
     <!-- ActiveAndroid ORM -->
     <meta-data
         android:name="AA_DB_NAME"
-        android:value="mensa_dev1.db" />
+        android:value="AA_Mensa.db" />
     <meta-data
         android:name="AA_DB_VERSION"
         android:value="1" />
     <meta-data
         android:name="AA_MODELS"
-        android:value="de.fhbingen.mensa.data.orm.Building,                        de.fhbingen.mensa.data.orm.Date,                        de.fhbingen.mensa.data.orm.Delete,                        de.fhbingen.mensa.data.orm.Dish,                        de.fhbingen.mensa.data.orm.OfferedAt,                        de.fhbingen.mensa.data.orm.Rating,                        de.fhbingen.mensa.data.orm.Sequence" />
+        android:value="de.fhbingen.mensa.data.orm.Building, de.fhbingen.mensa.data.orm.Date, de.fhbingen.mensa.data.orm.Delete, de.fhbingen.mensa.data.orm.Dish, de.fhbingen.mensa.data.orm.Ingredient, de.fhbingen.mensa.data.orm.LocalComplains, de.fhbingen.mensa.data.orm.LocalRating, de.fhbingen.mensa.data.orm.OfferedAt, de.fhbingen.mensa.data.orm.Photo, de.fhbingen.mensa.data.orm.Rating, de.fhbingen.mensa.data.orm.Sequence                       de.fhbingen.mensa.data.orm.Dish,                        de.fhbingen.mensa.data.orm.OfferedAt,                        de.fhbingen.mensa.data.orm.Rating,                        de.fhbingen.mensa.data.orm.Sequence" />
     <meta-data
         android:name="AA_SERIALIZERS"
-        android:value="de.fhbingen.mensa.data.serializer.SqlDateSerializer,                        de.fhbingen.mensa.data.serializer.SqlTimeSerializer" />
+        android:value="de.fhbingen.mensa.data.serializer.SqlDateSerializer, de.fhbingen.mensa.data.serializer.SqlTimeSerializer" />
 
     <application
         android:name=".Mensa"

@@ -278,11 +278,20 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
         return super.onOptionsItemSelected(item);
     }
 
+
+    private int currentTabSelected;
+
+    public int getCurrentTabSelected(){
+        return currentTabSelected;
+    }
+
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in
         // the ViewPager.
         mViewPager.setCurrentItem(tab.getPosition());
+
+        this.currentTabSelected = tab.getPosition();
     }
 
     @Override
@@ -367,6 +376,10 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN);
             args.putString(ARG_DATE, formatter.format(date));
 
+            if(!EventBus.getDefault().isRegistered(fragment)){
+                EventBus.getDefault().register(fragment);
+            }
+
             fragment.setArguments(args);
             return fragment;
         }
@@ -375,6 +388,27 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
         }
 
         private DishCursorAdapter dishCursorAdapter;
+
+        private ListView listView;
+
+        public void updateBuildingCursor(int buildingId){
+            final Date date = Date.valueOf(getArguments().getString(ARG_DATE));
+            final int currentBuildingId = PreferenceManager
+                    .getDefaultSharedPreferences(getActivity())
+                    .getInt(SettingsFragment.REF_KEY_CURRENT_BUILDINGID, SettingsFragment.DUMMY_INT_NOT_USED);
+
+            String statement = Dish.getSqlStatementForDateAndBuilding(date, 1703);
+            String[] args = new String[] {date.toString(), Integer.toString(currentBuildingId)};
+            Cursor dishCursorNew = Cache.openDatabase().rawQuery(statement, args);
+
+            dishCursorAdapter.changeCursor(dishCursorNew);
+        }
+
+        public void onEvent(BuildingChangedEvent buildingChangedEvent){
+            Log.v("Fragment", "buildingChangedEvent.buildingId: " + buildingChangedEvent.selectedBuildingId);
+
+            updateBuildingCursor(buildingChangedEvent.selectedBuildingId);
+        }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -389,17 +423,14 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
             // Build View
 
             String stmtnew = Dish.getSqlStatementForDateAndBuilding(date, 1703);
-            //Log.v("new", stmtnew);
-
             String[] argsNew = new String[] {date.toString(), Integer.toString(currentBuildingId)};
-            //Log.v("new", Arrays.toString(argsNew));
-
             Cursor dishCursorNew = Cache.openDatabase().rawQuery(stmtnew, argsNew);
 
-            //Log.d("onCreateView()", "count: " + dishCursorNew.getCount());
-            final ListView listView = (ListView) rootView.findViewById(R.id.listView_dishes);
+            listView = (ListView) rootView.findViewById(R.id.listView_dishes);
             dishCursorAdapter = new DishCursorAdapter(container.getContext(), dishCursorNew);
             listView.setAdapter(dishCursorAdapter);
+
+
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -421,9 +452,7 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
         }
     }
 
-    public void onEvent(BuildingChangedEvent buildingChangedEvent){
-        Log.v(TAG, "buildingChangedEvent.buildingId: " + buildingChangedEvent.selectedBuildingId);
-    }
+
 
     @Override
     protected void onResume() {
@@ -433,18 +462,14 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
         Intent intent= new Intent(this, UpdateContentService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-        if(!EventBus.getDefault().isRegistered(this)){
-            EventBus.getDefault().register(this);
-        }
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        if(EventBus.getDefault().isRegistered(this)){
-            EventBus.getDefault().unregister(this);
-        }
+
     }
 
     @Override

@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import de.fhbingen.mensa.data.event.BuildingChangedEvent;
 import de.fhbingen.mensa.data.orm.Building;
 import de.fhbingen.mensa.data.orm.Dish;
 import de.fhbingen.mensa.data.orm.Ingredient;
@@ -51,6 +52,7 @@ import de.fhbingen.mensa.data.orm.Photo;
 import de.fhbingen.mensa.data.orm.Rating;
 import de.fhbingen.mensa.data.orm.Sequence;
 import de.fhbingen.mensa.service.UpdateContentService;
+import de.greenrobot.event.EventBus;
 
 // TODO: Refresh list onResume (for Ratings and Pictures etc.)
 
@@ -209,8 +211,10 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
                     final SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putInt(SettingsFragment.REF_KEY_CURRENT_BUILDINGID, Integer.parseInt(arValues[position]));
                     editor.commit();
-                }
 
+                    //Post slected BuildingId
+                    EventBus.getDefault().post(new BuildingChangedEvent(Integer.parseInt(arValues[position])));
+                }
             });
 
             builder.show();
@@ -382,9 +386,6 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
                     .getDefaultSharedPreferences(getActivity())
                     .getInt(SettingsFragment.REF_KEY_CURRENT_BUILDINGID, SettingsFragment.DUMMY_INT_NOT_USED);
 
-            //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            //textView.setText(getString(R.string.section_format, getArguments().getString(ARG_DATE)));
-
             // Build View
 
             String stmtnew = Dish.getSqlStatementForDateAndBuilding(date, 1703);
@@ -420,6 +421,10 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
         }
     }
 
+    public void onEvent(BuildingChangedEvent buildingChangedEvent){
+        Log.v(TAG, "buildingChangedEvent.buildingId: " + buildingChangedEvent.selectedBuildingId);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -427,6 +432,19 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
 
         Intent intent= new Intent(this, UpdateContentService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+        if(!EventBus.getDefault().isRegistered(this)){
+            EventBus.getDefault().register(this);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(EventBus.getDefault().isRegistered(this)){
+            EventBus.getDefault().unregister(this);
+        }
     }
 
     @Override

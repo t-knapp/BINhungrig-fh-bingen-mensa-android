@@ -13,6 +13,8 @@ import de.fhbingen.mensa.data.orm.Rating;
 import de.fhbingen.mensa.data.orm.Sequence;
 
 /**
+ * Container Object for JSON from server API
+ *
  * Created by tknapp on 07.11.15.
  */
 public class Changes {

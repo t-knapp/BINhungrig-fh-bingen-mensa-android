@@ -56,6 +56,14 @@ import de.greenrobot.event.EventBus;
 
 // TODO: Refresh list onResume (for Ratings and Pictures etc.)
 
+/**
+ * MainActivity.
+ *
+ * Binding to BackgroundService
+ * Creating Tabbed View
+ * Select Building
+ * Menu-Logic
+ */
 public class MainActivitySlide extends Activity implements ActionBar.TabListener {
 
     private final String TAG = MainActivitySlide.class.getSimpleName();
@@ -94,7 +102,6 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
         ActiveAndroid.initialize(this);
 
         // Start data Service
-        // TODO: Just bind to running service
         Intent intent = new Intent(this, UpdateContentService.class);
         startService(intent);
 
@@ -219,7 +226,7 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
 
             builder.show();
 
-
+            /*
             List<Building> buildings = new Select().from(Building.class).execute();
             for (final Building b : buildings) {
                 Log.v(TAG, b.toString());
@@ -271,6 +278,7 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
                 seq = new Sequence();
             }
             Log.v(TAG, "Sequence: " + seq.toString());
+            */
 
             return true;
         }
@@ -404,6 +412,10 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
             dishCursorAdapter.changeCursor(dishCursorNew);
         }
 
+        /**
+         * EventBus Callback
+         * @param buildingChangedEvent
+         */
         public void onEvent(BuildingChangedEvent buildingChangedEvent){
             Log.v("Fragment", "buildingChangedEvent.buildingId: " + buildingChangedEvent.selectedBuildingId);
 
@@ -486,8 +498,8 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
             UpdateContentService.MyBinder b = (UpdateContentService.MyBinder) binder;
             s = b.getService();
 
-            Toast.makeText(MainActivitySlide.this, "Connected", Toast.LENGTH_SHORT)
-                    .show();
+            //Toast.makeText(MainActivitySlide.this, "Connected", Toast.LENGTH_SHORT)
+            //        .show();
         }
 
         @Override

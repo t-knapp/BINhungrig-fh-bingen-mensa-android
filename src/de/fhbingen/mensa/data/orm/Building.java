@@ -11,6 +11,9 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
+ * ActiveAndroid ORM Entity
+ * for Buildings (one cantine)
+ *
  * Created by tknapp on 07.11.15.
  */
 
@@ -66,11 +69,6 @@ public class Building extends Model {
     @JsonIgnore
     public int subscribed;
 
-    //
-    // Important for "dynamic" deletion
-    //
-    public final static String DELETEID = COL_BUILDINGID;
-
     public List<Dish> getDishes(){
         return getMany(Dish.class, "fk_buildingId");
     }
@@ -122,17 +120,17 @@ public class Building extends Model {
         return name;
     }
 
+    /**
+     * Checks if Building buildingId is open now (for ratings and photo upload)
+     *
+     * @param buildingId
+     * @return
+     */
     public static boolean isOpenNow(final long buildingId) {
         final Building dbBuilding = Building.findByBuildingId(buildingId);
         if(dbBuilding == null){
             return false;
         }
-        /*
-        final Time nowTime = new Time(Calendar.getInstance().getTimeInMillis());
-        Log.v("Building", "nowTime: " + nowTime.toString());
-        return dbBuilding.timeOpenFrom.before(nowTime)
-                && dbBuilding.timeOpenTill.after(nowTime);
-        */
         // create a java calendar instance
         Calendar calendar = Calendar.getInstance();
         calendar.set(1970, 0, 1);

@@ -11,6 +11,9 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 /**
+ * ActiveAndroid ORM Entity
+ * for Ingredients
+ *
  * Created by tknapp on 24.11.15.
  */
 public class Ingredient extends Model {
@@ -38,6 +41,11 @@ public class Ingredient extends Model {
         return seq;
     }
 
+    /**
+     * Returns full names of csv list of ingredients
+     * @param csvKeys CSV List of keys of ingredients
+     * @return
+     */
     public static String[] loopUpIngredientKeys(final String csvKeys){
         final String whereIn = "'" + TextUtils.join("','",StringUtils.commaDelimitedListToStringArray(csvKeys)) + "'";
         final List<Ingredient> ingredientList = new Select()
@@ -80,8 +88,4 @@ public class Ingredient extends Model {
                 .execute();
     }
 
-    //
-    // Important for "dynamic" deletion
-    //
-    public final static String DELETEID = COL_KEY;
 }

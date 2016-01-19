@@ -1,6 +1,8 @@
 package de.fhbingen.mensa.data.event;
 
 /**
+ * EventBus Event fired when UpdateService has finished pull replication
+ *
  * Created by tknapp on 10.11.15.
  */
 public class ServiceEvent {

@@ -20,6 +20,8 @@ import de.fhbingen.mensa.data.orm.Photo;
 import de.fhbingen.mensa.data.orm.Rating;
 
 /**
+ * Adapter used in Lists for displaying dishes
+ *
  * Created by tknapp on 10.11.15.
  */
 public class DishCursorAdapter extends CursorAdapter {

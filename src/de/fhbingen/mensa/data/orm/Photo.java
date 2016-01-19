@@ -11,6 +11,11 @@ import com.activeandroid.query.Select;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
+ * ActiveAndroid ORM Entity
+ * for Photos
+ *
+ * Thumb and full sized pictures are saved to sqlite
+ *
  * Created by tknapp on 26.11.15.
  */
 @Table(name = "Photos")
@@ -128,6 +133,11 @@ public class Photo extends Model {
         return full != null;
     }
 
+    /**
+     * Selects one photo for a dishId at random
+     * @param dishId
+     * @return
+     */
     public static Photo selectRandomByDishId(final long dishId){
         final From from =  new Select()
                 .from(Photo.class)
@@ -137,6 +147,11 @@ public class Photo extends Model {
        return from.executeSingle();
     }
 
+    /**
+     * Returns one photo selected by photoId (or null if not found)
+     * @param photoId
+     * @return Photo or null
+     */
     public static Photo findByPhotoId(final long photoId){
         return new Select()
                 .from(Photo.class)
@@ -144,6 +159,13 @@ public class Photo extends Model {
                 .executeSingle();
     }
 
+    /**
+     * Returns cursor with photos for one dish.
+     * UseCase: Gallery of all pircures of one dish.
+     *
+     * @param dishId
+     * @return Cursor
+     */
     public static Cursor getCursorForDishId(final long dishId){
         final String sql = new Select(Photo.COL_DISHID + " AS _id, " + Photo.COL_PHOTOID + ", " + Photo.COL_THUMB)
                 .from(Photo.class)
@@ -152,8 +174,4 @@ public class Photo extends Model {
         return Cache.openDatabase().rawQuery(sql, new String[]{ Long.toString(dishId) });
     }
 
-    //
-    // Important for "dynamic" deletion
-    //
-    public final static String DELETEID = COL_PHOTOID;
 }

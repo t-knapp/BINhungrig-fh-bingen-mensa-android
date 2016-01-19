@@ -6,6 +6,11 @@ import com.activeandroid.annotation.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
+ * ActiveAndroid ORM Entity
+ * for Sequence.
+ *
+ * This is the center of pull replication sync logic.
+ *
  * Created by tknapp on 07.11.15.
  */
 @Table(name = "_sequence")

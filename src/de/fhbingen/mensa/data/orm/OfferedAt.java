@@ -5,6 +5,10 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
 /**
+ * ActiveAndroid ORM Entity
+ * for OfferedAt. This is a join-table between Dates and Dishes.
+ * In common usecases this entity shall not be defined but is necessary by pull-replication model
+ *
  * Created by tknapp on 09.11.15.
  */
 @Table(name = "offeredAt")
@@ -50,8 +54,4 @@ public class OfferedAt extends Model {
         );
     }
 
-    //
-    // Important for "dynamic" deletion
-    //
-    public final static String DELETEID = COL_SEQ;
 }

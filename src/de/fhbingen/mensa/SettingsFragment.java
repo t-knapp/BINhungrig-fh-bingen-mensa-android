@@ -20,6 +20,8 @@ import de.fhbingen.mensa.data.orm.Building;
 import de.greenrobot.event.EventBus;
 
 /**
+ * Holding all Settings and handling change/update routines.
+ *
  * Created by tknapp on 11.11.15.
  */
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener{

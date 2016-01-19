@@ -12,6 +12,9 @@ import android.widget.GridView;
 
 import de.fhbingen.mensa.data.orm.Photo;
 
+/**
+ * Gallery
+ */
 public class GalleryOverview extends Activity implements AdapterView.OnItemClickListener {
 
     @Override

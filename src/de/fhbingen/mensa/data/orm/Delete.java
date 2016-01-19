@@ -1,6 +1,8 @@
 package de.fhbingen.mensa.data.orm;
 
 /**
+ * Object for holding Delete Action. No entity.
+ *
  * Created by tknapp on 09.11.15.
  */
 public class Delete {

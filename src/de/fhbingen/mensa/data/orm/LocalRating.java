@@ -5,6 +5,10 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.query.Select;
 
 /**
+ * ActiveAndroid ORM Entity
+ * for ratings a user made. These ratings are pushed to server and this entity is necessary  to
+ * prevent multiple ratings on same dish.
+ *
  * Created by tknapp on 24.11.15.
  */
 public class LocalRating extends Model {
@@ -38,6 +42,12 @@ public class LocalRating extends Model {
         return String.format("LocalRating [dishId: %d, date: %s, value: %d]", dishId, date, value);
     }
 
+    /**
+     * Find LocalRating by dishId and date-string
+     * @param dishId
+     * @param date
+     * @return
+     */
     public static LocalRating findByDishIdAndDate(final long dishId, final String date){
         return new Select()
                 .from(LocalRating.class)
@@ -45,6 +55,7 @@ public class LocalRating extends Model {
                 .executeSingle();
     }
 
+    /*
     public static void insertLocalRating(final long dishId, final String date, final int value){
         final LocalRating selected = findByDishIdAndDate(dishId, date);
         if(selected == null){
@@ -55,7 +66,13 @@ public class LocalRating extends Model {
             newRating.save();
         }
     }
+    */
 
+    /**
+     * Creates a LocalRating Entity from a Rating Entity
+     * @param rating
+     * @return
+     */
     public static LocalRating fromRating(final Rating rating){
         final LocalRating result = new LocalRating();
         result.dishId = rating.getDishId();

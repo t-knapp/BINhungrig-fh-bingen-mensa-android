@@ -29,6 +29,9 @@ import de.fhbingen.mensa.data.orm.Photo;
 import de.fhbingen.mensa.service.UpdateContentService;
 import de.greenrobot.event.EventBus;
 
+/**
+ * Activity showing photo in detail and let user complain about photo.
+ */
 public class PhotoDetailActivity extends Activity implements DownloadFullPhotoTask.IDownloadComplete {
 
     private ViewHolder vh;

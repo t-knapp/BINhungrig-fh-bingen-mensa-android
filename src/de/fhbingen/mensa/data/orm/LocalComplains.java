@@ -5,6 +5,10 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.query.Select;
 
 /**
+ * ActiveAndroid ORM Entity
+ * for LocalComplains. Complains are send to server, this entity is necessary to prevent
+ * multiple complains on one device for same picture.
+ *
  * Created by tknapp on 14.12.15.
  */
 public class LocalComplains extends Model {

@@ -13,6 +13,9 @@ import com.activeandroid.query.Select;
 import java.util.List;
 
 /**
+ * ActiveAndroid ORM Entity
+ * for Dish
+ *
  * Created by tknapp on 07.11.15.
  */
 
@@ -119,20 +122,13 @@ public class Dish extends Model {
         return this;
     }
 
-    //TODO: Code-Style
-    public static final List<Dish> selectForDateAndBuilding(final java.sql.Date date, final long subscribedBuilding){
-        //String buildings = Arrays.toString(subscribedBuildingIds).replace("[", "").replace("]", "").trim();
-        //Log.d("DishOld.Select...", buildings);
-        final From tmp = new Select().from(Dish.class)
-                .join(OfferedAt.class).on("dishId = fk_dishId")
-                .join(Date.class).on("fk_dateId = dateId")
-                //.join(Building.class).on("buildingId = fk_buildingId")
-                .where("date = ? AND fk_buildingId = ?", date, subscribedBuilding);
-                //.and("buildingId IN (?)", buildings);
-        return tmp.execute();
-    }
-
-    //TODO: Code-Style
+    /**
+     * Builds SQL Statement for fetching dishes for a date and a building
+     *
+     * @param date
+     * @param subscribedBuilding
+     * @return
+     */
     public static String getSqlStatementForDateAndBuilding(final java.sql.Date date, final long subscribedBuilding){
         //String buildings = Arrays.toString(subscribedBuildingIds).replace("[", "").replace("]", "").trim();
         //Log.d("DishOld.Select...", buildings);
@@ -150,46 +146,23 @@ public class Dish extends Model {
     }
 
 
-    public static Cursor fetchResultCursor(final java.sql.Date date, final long subscribedBuilding){
-        Log.v("fetchResultCursor()", String.format("(%s, %d)", date.toString(), subscribedBuilding));
-        return Cache.openDatabase().rawQuery(
-                getSqlStatementForDateAndBuilding(date, subscribedBuilding),
-                new String[] {date.toString(), Long.toString(subscribedBuilding)}
-        );
-    }
-
     public static Dish findByDishId(final int dishId){
         return new Select().from(Dish.class).where("dishId = ?", dishId).executeSingle();
     }
 
     public float getAvgRating(final boolean all, final String strDate){
-        /*final String sql = "SELECT AVG(`value`) AS `AVG` FROM `Ratings` WHERE `" + Rating.COL_FK_DISHID + "` = ?";
-        final Cursor cursor = Cache.openDatabase().rawQuery(sql, new String[]{Integer.toString(dishId)});
-        cursor.moveToFirst();
-        final float result = cursor.getFloat(cursor.getColumnIndexOrThrow("AVG"));
-        cursor.close();
-        return result;*/
         return Rating.getAvgRating(dishId, all, strDate);
     }
 
-    public float getAvgRatingForDate(final String date){
-        final String sql = String.format(
-                "SELECT AVG(`value`) AS `AVG` FROM `Ratings` WHERE `%s` = ? AND `%s` = ?"
-                , Rating.COL_FK_DISHID
-                , Rating.COL_DATE
-        );
-        final Cursor cursor = Cache.openDatabase().rawQuery(sql,
-                new String[]{
-                        Integer.toString(dishId)
-                        , date
-                }
-        );
-        cursor.moveToFirst();
-        final float result = cursor.getFloat(cursor.getColumnIndexOrThrow("AVG"));
-        cursor.close();
-        return result;
-    }
-
+    /**
+     * Returns int array with 7 cells.
+     * (index 0-4 for number of stars[index 0 = 1 star])
+     * (index 5 holds maximum of votes)
+     * (index 6 holds total number of votes)
+     * @param all
+     * @param strDate
+     * @return
+     */
     public int[] getRatings(boolean all, final String strDate) {
         final String sql = (all)
                 ? (String.format(
@@ -234,10 +207,5 @@ public class Dish extends Model {
     }
 
     public final static String ARG_DATE = "arg_date";
-
-    //
-    // Important for "dynamic" deletion
-    //
-    public final static String DELETEID = COL_DISHID;
 
 }

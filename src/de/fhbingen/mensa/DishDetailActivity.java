@@ -46,6 +46,10 @@ import de.fhbingen.mensa.data.orm.Rating;
 import de.fhbingen.mensa.service.UpdateContentService;
 import de.greenrobot.event.EventBus;
 
+/**
+ * Detail Activity showing (thumb|full)Picture, Title, Price, Ingredients, Ratings(all|only today),
+ *
+ */
 public class DishDetailActivity extends Activity implements DownloadFullPhotoTask.IDownloadComplete {
 
     private static final String TAG = DishDetailActivity.class.getSimpleName();

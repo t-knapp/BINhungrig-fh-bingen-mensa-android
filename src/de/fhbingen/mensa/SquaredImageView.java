@@ -5,6 +5,8 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 /**
+ * Custom ImageView used for SquaredImages in GridView
+ *
  * Created by tknapp on 10.12.15.
  */
 public class SquaredImageView extends ImageView {

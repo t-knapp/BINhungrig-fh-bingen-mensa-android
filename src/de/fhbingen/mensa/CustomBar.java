@@ -9,6 +9,9 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
 
+/**
+ * Custom View holding five colored bars indicating ratings
+ */
 public class CustomBar extends View {
 
     public CustomBar(Context context, AttributeSet atts) {

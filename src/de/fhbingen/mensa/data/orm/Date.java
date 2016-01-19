@@ -5,6 +5,12 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
 /**
+ * ActiveAndroid ORM Entity
+ * for Dates in yyyy-mm-dd format
+ *
+ * String is used for storage b.c. some problems with jackson de-/serialize of java.sql.date
+ * @see: http://wiki.fasterxml.com/JacksonFAQDateHandling
+ *
  * Created by tknapp on 09.11.15.
  */
 @Table(name = "Dates")
@@ -19,8 +25,6 @@ public class Date extends Model {
 
     @Column(name = "date")
     private String date;
-
-    //TODO: getDishes: Join Dishes via OfferedAt
 
     public long getDateId() {
         return dateId;
@@ -52,8 +56,4 @@ public class Date extends Model {
         );
     }
 
-    //
-    // Important for "dynamic" deletion
-    //
-    public final static String DELETEID = COL_DATEID;
 }

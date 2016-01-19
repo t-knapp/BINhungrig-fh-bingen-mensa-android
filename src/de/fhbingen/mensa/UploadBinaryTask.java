@@ -40,6 +40,9 @@ import org.springframework.web.client.RestTemplate;
 import de.fhbingen.mensa.data.orm.Photo;
 import de.fhbingen.mensa.service.UpdateContentService;
 
+/**
+ * AsyncTast for uploading taken pictures
+ */
  public class UploadBinaryTask extends AsyncTask<File, Void, Photo> {
 
 	private long dishId;

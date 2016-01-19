@@ -15,10 +15,17 @@ import de.fhbingen.mensa.data.orm.Photo;
 import de.fhbingen.mensa.service.UpdateContentService;
 
 /**
+ * AsyncTask for downloading byte-array of full sized picture.
+ *
  * Created by tknapp on 07.12.15.
  */
 public class DownloadFullPhotoTask extends AsyncTask<Photo, Void, Photo> {
 
+    /**
+     * Callback "workaround" for binding Methods be called when this Task is ready.
+     * E.g. Update View: View implements IDownloadComplete and handle an instance to
+     * this task in Constructor
+     */
     public interface IDownloadComplete {
         void onDownloadComplete(final byte[] bytes);
     }

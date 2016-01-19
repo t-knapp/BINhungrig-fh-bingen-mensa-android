@@ -8,6 +8,9 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
 /**
+ * ActiveAndroid ORM Entity
+ * for Ratings
+ *
  * Created by tknapp on 09.11.15.
  */
 
@@ -97,10 +100,5 @@ public class Rating extends Model {
         cursor.close();
         return result;
     }
-
-    //
-    // Important for "dynamic" deletion
-    //
-    public final static String DELETEID = COL_RATINGID;
 
 }

@@ -88,4 +88,9 @@ public class Ingredient extends Model {
                 .execute();
     }
 
+    //
+    // Important for "dynamic" deletion
+    //
+    public final static String DELETEID = COL_KEY;
+
 }

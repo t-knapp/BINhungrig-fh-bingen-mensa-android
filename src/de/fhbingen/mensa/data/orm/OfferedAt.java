@@ -54,4 +54,9 @@ public class OfferedAt extends Model {
         );
     }
 
+    //
+    // Important for "dynamic" deletion
+    //
+    public final static String DELETEID = COL_SEQ;
+
 }

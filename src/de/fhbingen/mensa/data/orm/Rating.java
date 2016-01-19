@@ -87,6 +87,14 @@ public class Rating extends Model {
         return this;
     }
 
+    /**
+     * Returns average Rating of a dish.
+     *
+     * @param dishId
+     * @param all     if true, all ratings are used, otherwise only todays
+     * @param strDate date yyyy-mm-dd
+     * @return
+     */
     public static float getAvgRating(final int dishId, final boolean all, final String strDate){
         final String sql = (all)
                 ? "SELECT AVG(`value`) AS `AVG` FROM `Ratings` WHERE `" + COL_FK_DISHID + "` = ?"
@@ -101,4 +109,8 @@ public class Rating extends Model {
         return result;
     }
 
+    //
+    // Important for "dynamic" deletion
+    //
+    public final static String DELETEID = COL_RATINGID;
 }

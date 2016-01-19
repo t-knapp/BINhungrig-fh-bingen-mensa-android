@@ -145,4 +145,9 @@ public class Building extends Model {
                 && dbBuilding.timeOpenTill.after(nowDate);
     }
 
+    //
+    // Important for "dynamic" deletion
+    //
+    public final static String DELETEID = COL_BUILDINGID;
+
 }

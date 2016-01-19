@@ -56,4 +56,6 @@ public class Date extends Model {
         );
     }
 
+    public final static String DELETEID = COL_DATEID;
+
 }

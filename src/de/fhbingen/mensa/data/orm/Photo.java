@@ -174,4 +174,9 @@ public class Photo extends Model {
         return Cache.openDatabase().rawQuery(sql, new String[]{ Long.toString(dishId) });
     }
 
+    //
+    // Important for "dynamic" deletion
+    //
+    public final static String DELETEID = COL_PHOTOID;
+
 }

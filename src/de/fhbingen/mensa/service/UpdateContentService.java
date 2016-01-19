@@ -1,13 +1,8 @@
 package de.fhbingen.mensa.service;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -20,7 +15,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,141 +37,21 @@ import de.fhbingen.mensa.data.orm.Rating;
 import de.fhbingen.mensa.data.orm.Sequence;
 import de.greenrobot.event.EventBus;
 
+/**
+ * Background Service for fetching new data from server.
+ */
 public class UpdateContentService extends Service {
 
     private static final String TAG = UpdateContentService.class.getSimpleName();
 
-    private boolean isRunning   = false;
     private boolean isConnected = false;
 
-    public static void clearDB(){
-        SQLiteDatabase db = ActiveAndroid.getDatabase();
-        List<String> tables = new ArrayList<String>();
-        Cursor cursor = db.rawQuery("SELECT * FROM sqlite_master WHERE type='table';", null);
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            String tableName = cursor.getString(1);
-            if (!tableName.equals("android_metadata") &&
-                    !tableName.equals("sqlite_sequence")) {
-                tables.add(tableName);
-            }
-            cursor.moveToNext();
-        }
-        cursor.close();
-        for (String tableName : tables) {
-            Log.d(TAG, "Delete content from '" + tableName + "'");
-            db.execSQL("DELETE FROM " + tableName);
-        }
-    }
-
-    private void updateBuildings(final List<Building> buildings) {
-        Building selectedBuilding;
-        for (final Building b : buildings) {
-            selectedBuilding = new Select().from(b.getClass()).where("buildingId = ?", b.getBuildingId()).executeSingle();
-            if (selectedBuilding != null) {
-                Log.d(TAG, "Updating building " + selectedBuilding.toString());
-                selectedBuilding.update(b).save();
-            } else {
-                //New building
-                Log.d(TAG, "Creating new Building " + b.toString());
-                b.save();
-            }
-        }
-        //TODO: Feedback to UI if update/inserts done
-    }
-
-    private void updateDishes(final List<Dish> dishes) {
-        Dish selectedDish;
-        for (final Dish d : dishes) {
-            selectedDish = new Select()
-                    .from(d.getClass())
-                    .where(Dish.COL_DISHID + " = ?", d.getDishId())
-                    .executeSingle();
-            if (selectedDish != null) {
-                //Update DishOld in DB
-                Log.d(TAG, "Updating Dish " + selectedDish.getDishId());
-                selectedDish.update(d).save();
-            } else {
-                //New DishOld
-                Log.d(TAG, "Creating new Dish " + d.getDishId());
-                d.save();
-            }
-        }
-        //TODO: Feedback to UI if update/inserts done
-    }
-
-    private void updateDates(List<Date> dates) {
-        Date selectedDate;
-        for (final Date d : dates) {
-            selectedDate = new Select().from(d.getClass()).where("date = ?", d.getDate()).executeSingle();
-            if (selectedDate != null) {
-                Log.d(TAG, "Updating Date " + d.toString());
-                selectedDate.update(d).save();
-            } else {
-                Log.d(TAG, "Creating new Date " + d.toString());
-                d.save();
-            }
-        }
-    }
-
-    private void updateOfferedAt(List<OfferedAt> offeredAt) {
-        OfferedAt selectedOfferedAt;
-        for (final OfferedAt oA : offeredAt) {
-            selectedOfferedAt = new Select()
-                    .from(oA.getClass())
-                    .where("fk_dishId = ? AND fk_dateId = ?", oA.getDishId(), oA.getDateId())
-                    .executeSingle();
-            if (selectedOfferedAt != null) {
-                Log.d(TAG, "Updating OfferedAt [dish: " + oA.getDishId() + ", date: " + oA.getDateId() + "]");
-                selectedOfferedAt.update(oA).save();
-            } else {
-                Log.d(TAG, "Creating new OfferedAt [dish: " + oA.getDishId() + ", date: " + oA.getDateId() + "]");
-                oA.save();
-            }
-        }
-    }
-
-    private void updateSequence(final Sequence sequence) {
-        Sequence currentSeq = new Select().from(Sequence.class).where("seq_name = ?", Sequence.SEQNAME).executeSingle();
-        if (currentSeq != null) {
-            Log.d(TAG, "Updating Sequence to " + sequence.getLastSequence());
-            currentSeq.update(sequence).save();
-        } else {
-            Log.d(TAG, "Creating Sequence with " + sequence.getLastSequence());
-            sequence.save();
-        }
-    }
-
-    private void applyDeletes(List<Delete> deletes) {
-        final String packagePrefix = "de.fhbingen.mensa.data.orm.";
-        Class cls;
-        for (final Delete d : deletes) {
-            try {
-                cls = Class.forName(packagePrefix + d.getTableName());
-
-                final Field deleteField = cls.getField("DELETEID");
-                deleteField.setAccessible(true);
-                final String deleteIdentifier = deleteField.get(null).toString();
-
-                Log.v(TAG, "Delete " + cls.getCanonicalName() + " WHERE " + deleteIdentifier + " = " + d.getDeleteId());
-
-                new com.activeandroid.query.Delete()
-                        .from(cls)
-                        .where(deleteIdentifier + " = ?", d.getDeleteId())
-                        .execute();
-
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
+    /**
+     * Central database modifing method (Insert/Update/Delete)
+     * @param changes Chanes object holding data fetched from server
+     */
     private void updateDatabase(final Changes changes) {
-        Log.d(TAG, "updateDatabase()");
+        //Log.d(TAG, "updateDatabase()");
 
         if (changes.needToUpdate) {
 
@@ -222,6 +96,10 @@ public class UpdateContentService extends Service {
         }
     }
 
+    /**
+     * Updates (Insert/Update) photos in DB
+     * @param photos
+     */
     private void updatePhotos(List<Photo> photos) {
         Photo selectedPhoto;
         for (final Photo p : photos) {
@@ -230,15 +108,19 @@ public class UpdateContentService extends Service {
                     .where(Photo.COL_PHOTOID + " = ? ", p.getPhotoId())
                     .executeSingle();
             if (selectedPhoto != null) {
-                Log.d(TAG, "Updating " + p.toString());
+                //Log.d(TAG, "Updating " + p.toString());
                 selectedPhoto.update(p).save();
             } else {
-                Log.d(TAG, "Creating new " + p.toString());
+                //Log.d(TAG, "Creating new " + p.toString());
                 p.save();
             }
         }
     }
 
+    /**
+     * Updates (Insert/Update) ingredients in DB
+     * @param ingredients
+     */
     private void updateIngredients(List<Ingredient> ingredients) {
         Ingredient selectedIngredient;
         for (final Ingredient i : ingredients) {
@@ -247,15 +129,19 @@ public class UpdateContentService extends Service {
                     .where(Ingredient.COL_KEY + " = ? ", i.getKey())
                     .executeSingle();
             if (selectedIngredient != null) {
-                Log.d(TAG, "Updating " + i.toString());
+                //Log.d(TAG, "Updating " + i.toString());
                 selectedIngredient.update(i).save();
             } else {
-                Log.d(TAG, "Creating new " + i.toString());
+                //Log.d(TAG, "Creating new " + i.toString());
                 i.save();
             }
         }
     }
 
+    /**
+     * Updates (Insert/Update) ratings in DB
+     * @param ratings
+     */
     private void updateRatings(List<Rating> ratings) {
         Rating selectedRating;
         for (final Rating r : ratings) {
@@ -264,18 +150,151 @@ public class UpdateContentService extends Service {
                     .where(Rating.COL_RATINGID + " = ? ", r.getRatingId())
                     .executeSingle();
             if (selectedRating != null) {
-                Log.d(TAG, "Updating " + r.toString());
+                //Log.d(TAG, "Updating " + r.toString());
                 selectedRating.update(r).save();
             } else {
-                Log.d(TAG, "Creating new " + r.toString());
+                //Log.d(TAG, "Creating new " + r.toString());
                 r.save();
             }
         }
     }
 
-    // EventBus
+    /**
+     * Updates (Insert/Update) buildings in DB
+     * @param buildings
+     */
+    private void updateBuildings(final List<Building> buildings) {
+        Building selectedBuilding;
+        for (final Building b : buildings) {
+            selectedBuilding = new Select().from(b.getClass()).where("buildingId = ?", b.getBuildingId()).executeSingle();
+            if (selectedBuilding != null) {
+                //Log.d(TAG, "Updating building " + selectedBuilding.toString());
+                selectedBuilding.update(b).save();
+            } else {
+                //New building
+                //Log.d(TAG, "Creating new Building " + b.toString());
+                b.save();
+            }
+        }
+        //TODO: Feedback to UI if update/inserts done
+    }
+
+    /**
+     * Updates (Insert/Update) dishes in DB
+     * @param dishes
+     */
+    private void updateDishes(final List<Dish> dishes) {
+        Dish selectedDish;
+        for (final Dish d : dishes) {
+            selectedDish = new Select()
+                    .from(d.getClass())
+                    .where(Dish.COL_DISHID + " = ?", d.getDishId())
+                    .executeSingle();
+            if (selectedDish != null) {
+                //Update DishOld in DB
+                //Log.d(TAG, "Updating Dish " + selectedDish.getDishId());
+                selectedDish.update(d).save();
+            } else {
+                //New DishOld
+                //Log.d(TAG, "Creating new Dish " + d.getDishId());
+                d.save();
+            }
+        }
+        //TODO: Feedback to UI if update/inserts done
+    }
+
+    /**
+     * Updates (Insert/Update) dates in DB
+     * @param dates
+     */
+    private void updateDates(List<Date> dates) {
+        Date selectedDate;
+        for (final Date d : dates) {
+            selectedDate = new Select().from(d.getClass()).where("date = ?", d.getDate()).executeSingle();
+            if (selectedDate != null) {
+                //Log.d(TAG, "Updating Date " + d.toString());
+                selectedDate.update(d).save();
+            } else {
+                //Log.d(TAG, "Creating new Date " + d.toString());
+                d.save();
+            }
+        }
+    }
+
+    /**
+     * Updates (Insert/Update) offeredAt in DB
+     * @param offeredAt
+     */
+    private void updateOfferedAt(List<OfferedAt> offeredAt) {
+        OfferedAt selectedOfferedAt;
+        for (final OfferedAt oA : offeredAt) {
+            selectedOfferedAt = new Select()
+                    .from(oA.getClass())
+                    .where("fk_dishId = ? AND fk_dateId = ?", oA.getDishId(), oA.getDateId())
+                    .executeSingle();
+            if (selectedOfferedAt != null) {
+                //Log.d(TAG, "Updating OfferedAt [dish: " + oA.getDishId() + ", date: " + oA.getDateId() + "]");
+                selectedOfferedAt.update(oA).save();
+            } else {
+                //Log.d(TAG, "Creating new OfferedAt [dish: " + oA.getDishId() + ", date: " + oA.getDateId() + "]");
+                oA.save();
+            }
+        }
+    }
+
+    /**
+     * Updates (Insert/Update) Sequence in DB
+     * @param sequence
+     */
+    private void updateSequence(final Sequence sequence) {
+        Sequence currentSeq = new Select().from(Sequence.class).where("seq_name = ?", Sequence.SEQNAME).executeSingle();
+        if (currentSeq != null) {
+            //Log.d(TAG, "Updating Sequence to " + sequence.getLastSequence());
+            currentSeq.update(sequence).save();
+        } else {
+            //Log.d(TAG, "Creating Sequence with " + sequence.getLastSequence());
+            sequence.save();
+        }
+    }
+
+    /**
+     * Applies deletions in DB
+     * @param deletes
+     */
+    private void applyDeletes(List<Delete> deletes) {
+        final String packagePrefix = "de.fhbingen.mensa.data.orm.";
+        Class cls;
+        for (final Delete d : deletes) {
+            try {
+                cls = Class.forName(packagePrefix + d.getTableName());
+
+                final Field deleteField = cls.getField("DELETEID");
+                deleteField.setAccessible(true);
+                final String deleteIdentifier = deleteField.get(null).toString();
+
+                //Log.v(TAG, "Delete " + cls.getCanonicalName() + " WHERE " + deleteIdentifier + " = " + d.getDeleteId());
+
+                new com.activeandroid.query.Delete()
+                        .from(cls)
+                        .where(deleteIdentifier + " = ?", d.getDeleteId())
+                        .execute();
+
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * EventBus Callback; Listens on SettingsChangeEvents
+     * @param event
+     */
     public void onEvent(SettingsChangeEvent event) {
-        Log.d(TAG, "onEvent: SettingsChangeEvent: " + event.getChangePreference());
+        //Log.d(TAG, "onEvent: SettingsChangeEvent: " + event.getChangePreference());
 
         // Run update if subscribed Buildings changed
         if(event.getChangePreference().equals(SettingsFragment.REF_KEY_BUILDINGS)) {
@@ -283,7 +302,10 @@ public class UpdateContentService extends Service {
         }
     };
 
-    // EventBus NetworkStatus
+    /**
+     * EventBus Callback; Listens on NetworkStatusEvents
+     * @param event
+     */
     public void onEvent(NetworkStatusEvent event){
         this.isConnected = event.isConnected();
 
@@ -304,13 +326,9 @@ public class UpdateContentService extends Service {
         //Always write your long running tasks in a separate thread, to avoid ANR
         new Thread(new Runnable() {
 
-            private final String TAG = UpdateContentService.TAG + ".Thread";
-
             @Override
             public void run() {
-                Log.d(TAG, "run()");
-
-
+                //Log.d(TAG, "run()");
                 final UrlBuilder urlBuilder = new UrlBuilder();
 
                 // Subscribed Buildings with BuildingSequence
@@ -344,14 +362,14 @@ public class UpdateContentService extends Service {
 
                 // Get URL from Builder
                 String url = urlBuilder.getChangesUrl();
-                Log.d(TAG, url);
+                //Log.d(TAG, url);
 
                 // Do REST call
                 final RestTemplate restTemplate = new RestTemplate();
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 Changes result = restTemplate.getForObject(url, Changes.class);
 
-                Log.d("myThread", "/GET");
+                //Log.d("myThread", "/GET");
                 if (result.needToUpdate) {
                     Log.d("myThread", "#buildings: " + result.getBuildings().size());
                     Log.d("myThread", "#ingredien: " + result.getIngredients().size());
@@ -362,7 +380,7 @@ public class UpdateContentService extends Service {
                     Log.d("myThread", "#photos:    " + result.getPhotos().size());
                     Log.d("myThread", "#offeredAt: " + result.getOfferedAt().size());
                 }
-                Log.d("myThread", "sequence:   " + result.getSequence().getLastSequence());
+                //Log.d("myThread", "sequence:   " + result.getSequence().getLastSequence());
 
                 if(firstRun){
                     //Just update Buildings, skipping all other data and sequence
@@ -381,18 +399,13 @@ public class UpdateContentService extends Service {
                     }
                     editor.apply();
                 }
-
-                //Stop service once it finishes its task
-                //stopSelf();
-
             }
         }).start();
-
     }
 
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand");
+        //Log.d(TAG, "onStartCommand");
 
         // Register EventBus if not
         if(!EventBus.getDefault().isRegistered(this)) {
@@ -400,28 +413,20 @@ public class UpdateContentService extends Service {
         }
 
         // Initial determination of internet state
-        /*ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        this.isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-        */
         this.isConnected = ((Mensa)getApplication()).isConnected();
-
 
         // Do the work (in new thread)
         doWork();
 
-        Log.d(TAG, "onStartCommand -> return");
+        //Log.d(TAG, "onStartCommand -> return");
         return Service.START_NOT_STICKY;
     }
 
-    //TODO: Was macht ein Binder?
     private final IBinder mBinder = new MyBinder();
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(TAG, "onBind");
+        //Log.d(TAG, "onBind");
         // TODO: Return the communication channel to the service.
         //throw new UnsupportedOperationException("Not yet implemented");
         return mBinder;
@@ -429,23 +434,18 @@ public class UpdateContentService extends Service {
 
     public class MyBinder extends Binder {
 
-        private static final String TAG = "MyBinder";
-
         public UpdateContentService getService(){
-            Log.d(TAG, "MyBinder.getService");
+            //Log.d(TAG, "MyBinder.getService");
             return UpdateContentService.this;
-        }
-
-        public void sendRating(int dishId, int value){
-            Log.d(TAG, "sendRating [dishId: " + dishId + ", value: " + value + "]");
-            //TODO: Send rating to server
-            //TODO: Store rating local with dishId and dateId in DB
         }
     }
 
+    /**
+     * Builds URLs for pulling and pushing data.
+     * (Pull plan, push ratings and pictures)
+     */
     public static class UrlBuilder {
-        public static final String BASE = "http://192.168.178.28:8080";
-        //public static final String BASE = "http://192.168.2.103:8080";
+        public static final String BASE = "http://143.93.91.62";
 
         public static final String RATINGS = BASE + "/ratings";
         public static final String PHOTOS  = BASE + "/photos";

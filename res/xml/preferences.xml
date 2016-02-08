@@ -4,11 +4,11 @@
     android:key="pref_key_storage_settings" >
 
     <!-- HiRes Photos -->
-    <CheckBoxPreference
+    <!--CheckBoxPreference
         android:key="pref_key_high_res_photos"
         android:summary="@string/settings_desc_photos"
         android:title="@string/settings_title_photos"
-        android:defaultValue="false" />
+        android:defaultValue="false" /-->
 
     <!-- User Role -->
     <ListPreference

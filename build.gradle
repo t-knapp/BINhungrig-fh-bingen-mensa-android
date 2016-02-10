@@ -23,13 +23,13 @@ repositories {
 dependencies {
 
     // EventBus for communication between Service, Activity, Thread
-    compile 'com.android.support:support-v4:22.2.0'
+    compile 'com.android.support:support-v4:23.1.1'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
     compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.6.3'
     compile 'de.greenrobot:eventbus:2.4.0'
-    compile 'com.android.support:support-v13:22.2.0'
+    compile 'com.android.support:support-v13:23.1.1'
 
     // Apache MultipartEntity
     compile ('org.apache.httpcomponents:httpmime:4.3.6') {

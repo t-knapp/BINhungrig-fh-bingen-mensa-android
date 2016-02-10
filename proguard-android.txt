@@ -10,11 +10,109 @@
 
 -keep interface com.actionbarsherlock.** { *; }
 
+# apache http
+-dontwarn org.apache.commons.**
+-keep class org.apache.http.** { *; }
+-dontwarn org.apache.http.**
+
+# ActiveAndroid
+-keep class com.activeandroid.** { *; }
+-keep class com.activeandroid.**.** { *; }
+-keep class * extends com.activeandroid.Model
+-keep class * extends com.activeandroid.serializer.TypeSerializer
+
+-keep class org.sqlite.** { *; }
+-keep class org.sqlite.database.** { *; }
 
 
+
+# Proguard configuration for Jackson 2.x (fasterxml package instead of codehaus package)
+-keep class com.fasterxml.jackson.databind.ObjectMapper {
+    public <methods>;
+    protected <methods>;
+}
+-keep class com.fasterxml.jackson.databind.ObjectWriter {
+    public ** writeValueAsString(**);
+}
+
+ -keep class org.codehaus.** { *; }
+ -keep class org.codehaus.jackson.** { *; }
+
+ -keepclassmembers public final enum org.codehaus.jackson.annotate.JsonAutoDetect$Visibility {
+ public static final org.codehaus.jackson.annotate.JsonAutoDetect$Visibility *; }
+
+## GreenRobot EventBus specific rules ##
+# https://github.com/greenrobot/EventBus/blob/master/HOWTO.md#proguard-configuration
+
+-keepclassmembers class ** {
+    public void onEvent*(***);
+}
+
+# Only required if you use AsyncExecutor
+-keepclassmembers class * extends de.greenrobot.event.util.ThrowableFailureEvent {
+    public <init>(java.lang.Throwable);
+}
+
+# Don't warn for missing support classes
+-dontwarn de.greenrobot.event.util.*$Support
+-dontwarn de.greenrobot.event.util.*$SupportManagerFragment
 
 # Keep line numbers to alleviate debugging stack traces
 
 -renamesourcefileattribute SourceFile
 
--keepattributes SourceFile,LineNumberTable
+#spring
+-keepattributes SourceFile,LineNumberTable,InnerClasses,EnclosingMethod,Signature
+
+
+-optimizationpasses 5
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-dontpreverify
+-verbose
+-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
+
+-keep public class * extends android.app.Activity
+-keep public class * extends android.app.Application
+-keep public class * extends android.app.Service
+-keep public class * extends android.content.BroadcastReceiver
+-keep public class * extends android.content.ContentProvider
+-keep public class * extends android.app.backup.BackupAgentHelper
+-keep public class * extends android.preference.Preference
+-keep public class com.android.vending.licensing.ILicensingService
+
+-keepclasseswithmembers class * {
+    native <methods>;
+}
+
+-keepclasseswithmembers class * {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+
+-keepclasseswithmembers class * {
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+}
+
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+-keep class * implements android.os.Parcelable {
+  public static final android.os.Parcelable$Creator *;
+}
+
+-keepclassmembers public class org.springframework {
+    public *;
+}
+
+-keep class org.springframework.**
+-keep class org.springframework.** { ; }
+-keepnames class org.springframework.* { ; }
+-keepclassmembers class org.springframework.* { ; }
+-keepclassmembers enum org.springframework.* { ; }
+-keepclassmembers interface org.springframework.* {*;}
+
+-keep class org.w3c.dom.bootstrap.DOMImplementationRegistry
+-keep class com.google.code.rome.android.repackaged.com.sun.syndication.**
+-keep class com.google.gson.**

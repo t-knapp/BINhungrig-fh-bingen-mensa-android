@@ -135,6 +135,15 @@ public class MainActivitySlide extends Activity implements ActionBar.TabListener
         // Set current day as selected default tab
         mViewPager.setCurrentItem(1);
 
+        // Check if mensa is selected
+        final Set<String> subscribedBuildingIds = PreferenceManager
+                .getDefaultSharedPreferences(this)
+                .getStringSet(SettingsFragment.REF_KEY_BUILDINGS, null);
+
+        if(subscribedBuildingIds == null){
+            Toast.makeText(this, R.string.toast_no_building_subscribed, Toast.LENGTH_LONG).show();
+        }
+
     }
 
 

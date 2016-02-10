@@ -163,7 +163,7 @@
     </string-array>
 
     <!-- MainActivitySlide -->
-    <string name="toast_no_building_subscribed">Bitte zuerst eine Mensa abonieren.</string>
+    <string name="toast_no_building_subscribed">Bitte zuerst eine Mensa in den Einstellungen abonnieren</string>
     <string name="dialog_title_select_building">Mensa auswählen</string>
     <string name="menu_ingredients">Inhaltsstoffe</string>
 

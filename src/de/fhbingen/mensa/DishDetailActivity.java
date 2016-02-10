@@ -150,7 +150,7 @@ public class DishDetailActivity extends Activity implements DownloadFullPhotoTas
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         vh.actionTakePhoto = menu.findItem(R.id.action_take_photo);
-        if(isCurrentDay && this.isBuildingOpenNow(dish.getBuildingId()) && isOnline) {
+        if((isCurrentDay && this.isBuildingOpenNow(dish.getBuildingId()) && isOnline) || BuildConfig.DEBUG) {
             vh.actionTakePhoto.setEnabled(true);
             vh.actionTakePhoto.getIcon().setAlpha(ENABLED_ALPHA);
         } else {
